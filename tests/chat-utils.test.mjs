@@ -17,6 +17,12 @@ test("builds a troubleshooting request with the selected model", () => {
   });
 });
 
+test("unified chat sends one model selection for specs and troubleshooting", () => {
+  assert.deepEqual(chatUtils.buildUnifiedChatRequest?.("Black Shark T11", "  ชาร์จไม่เข้า  "), {
+    question: "ชาร์จไม่เข้า", model_name: "Black Shark T11",
+  });
+});
+
 test("presents a mock handoff without implying a staff message was sent", () => {
   assert.deepEqual(
     chatUtils.presentChatReply?.({

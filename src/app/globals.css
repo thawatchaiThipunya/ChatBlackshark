@@ -64,6 +64,9 @@ button:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visi
 .online-dot.is-loading, .footer-dot.is-loading { background: #d4aa48; }
 .online-dot.is-offline, .footer-dot.is-offline { background: #c56350; }
 .topbar-actions { display: flex; align-items: center; gap: 8px; }
+.llm-link { color: #cfe7ad; font-size: 12px; text-decoration: none; padding: 7px 9px; border: 1px solid #435044; border-radius: 7px; white-space: nowrap; }
+.llm-link:hover { color: white; border-color: #a9e83d; }
+.unified-chat-label { display: inline-flex; align-items: center; color: #31472b; font-size: 12px; }
 .topbar-settings { display: none; width: 34px; height: 34px; place-items: center; color: #d2ddd5; background: #26332a; border: 1px solid #415044; border-radius: 8px; cursor: pointer; }
 .topbar-settings:hover { color: #fff; background: #344438; }
 

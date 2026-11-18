@@ -15,10 +15,9 @@ import {
   RefreshCw,
   Settings2,
   ShieldCheck,
-  Wrench,
   X,
 } from "lucide-react";
-import { buildChatRequest, getCatalogStatus, presentChatReply, type ChatMode, type ChatSource } from "@/lib/chat-utils";
+import { buildUnifiedChatRequest, getCatalogStatus, presentChatReply, type ChatSource } from "@/lib/chat-utils";
 
 type Catalog = {
   products: Array<{ name: string }>;
@@ -44,7 +43,6 @@ const GREETING: ChatMessage = {
 };
 
 export default function HomePage() {
-  const [mode, setMode] = useState<ChatMode>("spec");
   const [catalog, setCatalog] = useState<Catalog | null>(null);
   const [catalogLoading, setCatalogLoading] = useState(true);
   const [catalogError, setCatalogError] = useState(false);
@@ -81,23 +79,16 @@ export default function HomePage() {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, sending]);
 
-  const options = mode === "spec" ? catalog?.products.map((product) => product.name) ?? [] : catalog?.support_models ?? [];
-  const currentModeLabel = mode === "spec" ? "ข้อมูลสินค้า" : "แก้ปัญหาเบื้องต้น";
+  const options = [...new Set([...(catalog?.products.map((product) => product.name) ?? []), ...(catalog?.support_models ?? [])])];
+  const currentModeLabel = "สินค้าและการแก้ปัญหา";
   const catalogStatus = getCatalogStatus(catalogLoading, catalogError);
-
-  function changeMode(nextMode: ChatMode) {
-    setMode(nextMode);
-    const nextOptions = nextMode === "spec" ? catalog?.products.map((product) => product.name) ?? [] : catalog?.support_models ?? [];
-    setSelectedName(nextOptions[0] ?? "");
-    setComposerError("");
-  }
 
   async function sendQuestion(event?: FormEvent) {
     event?.preventDefault();
     if (sending) return;
-    let payload: ReturnType<typeof buildChatRequest>;
+    let payload: ReturnType<typeof buildUnifiedChatRequest>;
     try {
-      payload = buildChatRequest(mode, selectedName, draft);
+      payload = buildUnifiedChatRequest(selectedName, draft);
     } catch (error) {
       setComposerError(error instanceof Error ? error.message : "กรุณาตรวจสอบคำถามอีกครั้ง");
       return;
@@ -172,6 +163,7 @@ export default function HomePage() {
           </div>
         </div>
         <div className="topbar-actions">
+          <a className="llm-link" href="/llm">จัดการ Gemini key</a>
           <button className="topbar-settings" type="button" onClick={() => setSettingsOpen(true)} aria-label="เปิดการตั้งค่าสินค้า" title="สินค้าและข้อมูล">
             <Settings2 size={17} />
           </button>
@@ -179,29 +171,8 @@ export default function HomePage() {
       </header>
 
       <main className="page-wrap">
-        <nav className="mode-switcher-bar" aria-label="ประเภทแชท">
-          <div className="mode-switch" role="tablist" aria-label="ประเภทคำถาม">
-            <button
-              className={`mode-button ${mode === "spec" ? "is-active" : ""}`}
-              type="button"
-              role="tab"
-              aria-selected={mode === "spec"}
-              disabled={catalogLoading || !catalog || sending}
-              onClick={() => changeMode("spec")}
-            >
-              <PackageSearch size={16} /> ข้อมูลสินค้า
-            </button>
-            <button
-              className={`mode-button ${mode === "troubleshooting" ? "is-active" : ""}`}
-              type="button"
-              role="tab"
-              aria-selected={mode === "troubleshooting"}
-              disabled={catalogLoading || !catalog || sending}
-              onClick={() => changeMode("troubleshooting")}
-            >
-              <Wrench size={16} /> แก้ปัญหาเบื้องต้น
-            </button>
-          </div>
+        <nav className="mode-switcher-bar" aria-label="ขอบเขตการตอบ">
+          <strong className="unified-chat-label">ถามข้อมูลสินค้าและการแก้ปัญหาได้ในแชทเดียว</strong>
           <div className="source-assurance"><ShieldCheck size={16} strokeWidth={1.8} /><span>ตอบจากข้อมูลต้นทางเท่านั้น</span></div>
         </nav>
 
@@ -216,7 +187,7 @@ export default function HomePage() {
             </div>
 
             <label className="field-label" htmlFor="product-select">
-              {mode === "spec" ? "สินค้า" : "เลือกรุ่นสินค้า"}
+              สินค้าหรือรุ่นสินค้า
             </label>
             <div className="select-wrap">
               <select
@@ -237,11 +208,7 @@ export default function HomePage() {
                 <button type="button" onClick={() => void loadCatalog()}><RefreshCw size={14} /> ลองอีกครั้ง</button>
               </div>
             ) : (
-              <p className="field-help">
-                {mode === "spec"
-                  ? "ถามข้อมูลหรือสเปกของสินค้าที่เลือก"
-                  : "บอทจะค้นคู่มือของรุ่นที่เลือกก่อนตอบ"}
-              </p>
+              <p className="field-help">ถามสเปกหรือวิธีแก้ปัญหาได้ในช่องเดียว บอทจะเลือกข้อมูลที่เกี่ยวข้องเอง</p>
             )}
 
             <div className="scope-rule">

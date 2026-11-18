@@ -3,8 +3,10 @@ type RouteContext = { params: Promise<{ path: string[] }> };
 async function proxy(request: Request, context: RouteContext) {
   const { path } = await context.params;
   const endpoint = path.join("/");
-  if (!((request.method === "GET" && ["catalog", "health"].includes(endpoint)) ||
-    (request.method === "POST" && endpoint === "chat"))) {
+  const adminRoute = endpoint === "llm/keys" || /^llm\/keys\/\d+$/.test(endpoint);
+  if (!((request.method === "GET" && (["catalog", "health"].includes(endpoint) || endpoint === "llm/keys")) ||
+    (request.method === "POST" && (endpoint === "chat" || endpoint === "llm/keys")) ||
+    (request.method === "DELETE" && /^llm\/keys\/\d+$/.test(endpoint)))) {
     return Response.json({ error: "not_found" }, { status: 404 });
   }
 
@@ -14,7 +16,10 @@ async function proxy(request: Request, context: RouteContext) {
   try {
     const response = await fetch(`${backend.replace(/\/$/, "")}/api/${endpoint}`, {
       method: request.method,
-      headers: request.method === "POST" ? { "Content-Type": "application/json" } : undefined,
+      headers: {
+        ...(request.method === "POST" ? { "Content-Type": "application/json" } : {}),
+        ...(adminRoute ? { "X-Admin-Password": request.headers.get("X-Admin-Password") || "" } : {}),
+      },
       body: request.method === "POST" ? await request.text() : undefined,
       cache: "no-store",
     });
@@ -29,3 +34,4 @@ async function proxy(request: Request, context: RouteContext) {
 
 export const GET = proxy;
 export const POST = proxy;
+export const DELETE = proxy;

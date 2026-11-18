@@ -32,6 +32,14 @@ export function buildChatRequest(mode: ChatMode, selectedName: string, question:
     : { question: cleanQuestion, model_name: cleanName };
 }
 
+export function buildUnifiedChatRequest(selectedName: string, question: string) {
+  const cleanQuestion = question.trim();
+  const cleanName = selectedName.trim();
+  if (!cleanQuestion) throw new Error("กรุณาพิมพ์คำถามก่อนส่ง");
+  if (!cleanName) throw new Error("กรุณาเลือกรุ่นสินค้าก่อนส่งคำถาม");
+  return { question: cleanQuestion, model_name: cleanName };
+}
+
 export function presentChatReply(reply: ChatReply) {
   const isMockHandoff = reply.status === "handoff_mock" || reply.handoff_mock === true;
 
