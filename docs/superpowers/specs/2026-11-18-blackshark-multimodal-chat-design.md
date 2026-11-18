@@ -26,11 +26,11 @@ The web test chat can submit typed card/media inputs for manual testing. The API
 
 ## Product-card lookup and product history
 
-On a customer `item` or `variation_card` event, use the exact `item_id` to perform a read-only lookup in the Shopee product collection (`MONGO_URI`, `MONGO_DB`, `MONGO_COLLECTION`, default collection `ShpProducts`). Restrict the lookup to the Black Shark shop where the source record provides shop identity. The current card turn may use its Mongo description to identify and recommend the selected item.
+On a customer `item` or `variation_card` event, use the exact `item_id` to perform a read-only lookup in the Shopee product collection (`MONGO_URI`, `MONGO_DB`, `MONGO_COLLECTION`, default collection `ShpProducts`). Restrict the lookup to the Black Shark shop where the source record provides shop identity. For that card turn, use the matched item's Mongo data to answer the question about the exact listing, then resolve its product name/model against the Black Shark catalog in Supabase and save the mapping in product history. Persist a bounded card snapshot/source marker for the first-turn audit if useful, but never treat that snapshot as product evidence on later turns.
 
-Persist a per-session product timeline in Supabase with `item_id`, resolved Black Shark product/model, source (`customer_card`, `typed_model`, or `bot_suggestion`), timestamp, and anchor status. A new customer card or unambiguous model mention updates the active anchor; a bot suggestion is recorded separately. Pronouns and follow-ups resolve from that timeline. If model mapping is absent or ambiguous, ask a short clarification rather than guessing.
+Persist a per-session product timeline in Supabase with `item_id`, resolved Black Shark product/model ID and name, source (`customer_card`, `typed_model`, or `bot_suggestion`), timestamp, and anchor status. A new customer card or unambiguous model mention updates the active anchor; a bot suggestion is recorded separately. Pronouns and follow-ups resolve from that timeline. If model mapping is absent or ambiguous, ask a short clarification rather than guessing.
 
-For every turn after the card turn, use the persisted anchor only to select evidence from Supabase `bot_products` and `bot_faqs`. Do not query Mongo or reuse Mongo description as factual evidence on follow-up turns. Product images returned by the Black Shark chat must come from the product data available to the answer path; the test UI renders typed product cards/media when present.
+For every turn after the card turn, use the persisted product name/model mapping to retrieve Black Shark evidence from Supabase `bot_products` and `bot_faqs` first and answer from that data. Do not query Mongo or reuse the saved Mongo description as factual evidence on follow-up turns. If no reliable product mapping or Supabase evidence exists, say what is missing or ask a short clarification; do not silently fall back to Mongo. Product images returned by the Black Shark chat must come from the product data available to the answer path; the test UI renders typed product cards/media when present.
 
 ## Media and vision
 
@@ -86,8 +86,8 @@ Add constraints/indexes for owner-scoped session listing and chronological messa
 1. Existing plain-text chat still answers and keeps separate sessions.
 2. Refreshing/reopening the same browser reloads sessions, messages, product timeline, media, and vision descriptions from Supabase; no chat data is read from or written to `localStorage`.
 3. Each supported rich input type is normalized into a typed stored message; aliases, placeholder-only records, and bundle inputs are handled as specified.
-4. A product card performs one exact, read-only Mongo lookup. The selected product is written to the Supabase timeline and used as the active anchor in follow-up turns.
-5. Follow-up turns retrieve product/FAQ evidence only from Supabase and never use the Mongo description as evidence.
+4. A product card performs one exact, read-only Mongo lookup; that card turn can answer from the exact listing. The system resolves the listing's product/model name to Supabase and stores the mapping as the active anchor.
+5. Follow-up turns search the mapped product in Supabase `bot_products`/`bot_faqs` first and use that evidence; they never query Mongo or fall back to the saved Mongo description.
 6. Image/video originals are stored privately; Gemini vision descriptions are persisted and reused on follow-up turns.
 7. FAQ/live-agent handoff creates a Supabase escalation record and the UI accurately describes the handoff state.
 8. Gemini API keys continue to use the existing encrypted Supabase table.
