@@ -237,7 +237,7 @@ class GeminiAnswerer:
         from google.genai import types
         with genai.Client(api_key=key) as client:
             response = client.models.generate_content(
-                model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash"), contents=prompt,
+                model=os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite"), contents=prompt,
                 config=types.GenerateContentConfig(temperature=0, max_output_tokens=600))
             return (response.text or "").strip()
 
