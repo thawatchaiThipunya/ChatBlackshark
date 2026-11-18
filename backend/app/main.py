@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import hmac
+from typing import Literal
 
 from fastapi import FastAPI, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
@@ -33,10 +34,18 @@ app.add_middleware(
 )
 
 
+class ChatTurn(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str = Field(min_length=1, max_length=4000)
+    product_name: str | None = Field(default=None, max_length=200)
+
+
 class ChatRequest(BaseModel):
     question: str = Field(min_length=1, max_length=1000)
     product_name: str | None = None
     model_name: str | None = None
+    session_id: str | None = Field(default=None, min_length=1, max_length=100)
+    history: list[ChatTurn] = Field(default_factory=list, max_length=24)
 
 
 engine = ProductChatEngine()
@@ -75,7 +84,13 @@ def chat(request: ChatRequest) -> dict:
 
     if request.product_name and request.model_name:
         raise HTTPException(status_code=422, detail="Select either product_name or model_name")
-    return engine.answer(question, product_name=request.product_name, model_name=request.model_name)
+    return engine.answer(
+        question,
+        product_name=request.product_name,
+        model_name=request.model_name,
+        history=[turn.model_dump() for turn in request.history],
+        session_id=request.session_id,
+    )
 
 
 @app.get("/api/llm/keys")

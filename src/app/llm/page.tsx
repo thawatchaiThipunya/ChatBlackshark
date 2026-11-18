@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 
 type KeyRow = { id: number; label: string; last4: string; created_at: string };
 
@@ -10,7 +10,8 @@ export default function LlmKeysPage() {
   const [key, setKey] = useState("");
   const [rows, setRows] = useState<KeyRow[]>([]);
   const [loaded, setLoaded] = useState(false);
-  const [busy, setBusy] = useState(false);
+  const [authorized, setAuthorized] = useState(false);
+  const [busy, setBusy] = useState(true);
   const [error, setError] = useState("");
 
   async function call(path: string, method = "GET", body?: object) {
@@ -19,16 +20,22 @@ export default function LlmKeysPage() {
       headers: { "X-Admin-Password": password, ...(body ? { "Content-Type": "application/json" } : {}) },
       body: body ? JSON.stringify(body) : undefined,
     });
-    if (!response.ok) throw new Error(response.status === 401 ? "รหัสผู้ดูแลไม่ถูกต้อง" : "เชื่อมต่อที่เก็บคีย์ไม่ได้");
+    if (!response.ok) throw new Error(response.status === 401 ? "admin_unauthorized" : "เชื่อมต่อที่เก็บคีย์ไม่ได้");
     return response.json();
   }
 
   async function refresh() {
     setBusy(true); setError("");
-    try { setRows((await call("")).keys); setLoaded(true); }
-    catch (err) { setError(err instanceof Error ? err.message : "เกิดข้อผิดพลาด"); }
+    try { setRows((await call("")).keys); setLoaded(true); setAuthorized(true); }
+    catch (err) {
+      setAuthorized(false); setLoaded(false);
+      const message = err instanceof Error ? err.message : "เกิดข้อผิดพลาด";
+      setError(message === "admin_unauthorized" ? (password ? "รหัสผู้ดูแลไม่ถูกต้อง" : "") : message);
+    }
     finally { setBusy(false); }
   }
+
+  useEffect(() => { void refresh(); }, []);
 
   async function add(event: FormEvent) {
     event.preventDefault(); setBusy(true); setError("");
@@ -53,12 +60,18 @@ export default function LlmKeysPage() {
       <div className="llm-kicker">GEMINI API KEYS</div>
       <h1>จัดการคีย์ของบอท</h1>
       <p>เพิ่มได้หลายคีย์ บอทจะวนใช้ทุกคีย์ในฐานข้อมูลและลองคีย์ถัดไปเมื่อคีย์หนึ่งใช้ไม่ได้</p>
-      <label htmlFor="admin-password">รหัสผู้ดูแล</label>
-      <div className="llm-inline">
-        <input id="admin-password" type="password" value={password} onChange={e => setPassword(e.target.value)} autoComplete="off" placeholder="กรอกรหัสผู้ดูแล" />
-        <button type="button" onClick={() => void refresh()} disabled={!password || busy}>ดูคีย์</button>
-      </div>
+      {!authorized && <>
+        {busy && <p className="llm-empty">กำลังตรวจสิทธิ์...</p>}
+        {!busy && <>
+          <label htmlFor="admin-password">รหัสผู้ดูแล (ใช้เฉพาะหน้า Vercel)</label>
+          <div className="llm-inline">
+            <input id="admin-password" type="password" value={password} onChange={e => setPassword(e.target.value)} autoComplete="off" placeholder="กรอกรหัสผู้ดูแล" />
+            <button type="button" onClick={() => void refresh()} disabled={!password || busy}>ดูคีย์</button>
+          </div>
+        </>}
+      </>}
       {error && <p className="llm-error" role="alert">{error}</p>}
+      {authorized && <p className="llm-note">ตรวจสอบสิทธิ์แล้ว · คีย์เต็มไม่ถูกส่งกลับมาแสดง</p>}
       {loaded && <>
         <div className="llm-list-title"><h2>คีย์ที่บันทึกไว้</h2><span>{rows.length} คีย์</span></div>
         {rows.length ? <ul className="llm-list">{rows.map(row => <li key={row.id}>

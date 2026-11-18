@@ -12,13 +12,15 @@ async function proxy(request: Request, context: RouteContext) {
 
   const backend = process.env.PYTHON_API_URL || (process.env.VERCEL ? "" : "http://127.0.0.1:8000");
   if (!backend) return Response.json({ error: "python_api_not_configured" }, { status: 503 });
+  const suppliedAdminPassword = request.headers.get("X-Admin-Password") || "";
+  const localAdminPassword = process.env.VERCEL ? "" : process.env.ADMIN_PASSWORD || "";
 
   try {
     const response = await fetch(`${backend.replace(/\/$/, "")}/api/${endpoint}`, {
       method: request.method,
       headers: {
         ...(request.method === "POST" ? { "Content-Type": "application/json" } : {}),
-        ...(adminRoute ? { "X-Admin-Password": request.headers.get("X-Admin-Password") || "" } : {}),
+        ...(adminRoute ? { "X-Admin-Password": suppliedAdminPassword || localAdminPassword } : {}),
       },
       body: request.method === "POST" ? await request.text() : undefined,
       cache: "no-store",

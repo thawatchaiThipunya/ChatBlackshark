@@ -1,6 +1,6 @@
 # Black Shark product chat API
 
-Base URL: `http://localhost:8000`. The API is read-only and serves one product-support chat using only the two supplied workbooks.
+Base URL: `http://127.0.0.1:8001`. Product knowledge is read from Supabase. The API keeps no shared conversation state.
 
 ## `GET /api/health`
 
@@ -8,7 +8,7 @@ Returns `{ "status": "ok" }`.
 
 ## `GET /api/catalog`
 
-Returns exact product and support-model labels for the chat selector, plus source counts:
+Returns product and support-model labels plus source counts:
 
 ```json
 {
@@ -20,19 +20,19 @@ Returns exact product and support-model labels for the chat selector, plus sourc
 
 ## `POST /api/chat`
 
-Send a product specification question with `product_name`, or a troubleshooting question with `model_name`. Pass the exact label returned by `/api/catalog`.
+The web client sends a session ID and only that chat's recent history. The backend matches one exact catalog model from the current question, or from the latest user turns in that session. When the match is ambiguous or missing, it asks for clarification without calling Gemini. An explicit `product_name` or `model_name` is still accepted for API clients that already know the catalog label.
 
 ```json
-{ "product_name": "Black Shark T11", "question": "Game Mode" }
+{
+  "session_id": "unique-chat-id",
+  "question": "รุ่นนี้มี Game Mode ไหม",
+  "history": [{"role": "user", "content": "Black Shark T11 มีอะไรเด่นบ้าง"}]
+}
 ```
 
-```json
-{ "model_name": "Black Shark S1 Pro Smart Watch", "question": "ไมโครโฟนไม่มีเสียง" }
-```
+The exact `product_name` used for retrieval and Gemini is returned with the source evidence. Status is `answered`, `need_model`, `key_required`, or `handoff_mock`.
 
-The response includes `status`, `answer`, `intent`, `reason`, `matched_question` when applicable, and `sources` with workbook, sheet, and cell references. Status is `answered`, `need_model`, or `handoff_mock`.
-
-Payment/refund, warranty/claim, tax invoice, missing/unknown source information, and weak or ambiguous matches return:
+Payment/refund, warranty/claim, tax invoice, unknown products, or missing source information return:
 
 ```json
 {
@@ -44,4 +44,4 @@ Payment/refund, warranty/claim, tax invoice, missing/unknown source information,
 }
 ```
 
-This only displays a mock handoff message. No ticket or staff notification is created or sent. Gemini, when configured, can only rank supplied source passages; the answer remains a source excerpt.
+`key_required` means add a Gemini key through `/llm`. `handoff_mock` only displays a message; no ticket or staff notification is created or sent. Gemini receives evidence for one matched product only and is rejected when it adds unsupported facts.

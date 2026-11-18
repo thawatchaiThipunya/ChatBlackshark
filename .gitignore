@@ -11,3 +11,5 @@ __pycache__/
 .venv/
 .qa-profile/
 ui-preview-*.png
+.vercel
+.env*

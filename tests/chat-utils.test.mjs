@@ -23,6 +23,16 @@ test("unified chat sends one model selection for specs and troubleshooting", () 
   });
 });
 
+test("keeps the bot's recommended product attached to its own chat history", () => {
+  assert.deepEqual(chatUtils.buildSessionChatRequest?.("session-1", "แล้ว Strava ล่ะ", [
+    { role: "assistant", content: "ขอแนะนำรุ่นนี้ครับ", product_name: "Black Shark GS3" },
+  ]), {
+    session_id: "session-1",
+    question: "แล้ว Strava ล่ะ",
+    history: [{ role: "assistant", content: "ขอแนะนำรุ่นนี้ครับ", product_name: "Black Shark GS3" }],
+  });
+});
+
 test("presents a mock handoff without implying a staff message was sent", () => {
   assert.deepEqual(
     chatUtils.presentChatReply?.({
@@ -39,6 +49,28 @@ test("presents a mock handoff without implying a staff message was sent", () => 
       handoffSent: false,
     },
   );
+});
+
+test("truncates overlong history turns so the session stays valid", () => {
+  const longText = "ยาว".repeat(2000);
+  const request = chatUtils.buildSessionChatRequest?.("session-1", "คำถาม", [
+    { role: "assistant", content: longText },
+  ]);
+  assert.ok(request.history[0].content.length <= 900);
+});
+
+test("presents a real escalation as a sent handoff with case id", () => {
+  const presented = chatUtils.presentChatReply?.({
+    status: "escalated",
+    answer: "ส่งเรื่องให้เจ้าหน้าที่แล้ว เคส #7",
+    handoff_mock: false,
+    handoff_sent: true,
+    case_id: 7,
+    sources: [],
+  });
+  assert.equal(presented.kind, "handoff");
+  assert.equal(presented.handoffSent, true);
+  assert.equal(presented.caseId, 7);
 });
 
 test("reports catalog connection state accurately", () => {

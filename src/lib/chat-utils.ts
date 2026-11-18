@@ -12,8 +12,11 @@ export interface ChatSource {
 }
 
 export interface ChatReply {
-  status: "answered" | "need_model" | "handoff_mock" | string;
+  status: "answered" | "need_model" | "handoff_mock" | "key_required" | string;
   answer: string;
+  reason?: string;
+  product_name?: string;
+  candidate_models?: string[];
   handoff_mock?: boolean;
   handoff_sent?: boolean;
   sources?: ChatSource[];
@@ -40,13 +43,31 @@ export function buildUnifiedChatRequest(selectedName: string, question: string) 
   return { question: cleanQuestion, model_name: cleanName };
 }
 
+export type ChatHistoryTurn = { role: "user" | "assistant"; content: string; product_name?: string };
+
+export function buildSessionChatRequest(sessionId: string, question: string, history: ChatHistoryTurn[]) {
+  const cleanQuestion = question.trim();
+  if (!cleanQuestion) throw new Error("กรุณาพิมพ์คำถามก่อนส่ง");
+  if (!sessionId.trim()) throw new Error("ไม่พบ session ของแชท กรุณาเริ่มแชทใหม่");
+  const trimmedHistory = history.slice(-12).map((turn) => ({
+    ...turn,
+    content: turn.content.length > 900 ? turn.content.slice(0, 900) : turn.content,
+  }));
+  return { session_id: sessionId, question: cleanQuestion, history: trimmedHistory };
+}
+
 export function presentChatReply(reply: ChatReply) {
+  const isHandoff = reply.status === "handoff_mock" || reply.status === "escalated" ||
+    reply.handoff_mock === true || reply.handoff_sent === true;
   const isMockHandoff = reply.status === "handoff_mock" || reply.handoff_mock === true;
+  const needsKey = reply.status === "key_required" || reply.reason === "llm_key_missing";
 
   return {
-    kind: isMockHandoff ? "handoff" : reply.status === "need_model" ? "need_model" : "answer",
+    kind: needsKey ? "setup_required" : isHandoff ? "handoff" : reply.status === "need_model" ? "need_model" : "answer",
     answer: typeof reply.answer === "string" ? reply.answer : "",
     sources: isMockHandoff ? [] : Array.isArray(reply.sources) ? reply.sources : [],
     handoffSent: reply.handoff_sent === true,
+    ...(typeof reply.product_name === "string" ? { productName: reply.product_name } : {}),
+    ...(typeof reply.case_id === "number" ? { caseId: reply.case_id } : {}),
   } as const;
 }

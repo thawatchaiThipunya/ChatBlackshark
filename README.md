@@ -4,31 +4,33 @@
 
 ## เริ่มใช้งานในเครื่อง
 
-ต้องมี Python 3.11+ และ Node.js 22+
+ต้องมี Python 3.11+ และ Node.js 22+ จากโฟลเดอร์โปรเจกต์
 
-1. เปิด PowerShell ที่โฟลเดอร์โปรเจกต์ แล้วติดตั้ง Python dependencies:
+1. ติดตั้ง Python dependencies (ทำครั้งเดียว):
 
-   ```powershell
-   python -m pip install -r backend/requirements.txt
-   Copy-Item .env.example .env
+   ```bash
+   python3 -m venv .venv
+   .venv/bin/pip install -r backend/requirements.txt
    ```
 
 2. เปิด backend ใน terminal แรก:
 
-   ```powershell
-   python -m uvicorn backend.app.main:app --reload --host 127.0.0.1 --port 8000 --env-file .env
+   ```bash
+   .venv/bin/uvicorn backend.app.main:app --reload --host 127.0.0.1 --port 8001 --env-file .env
    ```
 
 3. เปิด Next.js ใน terminal ที่สอง:
 
-   ```powershell
+   ```bash
    npm install
-   npm run dev
+   npm run dev -- --port 3001
    ```
 
-4. เปิด `http://localhost:3000` โดย Next.js จะส่งคำขอ `/api/*` ไปยัง Python API ผ่าน `PYTHON_API_URL`
+4. เปิด `http://127.0.0.1:3001` โดย Next.js จะส่งคำขอ `/api/*` ไปยัง `http://127.0.0.1:8001` ผ่าน `PYTHON_API_URL`
 
-กรอกค่าจาก `.env.example` ก่อนรัน ระบบต้องเชื่อม Supabase และมี Gemini key อย่างน้อยหนึ่งคีย์จึงจะตอบข้อมูลสินค้าได้ หากยังไม่มีคีย์ ระบบจะแสดง mock handoff การทดสอบ offline ใช้ fake Gemini ใน regression tests
+ไฟล์ `.env` ใน workspace นี้ตั้งค่า Supabase และ secret สำหรับ key store ไว้แล้ว ระบบโหลดสินค้าและคู่มือจาก Supabase จริง หน้าแชทไม่บังคับเลือกสินค้า แต่จับรุ่นแบบ exact จากคำถามและประวัติของแชทนั้น หากยังระบุไม่ได้จะถามกลับก่อนค้นข้อมูล แต่ยังต้องเพิ่ม Gemini API key ผ่าน `/llm` จึงจะให้ Gemini เรียบเรียงคำตอบได้
+
+หน้าแชทเก็บหลาย session แยกกันใน browser และส่งเฉพาะประวัติของ session ที่กำลังถามไปยัง API ถ้าต้องเข้าหน้า `/llm` ให้ใช้ `ADMIN_PASSWORD` ใน `.env` ตัวอย่างคำสั่งแสดงรหัสบนเครื่องนี้คือ `grep '^ADMIN_PASSWORD=' .env` (อย่าแชร์ค่าดังกล่าว)
 
 ## Deploy บน Vercel
 
@@ -45,7 +47,7 @@
 ## ขอบเขตการตอบ
 
 - Supabase Postgres: 44 รายการสินค้า, 32 รุ่นที่มีคู่มือ, 462 หัวข้อแก้ปัญหา
-- Python ใช้ RapidFuzz เลือกข้อความต้นทางตามรุ่นและคำถาม แล้วส่งเฉพาะข้อความนั้นให้ Gemini เรียบเรียง หากไม่มีคีย์หรือคำตอบตรวจไม่ผ่านจะ mock handoff
+- Backend จับชื่อรุ่นจาก catalog แบบตรงตัว ใช้รุ่นจากประวัติของ session เดียวกันได้ แล้วส่งเฉพาะหลักฐานของรุ่นนั้นให้ Gemini หากมีหลายรุ่นหรือหลักฐานไม่พอจะไม่เดาคำตอบ
 - คำตอบแสดงชื่อไฟล์และตำแหน่งต้นทางเมื่อจับคู่ข้อมูลได้
 - คำถามชำระเงิน/คืนเงิน, ประกัน/เคลม, ใบกำกับภาษี, รุ่นหรือข้อมูลที่ไม่มี และผลค้นหาไม่ชัดเจน ใช้ข้อความ mock handoff: “ขอเช็กกับเจ้าหน้าที่ก่อน แล้วเดี๋ยวส่งกลับนะครับ”
 - Mock handoff แสดงบนหน้าจอเท่านั้น ยังไม่มีการส่งข้อความหรือตั๋วถึงเจ้าหน้าที่

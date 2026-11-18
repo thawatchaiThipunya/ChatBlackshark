@@ -71,3 +71,20 @@ class SupabaseStore:
             return None, None, 0
         key = Fernet(self.encryption_key.encode()).decrypt(selected["ciphertext"].encode()).decode()
         return key, selected["id"], selected["count"]
+
+    def escalate(self, session_id: str, model_name: str, question: str,
+                 transcript: list[dict[str, Any]]) -> dict[str, Any] | None:
+        """Record an unresolved-issue case for staff; returns {"id": n} or None."""
+        if not self.token:
+            return None
+        clean_turns = [
+            {"role": turn.get("role", "user"), "content": str(turn.get("content", ""))[:1000]}
+            for turn in (transcript or [])[-12:]
+        ]
+        return self._request("rpc/bot_escalate", {
+            "p_token": self.token,
+            "p_session_id": str(session_id or "")[:100],
+            "p_model_name": str(model_name or "")[:200],
+            "p_question": str(question or "")[:1000],
+            "p_transcript": clean_turns,
+        })
