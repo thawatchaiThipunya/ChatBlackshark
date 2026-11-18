@@ -33,11 +33,10 @@ type ChatMessage = {
   productName?: string;
   handoffSent?: boolean;
   caseId?: number;
+  imageUrl?: string;
 };
 type ChatSession = { id: string; title: string; updatedAt: number; messages: ChatMessage[] };
 
-const STORAGE_KEY = "black-shark-chat-sessions-v1";
-const ACTIVE_SESSION_KEY = "black-shark-active-session-v1";
 const GREETING: ChatMessage = {
   id: "welcome",
   role: "assistant",
@@ -45,24 +44,25 @@ const GREETING: ChatMessage = {
   text: "สวัสดีครับ พิมพ์คำถามได้เลย ไม่ต้องเลือกสินค้าก่อน ผมจะจับรุ่นจากข้อความและบริบทในแชทนี้ครับ",
 };
 
-function createSession(): ChatSession {
-  return { id: crypto.randomUUID(), title: "แชทใหม่", updatedAt: Date.now(), messages: [GREETING] };
+type StoredSession = { id: string; title: string; updated_at: string };
+type StoredMessage = { id: string; role: "user" | "assistant"; content: string; payload?: Record<string, unknown> };
+
+function fromStoredSession(row: StoredSession): ChatSession {
+  return { id: row.id, title: row.title, updatedAt: Date.parse(row.updated_at), messages: [GREETING] };
 }
 
-function isChatSession(value: unknown): value is ChatSession {
-  if (typeof value !== "object" || value === null) return false;
-  const item = value as Record<string, unknown>;
-  return typeof item.id === "string" && typeof item.title === "string" &&
-    typeof item.updatedAt === "number" && Array.isArray(item.messages);
-}
-
-function readSessions(): ChatSession[] {
-  try {
-    const saved: unknown = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
-    return Array.isArray(saved) ? saved.filter(isChatSession).slice(-40) : [];
-  } catch {
-    return [];
-  }
+function fromStoredMessage(row: StoredMessage): ChatMessage {
+  const payload = row.payload || {};
+  return {
+    id: row.id, role: row.role, text: row.content,
+    kind: row.role === "user" ? "answer" : payload.status === "escalated" ? "handoff" :
+      payload.status === "need_model" ? "need_model" : "answer",
+    productName: typeof payload.product_name === "string" ? payload.product_name : undefined,
+    sources: Array.isArray(payload.sources) ? payload.sources as ChatSource[] : [],
+    handoffSent: payload.handoff_sent === true,
+    caseId: typeof payload.case_id === "number" ? payload.case_id : undefined,
+    imageUrl: typeof payload.image_url === "string" ? payload.image_url : undefined,
+  };
 }
 
 function titleFromQuestion(question: string) {
@@ -78,6 +78,8 @@ export default function HomePage() {
   const [activeSessionId, setActiveSessionId] = useState("");
   const [sessionsReady, setSessionsReady] = useState(false);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [itemIds, setItemIds] = useState<Record<string, string>>({});
+  const [mediaFiles, setMediaFiles] = useState<Record<string, File[]>>({});
   const [sendingSessions, setSendingSessions] = useState<Set<string>>(new Set());
   const [composerErrors, setComposerErrors] = useState<Record<string, string>>({});
   const [sessionsOpen, setSessionsOpen] = useState(false);
@@ -100,22 +102,36 @@ export default function HomePage() {
 
   useEffect(() => {
     void loadCatalog();
-    const stored = readSessions();
-    const initial = stored.length ? stored : [createSession()];
-    setSessions(initial);
-    const preferred = sessionStorage.getItem(ACTIVE_SESSION_KEY);
-    setActiveSessionId(initial.some((session) => session.id === preferred) ? preferred! : initial[0].id);
-    setSessionsReady(true);
+    void (async () => {
+      try {
+        const response = await fetch("/api/chat/sessions", { cache: "no-store" });
+        const data = response.ok ? await response.json() as { sessions: StoredSession[] } : { sessions: [] };
+        if (!response.ok && response.status !== 401) throw new Error("chat_store_unavailable");
+        const rows = data.sessions.length ? data.sessions : [await createRemoteSession()];
+        const initial = rows.map(fromStoredSession);
+        setSessions(initial);
+        const preferred = new URLSearchParams(window.location.search).get("session");
+        const selected = initial.find((session) => session.id === preferred) || initial[0];
+        setActiveSessionId(selected.id);
+        await loadMessages(selected.id);
+      } catch {
+        setComposerErrors({ "": "โหลดประวัติแชทจากฐานข้อมูลไม่ได้ กรุณารีเฟรชหน้า" });
+      } finally { setSessionsReady(true); }
+    })();
   }, []);
 
-  useEffect(() => {
-    if (!sessionsReady) return;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
-  }, [sessions, sessionsReady]);
+  async function createRemoteSession(): Promise<StoredSession> {
+    const response = await fetch("/api/chat/sessions", { method: "POST" });
+    if (!response.ok) throw new Error("chat_store_unavailable");
+    return await response.json() as StoredSession;
+  }
 
-  useEffect(() => {
-    if (sessionsReady && activeSessionId) sessionStorage.setItem(ACTIVE_SESSION_KEY, activeSessionId);
-  }, [activeSessionId, sessionsReady]);
+  async function loadMessages(sessionId: string) {
+    const response = await fetch(`/api/chat/sessions/${sessionId}/messages`, { cache: "no-store" });
+    if (!response.ok) throw new Error("chat_history_unavailable");
+    const data = await response.json() as { messages: StoredMessage[] };
+    updateSession(sessionId, (current) => ({ ...current, messages: [GREETING, ...data.messages.map(fromStoredMessage)] }));
+  }
 
   const activeSession = sessions.find((session) => session.id === activeSessionId);
   const messages = activeSession?.messages ?? [GREETING];
@@ -143,17 +159,22 @@ export default function HomePage() {
     });
   }
 
-  function startNewChat() {
-    const session = createSession();
-    setSessions((current) => [...current, session]);
-    setActiveSessionId(session.id);
-    setDrafts((current) => ({ ...current, [session.id]: "" }));
-    setSessionsOpen(false);
-    setTimeout(() => textareaRef.current?.focus(), 0);
+  async function startNewChat() {
+    try {
+      const session = fromStoredSession(await createRemoteSession());
+      setSessions((current) => [session, ...current]);
+      setActiveSessionId(session.id);
+      window.history.replaceState(null, "", `?session=${session.id}`);
+      setDrafts((current) => ({ ...current, [session.id]: "" }));
+      setSessionsOpen(false);
+      setTimeout(() => textareaRef.current?.focus(), 0);
+    } catch { setComposerErrors((current) => ({ ...current, [activeSessionId]: "สร้างแชทในฐานข้อมูลไม่ได้" })); }
   }
 
   function selectSession(sessionId: string) {
     setActiveSessionId(sessionId);
+    window.history.replaceState(null, "", `?session=${sessionId}`);
+    void loadMessages(sessionId).catch(() => setComposerErrors((current) => ({ ...current, [sessionId]: "โหลดประวัติแชทไม่ได้" })));
     setSessionsOpen(false);
     setTimeout(() => textareaRef.current?.focus(), 0);
   }
@@ -172,14 +193,18 @@ export default function HomePage() {
           ...(message.productName ? { product_name: message.productName } : {}),
         } as const))
         .slice(-12);
-      payload = buildSessionChatRequest(session.id, draft, history);
+      payload = buildSessionChatRequest(session.id, draft || (itemIds[session.id] ? "ช่วยดูสินค้าจากการ์ดนี้" : mediaFiles[session.id]?.length ? "ช่วยดูภาพหรือวิดีโอนี้" : ""), history);
     } catch (error) {
       setComposerErrors((current) => ({ ...current, [session.id]: error instanceof Error ? error.message : "กรุณาตรวจสอบคำถามอีกครั้ง" }));
       return;
     }
 
     const question = payload.question;
+    const itemId = itemIds[session.id]?.trim();
+    const files = mediaFiles[session.id] || [];
     setDrafts((current) => ({ ...current, [session.id]: "" }));
+    setItemIds((current) => ({ ...current, [session.id]: "" }));
+    setMediaFiles((current) => ({ ...current, [session.id]: [] }));
     setComposerErrors((current) => ({ ...current, [session.id]: "" }));
     updateSession(session.id, (current) => ({
       ...current,
@@ -190,10 +215,24 @@ export default function HomePage() {
     setSessionSending(session.id, true);
 
     try {
+      const attachmentIds: string[] = [];
+      for (const file of files) {
+        const signedResponse = await fetch("/api/chat/media/upload-url", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ session_id: session.id, filename: file.name,
+            mime_type: file.type, byte_size: file.size }),
+        });
+        if (!signedResponse.ok) throw new Error("media_upload_unavailable");
+        const signed = await signedResponse.json() as { attachment_id: string; upload_url: string };
+        const uploaded = await fetch(signed.upload_url, { method: "PUT", headers: { "Content-Type": file.type }, body: file });
+        if (!uploaded.ok) throw new Error("media_upload_failed");
+        attachmentIds.push(signed.attachment_id);
+      }
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ ...payload, attachment_ids: attachmentIds,
+          ...(itemId ? { event: { type: "item", item_id: itemId, text: draft } } : {}) }),
       });
       if (!response.ok) throw new Error("chat_unavailable");
       const presented = presentChatReply(await response.json());
@@ -211,6 +250,7 @@ export default function HomePage() {
           ...(presented.caseId !== undefined ? { caseId: presented.caseId } : {}),
         }],
       }));
+      await loadMessages(session.id);
     } catch {
       updateSession(session.id, (current) => ({
         ...current,
@@ -334,8 +374,9 @@ export default function HomePage() {
                       <p className="handoff-note">ส่งเรื่องให้เจ้าหน้าที่จริงแล้ว{message.caseId !== undefined ? ` · เคส #${message.caseId}` : ""} ทีมงานจะติดต่อกลับ</p>
                     )}
                     {message.kind === "handoff" && !message.handoffSent && (
-                      <p className="handoff-note">นี่คือการจำลองเท่านั้น ยังไม่มีการส่งข้อความถึงเจ้าหน้าที่จริง</p>
+                      <p className="handoff-note">บันทึกคำขอไว้ในระบบแล้ว ยังไม่มีการส่งข้อความถึงเจ้าหน้าที่ผ่าน Shopee</p>
                     )}
+                    {message.imageUrl && <img src={message.imageUrl} alt={message.productName || "รูปสินค้า"} className="message-product-image" />}
                     {!!message.sources?.length && (
                       <div className="sources-list" aria-label="แหล่งข้อมูลอ้างอิง">
                         {message.sources.map((source, index) => (
@@ -362,6 +403,15 @@ export default function HomePage() {
             </div>
 
             <form className="composer" onSubmit={(event) => void sendQuestion(event)}>
+              <label>ภาพ/วิดีโอ
+                <input type="file" accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
+                  multiple onChange={(event) => setMediaFiles((current) => ({ ...current,
+                    [activeSessionId]: Array.from(event.target.files || []).slice(0, 5) }))} />
+              </label>
+              <input type="text" inputMode="numeric" value={itemIds[activeSessionId] || ""}
+                onChange={(event) => setItemIds((current) => ({ ...current, [activeSessionId]: event.target.value }))}
+                placeholder="item_id จากการ์ดสินค้า (ถ้ามี)" aria-label="item_id จากการ์ดสินค้า"
+                maxLength={100} disabled={!activeSession || sending} />
               <div className="composer-main">
                 <textarea
                   ref={textareaRef}
@@ -377,7 +427,7 @@ export default function HomePage() {
                   maxLength={1000}
                   disabled={!sessionsReady || catalogLoading || catalogError || !activeSession}
                 />
-                <button className="send-button" type="submit" disabled={sending || !draft.trim() || !sessionsReady || catalogLoading || catalogError} aria-label="ส่งคำถาม">
+                <button className="send-button" type="submit" disabled={sending || (!draft.trim() && !itemIds[activeSessionId]?.trim() && !mediaFiles[activeSessionId]?.length) || !sessionsReady || catalogLoading || catalogError} aria-label="ส่งคำถาม">
                   {sending ? <LoaderCircle size={18} className="spin" /> : <ArrowUp size={19} strokeWidth={2.1} />}
                 </button>
               </div>
@@ -425,7 +475,7 @@ export default function HomePage() {
 
             <div className="info-storage-note">
               <ShieldCheck size={15} strokeWidth={1.8} />
-              <p>ประวัติแต่ละแชทแยกกันและเก็บไว้ใน browser นี้</p>
+              <p>ประวัติแต่ละแชทแยกกันและบันทึกไว้ในฐานข้อมูล</p>
             </div>
           </aside>
         </div>
