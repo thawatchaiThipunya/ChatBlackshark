@@ -511,6 +511,13 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
         reply = {"status": "answered", "answer": "ได้รับข้อมูลแล้วครับ พิมพ์สิ่งที่อยากให้ช่วยดูต่อได้เลยครับ"}
     elif event.message_type == "unknown":
         reply = {"status": "need_model", "answer": "ผมยังอ่านข้อมูลที่ส่งมาไม่ครบครับ ช่วยพิมพ์สิ่งที่อยากให้ดูอีกนิดได้ไหมครับ"}
+    elif descriptions and any(cue in question for cue in ("เห็นอะไร", "ในภาพ", "ในวิดีโอ", "ในคลิป")):
+        observations = [item for item in descriptions if not item.startswith("[ไม่สามารถอ่าน")]
+        reply = {"status": "answered" if observations else "need_model",
+                 "answer": "จากภาพหรือวิดีโอที่ส่งมา ผมเห็นว่า " + " ".join(observations)
+                           if observations else "ตอนนี้ผมอ่านภาพหรือวิดีโอนี้ไม่ได้ครับ ลองส่งใหม่อีกครั้งได้ไหมครับ",
+                 "source_type": "gemini_vision" if observations else "vision_unavailable",
+                 "vision_descriptions": observations}
     else:
         anchor = store.chat_action(guest, "product_anchor", session_id)
         anchored_name = anchor.get("product_name") if anchor else None
