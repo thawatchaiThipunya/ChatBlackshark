@@ -35,6 +35,7 @@ type ChatMessage = {
   caseId?: number;
   imageUrl?: string;
   cardTitle?: string;
+  productCards?: Array<{ itemId: string; title: string; imageUrl?: string }>;
   attachments?: string[];
 };
 type ChatSession = { id: string; title: string; updatedAt: number; messages: ChatMessage[] };
@@ -48,6 +49,17 @@ const GREETING: ChatMessage = {
 
 type StoredSession = { id: string; title: string; updated_at: string };
 type StoredMessage = { id: string; role: "user" | "assistant"; content: string; payload?: Record<string, unknown> };
+
+function readProductCards(value: unknown) {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((candidate) => {
+    if (!candidate || typeof candidate !== "object") return [];
+    const card = candidate as Record<string, unknown>;
+    if (typeof card.name !== "string") return [];
+    return [{ itemId: typeof card.item_id === "string" ? card.item_id : "",
+      title: card.name, imageUrl: typeof card.image_url === "string" ? card.image_url : undefined }];
+  });
+}
 
 function fromStoredSession(row: StoredSession): ChatSession {
   return { id: row.id, title: row.title, updatedAt: Date.parse(row.updated_at), messages: [GREETING] };
@@ -63,8 +75,9 @@ function fromStoredMessage(row: StoredMessage): ChatMessage {
     sources: Array.isArray(payload.sources) ? payload.sources as ChatSource[] : [],
     handoffSent: payload.handoff_sent === true,
     caseId: typeof payload.case_id === "number" ? payload.case_id : undefined,
-    imageUrl: typeof payload.image_url === "string" ? payload.image_url : undefined,
-    cardTitle: typeof payload.card_title === "string" ? payload.card_title : undefined,
+    imageUrl: row.role === "user" && typeof payload.image_url === "string" ? payload.image_url : undefined,
+    cardTitle: row.role === "user" && typeof payload.card_title === "string" ? payload.card_title : undefined,
+    productCards: row.role === "user" ? readProductCards(payload.product_cards) : [],
     attachments: Array.isArray(payload.attachment_ids) ? payload.attachment_ids.filter((id): id is string => typeof id === "string") : undefined,
   };
 }
@@ -399,12 +412,21 @@ export default function HomePage() {
                     {message.kind === "handoff" && !message.handoffSent && (
                       <p className="handoff-note">บันทึกคำขอไว้ในระบบแล้ว ยังไม่มีการส่งข้อความถึงเจ้าหน้าที่ผ่าน Shopee</p>
                     )}
-                    {message.cardTitle && (
+                    {!!message.productCards?.length ? (
+                      <div className="message-product-cards">
+                        {message.productCards.map((card, index) => (
+                          <div className="message-product-card" key={`${card.itemId}-${index}`}>
+                            {card.imageUrl && <img src={card.imageUrl} alt={card.title} />}
+                            <div><strong>{card.title}</strong><span>{card.itemId ? `Shopee item_id ${card.itemId}` : "สินค้าที่ส่งมา"}</span></div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : message.cardTitle ? (
                       <div className="message-product-card">
                         {message.imageUrl && <img src={message.imageUrl} alt={message.cardTitle} />}
                         <div><strong>{message.cardTitle}</strong><span>การ์ดสินค้าที่ส่งมา</span></div>
                       </div>
-                    )}
+                    ) : null}
                     {message.imageUrl && !message.cardTitle && <img src={message.imageUrl} alt={message.productName || "รูปสินค้า"} className="message-product-image" />}
                     {!!message.attachments?.length && (
                       <div className="message-attachments">

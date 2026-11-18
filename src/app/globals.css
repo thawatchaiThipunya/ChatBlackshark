@@ -331,6 +331,7 @@ kbd { min-width: 20px; padding: 0 4px; color: #4a564e; background: #f1f4f0; bord
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
 .message-product-card { display: flex; gap: 12px; align-items: center; max-width: 360px; padding: 10px; margin-top: 8px; border: 1px solid var(--line); border-radius: 14px; background: var(--paper); color: var(--ink); }
+.message-product-cards { display: grid; gap: 8px; }
 .message-product-card img { width: 72px; height: 72px; object-fit: cover; border-radius: 9px; }
 .message-product-card div { display: grid; gap: 4px; min-width: 0; }
 .message-product-card strong { font-size: 13px; line-height: 1.4; }
