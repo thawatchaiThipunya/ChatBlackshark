@@ -79,8 +79,7 @@ class SupabaseStore:
             raise RuntimeError("Supabase Storage secret key is not configured")
         data = json.dumps(payload).encode() if payload is not None else None
         request = urllib.request.Request(self.url + "/storage/v1/" + path, data=data,
-            headers={"apikey": secret, "Authorization": "Bearer " + secret,
-                     "Content-Type": "application/json"},
+            headers={"apikey": secret, "Content-Type": "application/json"},
             method="POST" if data is not None else "GET")
         with urllib.request.urlopen(request, timeout=30) as response:
             return json.load(response) if payload is not None else response.read()
