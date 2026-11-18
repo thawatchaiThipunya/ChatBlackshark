@@ -1,13 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Check, LoaderCircle, Palette, Type } from "lucide-react";
+import { Check, LoaderCircle, Palette, Settings2, Type } from "lucide-react";
+import { ConsolePage } from "@/components/ConsolePage";
 
 type Preferences = { bubble_color: string; chat_text_size: "small" | "medium" | "large"; theme_preference: "light" | "dark" };
 const defaults: Preferences = { bubble_color: "#8b1e28", chat_text_size: "medium", theme_preference: "light" };
 const colors = ["#8b1e28", "#0b2340", "#2255a4", "#087e77", "#6643a5"];
 const sizes: Array<{ value: Preferences["chat_text_size"]; label: string }> = [
-  { value: "small", label: "เล็ก" }, { value: "medium", label: "ปกติ" }, { value: "large", label: "ใหญ่" },
+  { value: "small", label: "เล็ก · 14px" }, { value: "medium", label: "ปกติ · 16px" }, { value: "large", label: "ใหญ่ · 18px" },
 ];
 
 function applyPreferences(preferences: Preferences) {
@@ -55,9 +56,7 @@ export default function SettingsPage() {
     } finally { setSaving(false); }
   }
 
-  return <main className="admin-page">
-    <div className="admin-page-inner">
-      <header className="admin-page-header"><div><h1>ตั้งค่าหน้าจอ</h1><p>ปรับสี bubble ขนาดตัวอักษร และธีมสำหรับหน้าสนทนา</p></div></header>
+  return <ConsolePage icon={Settings2} title="ตั้งค่าหน้าจอ" subtitle="ปรับสี bubble ขนาดตัวอักษร และธีมสำหรับหน้าสนทนา">
       <div className="settings-grid">
         <section className="settings-panel" aria-labelledby="settings-title">
           <h2 id="settings-title">การแสดงผลแชท</h2><p>ค่าที่บันทึกจะใช้กับบัญชีของคุณทุกครั้งที่เข้าสู่ระบบ</p>
@@ -84,6 +83,5 @@ export default function SettingsPage() {
           <div className="chat-preview"><div className="preview-assistant">สวัสดีครับ มีอะไรให้ช่วยไหมครับ</div><div className="preview-bubble">ช่วยดูสินค้ารุ่นนี้ให้หน่อยครับ</div></div>
         </section>
       </div>
-    </div>
-  </main>;
+  </ConsolePage>;
 }

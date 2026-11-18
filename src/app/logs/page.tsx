@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, ScrollText } from "lucide-react";
+import { ConsolePage } from "@/components/ConsolePage";
 
 type LogRow = { id: number; actor_email: string; action: string; metadata: Record<string, unknown>; created_at: string };
 const actionOptions = ["auth.login", "auth.logout", "preferences.update", "llm_key.add", "llm_key.delete"];
@@ -36,11 +37,8 @@ export default function LogsPage() {
 
   useEffect(() => { void load(); }, [load]);
 
-  return <main className="admin-page">
-    <div className="admin-page-inner">
-      <header className="admin-page-header"><div><h1>บันทึกระบบ</h1><p>ตรวจสอบการเข้าสู่ระบบ การเปลี่ยนค่าหน้าจอ และการจัดการ Gemini keys</p></div>
-        <button className="header-action" type="button" onClick={() => void load()} disabled={loading}><RefreshCw size={15} /> รีเฟรช</button>
-      </header>
+  return <ConsolePage icon={ScrollText} title="บันทึกระบบ" subtitle="ตรวจสอบการเข้าสู่ระบบ การเปลี่ยนค่าหน้าจอ และการจัดการ Gemini keys"
+    actions={<button className="header-action" type="button" onClick={() => void load()} disabled={loading}><RefreshCw size={15} /> รีเฟรช</button>}>
       <div className="admin-toolbar"><label htmlFor="log-action">ประเภทกิจกรรม
         <select id="log-action" value={action} onChange={(event) => setAction(event.target.value)}><option value="">ทั้งหมด</option>{actionOptions.map((item) => <option key={item} value={item}>{item}</option>)}</select>
       </label><span className="log-count">{loading ? "กำลังโหลด…" : `${rows.length} รายการล่าสุด`}</span></div>
@@ -52,6 +50,5 @@ export default function LogsPage() {
         <header><strong>{row.action}</strong><time dateTime={row.created_at}>{formatDate(row.created_at)}</time></header>
         <p>{row.actor_email}</p><p>{formatMetadata(row.metadata)}</p>
       </article>)}{!rows.length && <p className="empty-copy">{loading ? "กำลังโหลดข้อมูล…" : "ไม่พบรายการบันทึก"}</p>}</div>
-    </div>
-  </main>;
+  </ConsolePage>;
 }

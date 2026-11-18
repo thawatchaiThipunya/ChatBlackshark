@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { KeyRound, Plus, RefreshCw, Trash2 } from "lucide-react";
+import { ConsolePage } from "@/components/ConsolePage";
 
 type KeyRow = { id: number; label: string; last4: string; created_at: string };
 
@@ -55,10 +56,8 @@ export default function LlmKeysPage() {
     finally { setBusy(false); }
   }
 
-  return <main className="llm-console"><div className="llm-console-inner">
-    <header className="admin-page-header"><div><h1>จัดการ Gemini keys</h1><p>เพิ่มและลบคีย์ที่ระบบใช้สร้างคำตอบ คีย์เต็มจะไม่แสดงหลังบันทึก</p></div>
-      <button className="header-action" type="button" onClick={() => void refresh()} disabled={busy}><RefreshCw size={15} /> รีเฟรช</button>
-    </header>
+  return <ConsolePage icon={KeyRound} title="จัดการ Gemini keys" subtitle="เพิ่มและลบคีย์ที่ระบบใช้สร้างคำตอบ คีย์เต็มจะไม่แสดงหลังบันทึก"
+    actions={<button className="header-action" type="button" onClick={() => void refresh()} disabled={busy}><RefreshCw size={15} /> รีเฟรช</button>}>
     {error && <p className="load-error" role="alert">{error}</p>}{notice && <p className="setting-feedback" role="status">{notice}</p>}
     <div className="llm-key-grid">
       <section className="llm-panel" aria-labelledby="key-list-title">
@@ -81,5 +80,5 @@ export default function LlmKeysPage() {
       </section>
     </div>
     <Link className="llm-back-link" href="/dashboard">กลับไปหน้า Dashboard</Link>
-  </div></main>;
+  </ConsolePage>;
 }
