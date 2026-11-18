@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+.next/
+node_modules/
+.openai/
+*.tsbuildinfo
+__pycache__/
+*.py[cod]
+.venv/
+.qa-profile/
+ui-preview-*.png
