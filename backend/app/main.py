@@ -14,7 +14,7 @@ import urllib.request
 from datetime import datetime, timedelta, timezone
 from typing import Literal
 
-from fastapi import FastAPI, HTTPException, Depends, Query, Request, Response
+from fastapi import FastAPI, HTTPException, Cookie, Depends, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
@@ -107,16 +107,9 @@ engine = ProductChatEngine()
 store = engine.store
 
 
-def chat_guest_for_admin(admin: dict) -> str:
-    email = str(admin.get("email") or "").strip().lower()
-    if not email or not store.token:
-        raise HTTPException(status_code=503, detail="chat_identity_unavailable")
-    return hmac.new(store.token.encode(), f"blackshark-chat:{email}".encode(), "sha256").hexdigest()
-
-
-def ensure_chat_guest(admin: dict) -> str:
-    guest = chat_guest_for_admin(admin)
-    store.chat_action(guest, "create_guest")
+def guest_or_401(guest: str | None) -> str:
+    if not guest or len(guest) < 32:
+        raise HTTPException(status_code=401, detail="chat_guest_required")
     return guest
 
 
@@ -308,29 +301,35 @@ def auth_logout(request: Request, response: Response) -> dict[str, bool]:
 
 
 @app.post("/api/chat/sessions")
-def create_chat_session(response: Response, admin: dict = Depends(current_admin)) -> dict:
+def create_chat_session(response: Response, chat_guest: str | None = Cookie(default=None)) -> dict:
+    guest = chat_guest or secrets.token_urlsafe(48)
     try:
-        guest = ensure_chat_guest(admin)
+        if not chat_guest:
+            store.chat_action(guest, "create_guest")
         session = store.chat_action(guest, "create_session")
     except Exception:
         raise HTTPException(status_code=503, detail="chat_store_unavailable")
-    response.delete_cookie("chat_guest", path="/")
+    if not chat_guest:
+        response.set_cookie("chat_guest", guest, httponly=True, secure=os.getenv("VERCEL") == "1",
+                            samesite="lax", max_age=60 * 60 * 24 * 365)
     return session
 
 
 @app.get("/api/chat/sessions")
-def list_chat_sessions(admin: dict = Depends(current_admin)) -> dict:
+def list_chat_sessions(chat_guest: str | None = Cookie(default=None)) -> dict:
     try:
-        guest = ensure_chat_guest(admin)
+        guest = guest_or_401(chat_guest)
         return {"sessions": store.chat_action(guest, "list_sessions")}
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(status_code=503, detail="chat_store_unavailable")
 
 
 @app.get("/api/chat/sessions/{session_id}/messages")
-def list_chat_messages(session_id: str, admin: dict = Depends(current_admin)) -> dict:
+def list_chat_messages(session_id: str, chat_guest: str | None = Cookie(default=None)) -> dict:
     try:
-        guest = ensure_chat_guest(admin)
+        guest = guest_or_401(chat_guest)
         return {"messages": store.chat_action(guest, "load_session", valid_session(session_id))}
     except HTTPException:
         raise
@@ -346,7 +345,7 @@ class UploadRequest(BaseModel):
 
 
 @app.post("/api/chat/media/upload-url")
-def create_upload_url(request: UploadRequest, admin: dict = Depends(current_admin)) -> dict:
+def create_upload_url(request: UploadRequest, chat_guest: str | None = Cookie(default=None)) -> dict:
     allowed = {"image/jpeg": ".jpg", "image/png": ".png", "image/webp": ".webp",
                "image/gif": ".gif", "video/mp4": ".mp4", "video/webm": ".webm",
                "video/quicktime": ".mov"}
@@ -355,7 +354,7 @@ def create_upload_url(request: UploadRequest, admin: dict = Depends(current_admi
         raise HTTPException(status_code=422, detail="unsupported_media_type")
     session_id = valid_session(request.session_id)
     try:
-        guest = ensure_chat_guest(admin)
+        guest = guest_or_401(chat_guest)
         store.chat_action(guest, "load_session", session_id)
         path = f"{session_id}/{uuid.uuid4()}{suffix}"
         signed = store.signed_upload(path)
@@ -427,7 +426,7 @@ def admin_logs(limit: int = Query(default=50, ge=1, le=100),
 
 
 @app.post("/api/chat")
-def chat(request: ChatRequest, admin: dict = Depends(current_admin)) -> dict:
+def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) -> dict:
     event = normalize_chat_input(request.event, request.question)
     question = event.text or ("ช่วยดูสินค้าจากการ์ดนี้" if event.item_ids else "")
     if not question and not request.attachment_ids and event.message_type not in ("faq_liveagent", "sticker", "notification", "order", "unknown"):
@@ -437,13 +436,19 @@ def chat(request: ChatRequest, admin: dict = Depends(current_admin)) -> dict:
         raise HTTPException(status_code=422, detail="Select either product_name or model_name")
     session_id = valid_session(request.session_id or "")
     try:
-        guest = ensure_chat_guest(admin)
+        guest = guest_or_401(chat_guest)
         prior = store.chat_action(guest, "load_session", session_id)
     except Exception:
         raise HTTPException(status_code=503, detail="chat_store_unavailable")
     history = [{"role": row["role"], "content": row["content"],
                 "product_name": row.get("payload", {}).get("product_name")}
                for row in prior[-12:]]
+    listing = None
+    if event.message_type in ("item", "variation_card", "bundle_message") and event.item_ids:
+        try:
+            listing = lookup_shopee_item(event.item_ids[0])
+        except Exception:
+            logger.exception("shopee_card_lookup_failed")
     descriptions = []
     for attachment_id in request.attachment_ids:
         attachment = store.chat_action(guest, "get_attachment", session_id, {"id": valid_session(attachment_id)})
@@ -468,14 +473,12 @@ def chat(request: ChatRequest, admin: dict = Depends(current_admin)) -> dict:
         store.chat_action(guest, "save_message", session_id, {"role": "user", "content": question,
             "payload": {"message_type": event.message_type, "item_ids": list(event.item_ids),
                         "order_sn": event.order_sn, "media": list(event.media),
-                        "attachment_ids": request.attachment_ids, "vision_descriptions": descriptions}})
+                        "attachment_ids": request.attachment_ids, "vision_descriptions": descriptions,
+                        "card_title": listing["name"] if listing else None,
+                        "image_url": listing["image_url"] if listing else None}})
     except Exception:
         raise HTTPException(status_code=503, detail="chat_save_failed")
     if event.message_type in ("item", "variation_card", "bundle_message") and event.item_ids:
-        try:
-            listing = lookup_shopee_item(event.item_ids[0])
-        except Exception:
-            listing = None
         if listing:
             knowledge = store.knowledge()
             title = " ".join(listing["name"].lower().split())
@@ -485,10 +488,14 @@ def chat(request: ChatRequest, admin: dict = Depends(current_admin)) -> dict:
             store.chat_action(guest, "save_product", session_id, {"item_id": listing["item_id"],
                 "product_name": matched, "source": "customer_card", "is_anchor": True,
                 "card_snapshot": {"name": listing["name"]}})
-            description = listing["description"][:1200]
-            reply = {"status": "answered", "answer": f"{listing['name']} ครับ {description}".strip(),
+            description = listing["description"][:5000]
+            answer, _ = engine.answerer.answer(
+                question, f"ชื่อสินค้าในการ์ด: {listing['name']}\nรายละเอียดสินค้าการ์ด: {description}",
+                product_name=listing["name"], intent="product_info", history=history)
+            reply = {"status": "answered", "answer": answer or f"การ์ดนี้คือ {listing['name']} ครับ {description[:500]}".strip(),
                      "product_name": matched, "item_id": listing["item_id"],
-                     "image_url": listing["image_url"], "source_type": "shopee_exact_item"}
+                     "image_url": listing["image_url"], "source_type": "shopee_exact_item",
+                     "card_title": listing["name"]}
         else:
             reply = {"status": "need_model", "answer": "ผมหาการ์ดสินค้านี้ไม่พบครับ รบกวนบอกชื่อรุ่นบนการ์ดให้หน่อยครับ"}
     elif event.message_type == "faq_liveagent":

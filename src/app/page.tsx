@@ -34,6 +34,7 @@ type ChatMessage = {
   handoffSent?: boolean;
   caseId?: number;
   imageUrl?: string;
+  cardTitle?: string;
 };
 type ChatSession = { id: string; title: string; updatedAt: number; messages: ChatMessage[] };
 
@@ -62,6 +63,7 @@ function fromStoredMessage(row: StoredMessage): ChatMessage {
     handoffSent: payload.handoff_sent === true,
     caseId: typeof payload.case_id === "number" ? payload.case_id : undefined,
     imageUrl: typeof payload.image_url === "string" ? payload.image_url : undefined,
+    cardTitle: typeof payload.card_title === "string" ? payload.card_title : undefined,
   };
 }
 
@@ -376,7 +378,13 @@ export default function HomePage() {
                     {message.kind === "handoff" && !message.handoffSent && (
                       <p className="handoff-note">บันทึกคำขอไว้ในระบบแล้ว ยังไม่มีการส่งข้อความถึงเจ้าหน้าที่ผ่าน Shopee</p>
                     )}
-                    {message.imageUrl && <img src={message.imageUrl} alt={message.productName || "รูปสินค้า"} className="message-product-image" />}
+                    {message.cardTitle && (
+                      <div className="message-product-card">
+                        {message.imageUrl && <img src={message.imageUrl} alt={message.cardTitle} />}
+                        <div><strong>{message.cardTitle}</strong><span>การ์ดสินค้าที่ส่งมา</span></div>
+                      </div>
+                    )}
+                    {message.imageUrl && !message.cardTitle && <img src={message.imageUrl} alt={message.productName || "รูปสินค้า"} className="message-product-image" />}
                     {!!message.sources?.length && (
                       <div className="sources-list" aria-label="แหล่งข้อมูลอ้างอิง">
                         {message.sources.map((source, index) => (
