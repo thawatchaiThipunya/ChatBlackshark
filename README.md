@@ -26,9 +26,19 @@
    npm run dev
    ```
 
-4. เปิด `http://localhost:3000`
+4. เปิด `http://localhost:3000` โดย Next.js จะส่งคำขอ `/api/*` ไปยัง Python API ผ่าน `PYTHON_API_URL`
 
 ไม่ต้องใส่ Gemini key เพื่อทดลองแบบ offline; บอทใช้ PyThaiNLP และ RapidFuzz ค้นจากข้อมูลในเครื่องได้ ส่วน Gemini เป็นตัวเลือกที่ช่วยจัดอันดับข้อความต้นทางเมื่อมี key และไม่เขียนข้อเท็จจริงใหม่
+
+## Deploy บน Vercel
+
+ใช้ GitHub repo เดียวสร้าง Vercel สองโปรเจกต์ เพื่อให้ Python และ Next.js build แยกกัน:
+
+1. **Python API:** Import repo โดยตั้ง Root Directory เป็น `backend` และ Framework Preset เป็น FastAPI ใช้ค่าจาก `backend/requirements.txt` โดยอัตโนมัติ หลัง deploy ตรวจ `https://<backend-domain>/api/health` ให้ได้ `{"status":"ok"}`
+2. **Next.js:** Import repo เดิมอีกครั้ง โดยตั้ง Root Directory เป็นราก repo และ Framework Preset เป็น Next.js ตั้ง Environment Variable `PYTHON_API_URL=https://<backend-domain>` โดยไม่เติม `/api` ท้าย URL จากนั้น deploy แล้วเปิดหน้าเว็บเพื่อทดลองถามคำถาม
+3. ถ้าต้องการ Gemini ให้เพิ่ม `GEMINI_API_KEY` เฉพาะโปรเจกต์ Python API แล้ว redeploy ฝั่งนั้น หน้าเว็บและบอทใช้งาน offline ได้โดยไม่ต้องมี key
+
+หน้าเว็บเรียก `/api/*` บนโดเมนตัวเอง แล้ว Next.js ส่งต่อไปยัง Python API ฝั่ง server จึงไม่ต้องเปิด CORS ให้โดเมนสาธารณะ และไม่เปิดเผย Gemini key ใน browser
 
 ## ขอบเขตการตอบ
 

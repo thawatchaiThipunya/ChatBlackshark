@@ -20,7 +20,6 @@ import {
 } from "lucide-react";
 import { buildChatRequest, getCatalogStatus, presentChatReply, type ChatMode, type ChatSource } from "@/lib/chat-utils";
 
-const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "");
 type Catalog = {
   products: Array<{ name: string }>;
   support_models: string[];
@@ -62,7 +61,7 @@ export default function HomePage() {
     setCatalogLoading(true);
     setCatalogError(false);
     try {
-      const response = await fetch(`${API_URL}/api/catalog`, { cache: "no-store" });
+      const response = await fetch("/api/catalog", { cache: "no-store" });
       if (!response.ok) throw new Error("catalog_unavailable");
       const data = (await response.json()) as Catalog;
       setCatalog(data);
@@ -111,7 +110,7 @@ export default function HomePage() {
     setSending(true);
 
     try {
-      const response = await fetch(`${API_URL}/api/chat`, {
+      const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

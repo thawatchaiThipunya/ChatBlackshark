@@ -4,6 +4,7 @@
 .next/
 node_modules/
 .openai/
+.vercel/
 *.tsbuildinfo
 __pycache__/
 *.py[cod]
