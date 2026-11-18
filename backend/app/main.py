@@ -341,6 +341,29 @@ def list_chat_messages(session_id: str, chat_guest: str | None = Cookie(default=
         raise HTTPException(status_code=503, detail="chat_store_unavailable")
 
 
+@app.get("/api/chat/sessions/{session_id}/media/{attachment_id}")
+def get_chat_media(session_id: str, attachment_id: str,
+                   chat_guest: str | None = Cookie(default=None)) -> dict:
+    guest = guest_or_401(chat_guest)
+    sid = valid_session(session_id)
+    aid = valid_session(attachment_id)
+    try:
+        attachment = store.chat_action(guest, "get_attachment", sid, {"id": aid})
+        if not attachment:
+            raise HTTPException(status_code=404, detail="attachment_not_found")
+        signed = store.signed_download(attachment["object_path"])
+        return {"url": store.url + "/storage/v1" + signed["signedURL"],
+                "mime_type": attachment["mime_type"]}
+    except HTTPException:
+        raise
+    except urllib.error.HTTPError as exc:
+        if exc.code == 400:
+            raise HTTPException(status_code=404, detail="attachment_not_found")
+        raise HTTPException(status_code=503, detail="media_unavailable")
+    except Exception:
+        raise HTTPException(status_code=503, detail="media_unavailable")
+
+
 class UploadRequest(BaseModel):
     session_id: str
     filename: str = Field(max_length=200)
