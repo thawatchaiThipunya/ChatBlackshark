@@ -87,6 +87,9 @@ class SupabaseStore:
     def signed_upload(self, object_path: str) -> dict[str, Any]:
         return self.storage_request("object/upload/sign/chat-media/" + urllib.parse.quote(object_path), {})
 
+    def signed_download(self, object_path: str) -> dict[str, Any]:
+        return self.storage_request("object/sign/chat-media/" + urllib.parse.quote(object_path), {"expiresIn": 900})
+
     def media_bytes(self, object_path: str) -> bytes:
         return self.storage_request("object/chat-media/" + urllib.parse.quote(object_path))
 

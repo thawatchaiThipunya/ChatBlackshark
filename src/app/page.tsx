@@ -35,6 +35,7 @@ type ChatMessage = {
   caseId?: number;
   imageUrl?: string;
   cardTitle?: string;
+  attachments?: string[];
 };
 type ChatSession = { id: string; title: string; updatedAt: number; messages: ChatMessage[] };
 
@@ -64,7 +65,24 @@ function fromStoredMessage(row: StoredMessage): ChatMessage {
     caseId: typeof payload.case_id === "number" ? payload.case_id : undefined,
     imageUrl: typeof payload.image_url === "string" ? payload.image_url : undefined,
     cardTitle: typeof payload.card_title === "string" ? payload.card_title : undefined,
+    attachments: Array.isArray(payload.attachment_ids) ? payload.attachment_ids.filter((id): id is string => typeof id === "string") : undefined,
   };
+}
+
+function MediaAttachment({ sessionId, attachmentId }: { sessionId: string; attachmentId: string }) {
+  const [media, setMedia] = useState<{ url: string; mime_type: string } | null>(null);
+  useEffect(() => {
+    let active = true;
+    void fetch(`/api/chat/sessions/${sessionId}/media/${attachmentId}`, { cache: "no-store" })
+      .then((response) => response.ok ? response.json() as Promise<{ url: string; mime_type: string }> : null)
+      .then((result) => { if (active && result) setMedia(result); })
+      .catch(() => {});
+    return () => { active = false; };
+  }, [sessionId, attachmentId]);
+  if (!media) return <span className="media-loading">กำลังโหลดสื่อ…</span>;
+  return media.mime_type.startsWith("video/")
+    ? <video className="message-media" controls preload="metadata" src={media.url} />
+    : <img className="message-media" src={media.url} alt="ภาพที่ส่งในแชท" />;
 }
 
 function titleFromQuestion(question: string) {
@@ -350,6 +368,9 @@ export default function HomePage() {
                   </p>
                 </div>
               </div>
+              <button className="sessions-toggle-button" type="button" onClick={() => setSessionsOpen(true)} aria-label="เปิดรายการแชท">
+                <MessageCircle size={16} strokeWidth={1.8} /><span>แชท</span>
+              </button>
               <button className="new-chat-button" type="button" onClick={startNewChat} aria-label="เริ่มแชทใหม่">
                 <MessageCircle size={16} strokeWidth={1.8} /><span>เริ่มใหม่</span>
               </button>
@@ -385,6 +406,11 @@ export default function HomePage() {
                       </div>
                     )}
                     {message.imageUrl && !message.cardTitle && <img src={message.imageUrl} alt={message.productName || "รูปสินค้า"} className="message-product-image" />}
+                    {!!message.attachments?.length && (
+                      <div className="message-attachments">
+                        {message.attachments.map((attachmentId) => <MediaAttachment key={attachmentId} sessionId={activeSessionId} attachmentId={attachmentId} />)}
+                      </div>
+                    )}
                     {!!message.sources?.length && (
                       <div className="sources-list" aria-label="แหล่งข้อมูลอ้างอิง">
                         {message.sources.map((source, index) => (
