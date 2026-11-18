@@ -1,6 +1,7 @@
 """Bounded normalization of web and Shopee style chat events."""
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -21,6 +22,7 @@ ALIASES = {"item_card": "item", "picture": "image", "faq_liveagents": "faq_livea
 KNOWN = {"text", "image", "image_with_text", "video", "sticker", "item", "variation_card",
          "order", "bundle_message", "notification", "faq_liveagent"}
 PLACEHOLDERS = {"[image]", "[video]", "[sticker]", "[product]", "[order]"}
+ITEM_ID_LIST = re.compile(r"\d{8,20}(?:[\s,;，；]+\d{8,20})*")
 
 
 def _id(value: Any) -> str:
@@ -30,6 +32,22 @@ def _id(value: Any) -> str:
     if raw.endswith(".0") and raw[:-2].isdigit():
         raw = raw[:-2]
     return raw[:100] if raw.isdigit() else ""
+
+
+def _ids(value: Any) -> list[str]:
+    """Read one or more IDs only from structured item ID fields."""
+    if isinstance(value, (list, tuple)):
+        values = value
+    elif isinstance(value, str) and ITEM_ID_LIST.fullmatch(value.strip()):
+        values = re.split(r"[\s,;，；]+", value.strip())
+    else:
+        values = [value]
+    result: list[str] = []
+    for candidate in values:
+        item_id = _id(candidate)
+        if item_id and item_id not in result:
+            result.append(item_id)
+    return result
 
 
 def normalize_chat_input(raw_payload: object | None, fallback_text: str = "") -> NormalizedChatInput:
@@ -43,9 +61,10 @@ def normalize_chat_input(raw_payload: object | None, fallback_text: str = "") ->
         text = ""
     ids = []
     for source in (raw, content, content.get("source_content") if isinstance(content.get("source_content"), dict) else {}):
-        item_id = _id(source.get("item_id"))
-        if item_id and item_id not in ids:
-            ids.append(item_id)
+        for field_name in ("item_id", "item_ids"):
+            for item_id in _ids(source.get(field_name)):
+                if item_id not in ids:
+                    ids.append(item_id)
     media = []
     for source in (raw, content):
         for key in ("image_url", "video_url", "url", "object_path"):
@@ -64,6 +83,13 @@ def normalize_chat_input(raw_payload: object | None, fallback_text: str = "") ->
                     ids.append(item_id)
         if not text:
             text = " ".join(child.text for child in children if child.text)[:1000]
+    metadata: dict[str, object] = {}
+    if typ == "text" and not ids and ITEM_ID_LIST.fullmatch(text):
+        ids = _ids(text)
+        typ = "item"
+        metadata["plain_item_ids"] = True
+    elif typ == "text" and ids:
+        typ = "item"
     order_sn = raw.get("order_sn") or content.get("order_sn")
     return NormalizedChatInput(typ, text, tuple(ids[:10]), str(order_sn)[:100] if order_sn else None,
-                               tuple(media[:5]), children, {})
+                               tuple(media[:5]), children, metadata)

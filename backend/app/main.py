@@ -455,7 +455,9 @@ def admin_logs(limit: int = Query(default=50, ge=1, le=100),
 @app.post("/api/chat")
 def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) -> dict:
     event = normalize_chat_input(request.event, request.question)
-    question = event.text or ("ช่วยดูสินค้าจากการ์ดนี้" if event.item_ids else "")
+    plain_item_ids = event.metadata.get("plain_item_ids") is True
+    question = ("ช่วยแนะนำสินค้าจากรหัสที่ส่งมา" if plain_item_ids else
+                event.text or ("ช่วยดูสินค้าจากการ์ดนี้" if event.item_ids else ""))
     if not question and not request.attachment_ids and event.message_type not in ("faq_liveagent", "sticker", "notification", "order", "unknown"):
         raise HTTPException(status_code=422, detail="question must not be blank")
 
@@ -476,12 +478,16 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
     history = [{"role": row["role"], "content": row["content"],
                 "product_name": row.get("payload", {}).get("product_name")}
                for row in prior[-12:]]
-    listing = None
-    if event.message_type in ("item", "variation_card", "bundle_message") and event.item_ids:
-        try:
-            listing = lookup_shopee_item(event.item_ids[0])
-        except Exception:
-            logger.exception("shopee_card_lookup_failed")
+    is_item_event = event.message_type in ("item", "variation_card", "bundle_message") and bool(event.item_ids)
+    listings = []
+    if is_item_event:
+        for item_id in event.item_ids:
+            try:
+                listing = lookup_shopee_item(item_id)
+                if listing:
+                    listings.append(listing)
+            except Exception:
+                logger.exception("shopee_card_lookup_failed item_id=%s", item_id)
     descriptions = []
     for attachment_id in request.attachment_ids:
         attachment = store.chat_action(guest, "get_attachment", session_id, {"id": valid_session(attachment_id)})
@@ -502,35 +508,55 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
             store.chat_action(guest, "update_vision", session_id,
                 {"id": attachment_id, "status": "failed", "description": ""})
             descriptions.append("[ไม่สามารถอ่านภาพหรือวิดีโอได้]")
+    product_cards = [{"item_id": item["item_id"], "name": item["name"], "image_url": item["image_url"]}
+                     for item in listings]
+    user_content = request.question if plain_item_ids and request.question.strip() else question
     try:
-        store.chat_action(guest, "save_message", session_id, {"role": "user", "content": question,
+        store.chat_action(guest, "save_message", session_id, {"role": "user", "content": user_content,
             "payload": {"message_type": event.message_type, "item_ids": list(event.item_ids),
                         "order_sn": event.order_sn, "media": list(event.media),
                         "attachment_ids": request.attachment_ids, "vision_descriptions": descriptions,
-                        "card_title": listing["name"] if listing else None,
-                        "image_url": listing["image_url"] if listing else None}})
+                        "product_cards": product_cards,
+                        "card_title": product_cards[0]["name"] if len(product_cards) == 1 else None,
+                        "image_url": product_cards[0]["image_url"] if len(product_cards) == 1 else None}})
     except Exception:
         raise HTTPException(status_code=503, detail="chat_save_failed")
-    if event.message_type in ("item", "variation_card", "bundle_message") and event.item_ids:
-        if listing:
+    if is_item_event:
+        if listings:
             knowledge = store.knowledge()
-            title = " ".join(listing["name"].lower().split())
-            matches = [p["name"] for p in knowledge["products"]
-                       if " ".join(p["name"].lower().split()) in title]
-            matched = matches[0] if len(matches) == 1 else None
-            store.chat_action(guest, "save_product", session_id, {"item_id": listing["item_id"],
-                "product_name": matched, "source": "customer_card", "is_anchor": True,
-                "card_snapshot": {"name": listing["name"]}})
-            description = listing["description"][:5000]
+            matched_names = []
+            for listing in listings:
+                title = " ".join(listing["name"].lower().split())
+                matches = [p["name"] for p in knowledge["products"]
+                           if " ".join(p["name"].lower().split()) in title]
+                matched_names.append(matches[0] if len(matches) == 1 else None)
+            unique_models = list(dict.fromkeys(name for name in matched_names if name))
+            for listing, matched in zip(listings, matched_names):
+                store.chat_action(guest, "save_product", session_id, {"item_id": listing["item_id"],
+                    "product_name": matched, "source": "customer_card",
+                    "is_anchor": len(listings) == 1 or len(unique_models) == 1,
+                    "card_snapshot": {"name": listing["name"]}})
+            evidence = "\n\n".join(
+                f"รหัสสินค้า: {listing['item_id']}\nชื่อสินค้า: {listing['name']}\nรายละเอียดสินค้า:\n{listing['description'][:5000]}"
+                for listing in listings
+            )
+            model_label = " / ".join(unique_models) if unique_models else " / ".join(item["name"] for item in listings)
+            if plain_item_ids:
+                question = "จากสินค้าที่ส่งมา ช่วยบอกชื่อรุ่นและสรุปจุดเด่นที่ระบุในข้อมูลสินค้า"
             answer, _ = engine.answerer.answer(
-                question, f"ชื่อสินค้าในการ์ด: {listing['name']}\nรายละเอียดสินค้าการ์ด: {description}",
-                product_name=listing["name"], intent="product_info", history=history)
-            reply = {"status": "answered", "answer": answer or f"การ์ดนี้คือ {listing['name']} ครับ {description[:500]}".strip(),
-                     "product_name": matched, "item_id": listing["item_id"],
-                     "image_url": listing["image_url"], "source_type": "shopee_exact_item",
-                     "card_title": listing["name"]}
+                question, evidence, product_name=model_label, intent="product_info", history=history)
+            found_ids = {listing["item_id"] for listing in listings}
+            missing_ids = [item_id for item_id in event.item_ids if item_id not in found_ids]
+            fallback = "พบสินค้า: " + "; ".join(item["name"] for item in listings)
+            if missing_ids:
+                fallback += f"\nส่วนรหัส {' และ '.join(missing_ids)} ยังไม่พบในรายการร้าน"
+            reply = {"status": "answered", "answer": answer or fallback,
+                     "product_name": unique_models[0] if len(unique_models) == 1 else None,
+                     "item_id": listings[0]["item_id"] if len(listings) == 1 else None,
+                     "source_type": "shopee_exact_item", "product_cards": product_cards}
         else:
-            reply = {"status": "need_model", "answer": "ผมหาการ์ดสินค้านี้ไม่พบครับ รบกวนบอกชื่อรุ่นบนการ์ดให้หน่อยครับ"}
+            reply = {"status": "need_model", "answer": "ผมหาสินค้าจาก item_id ที่ส่งมาในรายการร้านไม่พบครับ ลองตรวจเลขอีกครั้งได้ไหมครับ",
+                     "unresolved_item_ids": list(event.item_ids)}
     elif event.message_type == "faq_liveagent":
         settings = store.chat_action(guest, "live_agent_settings", session_id)
         if settings.get("action") == "bot_reply" and question:
