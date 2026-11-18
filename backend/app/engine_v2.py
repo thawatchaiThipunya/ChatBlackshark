@@ -278,7 +278,7 @@ class GeminiAnswerer:
             f"QUESTION: {question}\nSOURCE:\n{grounded_evidence}"
         )
         try:
-            count = len(self.store.list_keys())
+            count = self.store.next_key()[2]
         except Exception:
             logger.warning("Gemini key store unavailable")
             return None, "key_store_unavailable"
@@ -421,7 +421,7 @@ class GeminiAnswerer:
             f"FAQ OPTIONS FOR THIS PRODUCT:\n{options}"
         )
         try:
-            count = len(self.store.list_keys())
+            count = self.store.next_key()[2]
         except Exception:
             return None
         attempted: set[int] = set()
@@ -464,7 +464,7 @@ class GeminiAnswerer:
             f"ข้อความลูกค้าล่าสุด: {question}"
         )
         try:
-            count = len(self.store.list_keys())
+            count = self.store.next_key()[2]
         except Exception:
             return fallback, "smalltalk_fallback"
         if count == 0:
@@ -742,7 +742,7 @@ class ProductChatEngine:
             self._mentions_in_session(question, history or [], names, limit=1)
         )
         if (not any(term in current_text for term in (*domain_terms, "gps", "strava"))
-                and not contextual_followup and not current_model_mentions):
+                and not contextual_followup and not current_model_mentions and not product_name and not model_name):
             return self._out_of_scope(session_id)
         name = (product_name or model_name or "").strip()
         if not name:

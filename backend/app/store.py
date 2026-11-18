@@ -52,18 +52,58 @@ class SupabaseStore:
             raise RuntimeError("LLM key store is not configured")
         return self._request("rpc/bot_llm_key_action", {"p_token": self.token, "p_action": action, **kwargs})
 
-    def list_keys(self) -> list[dict[str, Any]]:
-        return self.key_action("list")
+    def chat_action(self, guest_token: str, action: str, session_id: str | None = None,
+                    payload: dict[str, Any] | None = None) -> Any:
+        if not self.token:
+            raise RuntimeError("Chat store is not configured")
+        return self._request("rpc/bot_chat_action", {
+            "p_app_token": self.token, "p_guest_token": guest_token,
+            "p_action": action, "p_session_id": session_id,
+            "p_payload": payload or {},
+        })
 
-    def add_key(self, label: str, key: str) -> dict[str, Any]:
+    def admin_action(self, session_token: str | None, action: str,
+                     payload: dict[str, Any] | None = None) -> Any:
+        if not self.token:
+            raise RuntimeError("Admin store is not configured")
+        return self._request("rpc/bot_admin_action", {
+            "p_app_token": self.token,
+            "p_session_token": session_token,
+            "p_action": action,
+            "p_payload": payload or {},
+        })
+
+    def storage_request(self, path: str, payload: dict[str, Any] | None = None) -> Any:
+        secret = os.getenv("SUPABASE_SECRET_KEY", "")
+        if not secret:
+            raise RuntimeError("Supabase Storage secret key is not configured")
+        data = json.dumps(payload).encode() if payload is not None else None
+        request = urllib.request.Request(self.url + "/storage/v1/" + path, data=data,
+            headers={"apikey": secret, "Content-Type": "application/json"},
+            method="POST" if data is not None else "GET")
+        with urllib.request.urlopen(request, timeout=30) as response:
+            return json.load(response) if payload is not None else response.read()
+
+    def signed_upload(self, object_path: str) -> dict[str, Any]:
+        return self.storage_request("object/upload/sign/chat-media/" + urllib.parse.quote(object_path), {})
+
+    def media_bytes(self, object_path: str) -> bytes:
+        return self.storage_request("object/chat-media/" + urllib.parse.quote(object_path))
+
+    def list_keys(self, session_token: str) -> list[dict[str, Any]]:
+        return self.admin_action(session_token, "list_keys")
+
+    def add_key(self, label: str, key: str, session_token: str) -> dict[str, Any]:
         clean = key.strip()
         if not clean or not label.strip() or len(label) > 80:
             raise ValueError("label and key are required")
         ciphertext = Fernet(self.encryption_key.encode()).encrypt(clean.encode()).decode()
-        return self.key_action("add", p_label=label.strip(), p_ciphertext=ciphertext, p_last4=clean[-4:])
+        return self.admin_action(session_token, "add_key", {
+            "label": label.strip(), "ciphertext": ciphertext, "last4": clean[-4:],
+        })
 
-    def delete_key(self, key_id: int) -> dict[str, Any]:
-        return self.key_action("delete", p_id=key_id)
+    def delete_key(self, key_id: int, session_token: str) -> dict[str, Any]:
+        return self.admin_action(session_token, "delete_key", {"id": key_id})
 
     def next_key(self) -> tuple[str | None, int | None, int]:
         selected = self.key_action("next")
