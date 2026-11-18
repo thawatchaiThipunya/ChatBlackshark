@@ -333,6 +333,10 @@ def list_chat_messages(session_id: str, chat_guest: str | None = Cookie(default=
         return {"messages": store.chat_action(guest, "load_session", valid_session(session_id))}
     except HTTPException:
         raise
+    except urllib.error.HTTPError as exc:
+        if exc.code == 400:
+            raise HTTPException(status_code=404, detail="chat_session_not_found")
+        raise HTTPException(status_code=503, detail="chat_store_unavailable")
     except Exception:
         raise HTTPException(status_code=503, detail="chat_store_unavailable")
 
@@ -438,6 +442,12 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
     try:
         guest = guest_or_401(chat_guest)
         prior = store.chat_action(guest, "load_session", session_id)
+    except urllib.error.HTTPError as exc:
+        if exc.code == 400:
+            raise HTTPException(status_code=404, detail="chat_session_not_found")
+        raise HTTPException(status_code=503, detail="chat_store_unavailable")
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(status_code=503, detail="chat_store_unavailable")
     history = [{"role": row["role"], "content": row["content"],
