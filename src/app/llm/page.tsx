@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { Bot, Check, Eye, EyeOff, KeyRound, Plus, RefreshCw, ShieldCheck, Trash2 } from "lucide-react";
+import { useCallback, useEffect, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from "react";
+import { Bot, Check, ChevronDown, Eye, EyeOff, KeyRound, Plus, RefreshCw, Search, ShieldCheck, Trash2 } from "lucide-react";
 import { ConsolePage } from "@/components/ConsolePage";
 
 type Provider = "gemini" | "openrouter";
@@ -23,6 +23,134 @@ const modelFields = [
   { key: "vision", title: "Vision", description: "อ่านภาพและวิดีโอที่แนบ" },
   { key: "answer", title: "Answer", description: "สร้างคำตอบที่ส่งให้ลูกค้า" },
 ] as const;
+
+type ModelFieldKey = typeof modelFields[number]["key"];
+type ModelOption = { id: string; name: string; supportsVision: boolean };
+
+const geminiModels: ModelOption[] = [
+  { id: "gemini-3.8-flash", name: "Gemini 3.8 Flash", supportsVision: true },
+  { id: "gemini-3.7-flash", name: "Gemini 3.7 Flash", supportsVision: true },
+  { id: "gemini-3.6-flash", name: "Gemini 3.6 Flash", supportsVision: true },
+  { id: "gemini-3.5-flash", name: "Gemini 3.5 Flash", supportsVision: true },
+  { id: "gemini-3.5-flash-lite", name: "Gemini 3.5 Flash Lite", supportsVision: true },
+  { id: "gemini-3.1-flash-lite", name: "Gemini 3.1 Flash Lite", supportsVision: true },
+  { id: "gemini-3.1-pro-preview", name: "Gemini 3.1 Pro Preview", supportsVision: true },
+  { id: "gemini-3-flash-preview", name: "Gemini 3 Flash Preview", supportsVision: true },
+  { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", supportsVision: true },
+  { id: "gemini-2.5-pro", name: "Gemini 2.5 Pro", supportsVision: true },
+];
+
+const openRouterModels: ModelOption[] = [
+  { id: "google/gemini-4-neon", name: "Gemini 4 Neon · Google", supportsVision: true },
+  { id: "google/gemini-4-hydrogen", name: "Gemini 4 Hydrogen · Google", supportsVision: true },
+  { id: "google/gemini-4-carbon", name: "Gemini 4 Carbon · Google", supportsVision: true },
+  { id: "google/gemini-3.8-flash", name: "Gemini 3.8 Flash · Google", supportsVision: true },
+  { id: "google/gemini-3.7-flash", name: "Gemini 3.7 Flash · Google", supportsVision: true },
+  { id: "google/gemini-3.1-flash-lite", name: "Gemini 3.1 Flash Lite · Google", supportsVision: true },
+  { id: "google/gemini-2.5-flash", name: "Gemini 2.5 Flash · Google", supportsVision: true },
+  { id: "anthropic/claude-opus-5.5", name: "Claude Opus 5.5 · Anthropic", supportsVision: true },
+  { id: "anthropic/claude-sonnet-5", name: "Claude Sonnet 5 · Anthropic", supportsVision: true },
+  { id: "anthropic/claude-haiku-5.5", name: "Claude Haiku 5.5 · Anthropic", supportsVision: true },
+  { id: "openai/gpt-6-astra", name: "GPT-6 Astra · OpenAI", supportsVision: true },
+  { id: "openai/gpt-6-sol", name: "GPT-6 Sol · OpenAI", supportsVision: true },
+  { id: "deepseek/deepseek-v4.1-flash-1017", name: "DeepSeek V4.1 Flash · DeepSeek", supportsVision: true },
+  { id: "qwen/qwen4-max", name: "Qwen4 Max · Qwen", supportsVision: true },
+  { id: "moonshotai/kimi-k3.1-pro", name: "Kimi K3.1 Pro · Moonshot AI", supportsVision: true },
+  { id: "xiaomi/mimo-v2.6-flash", name: "MiMo V2.6 Flash · Xiaomi", supportsVision: true },
+  { id: "z-ai/glm-5.3", name: "GLM 5.3 · Z.ai", supportsVision: false },
+  { id: "meta/muse-spark-1.3-contributor", name: "Muse Spark 1.3 · Meta", supportsVision: true },
+];
+
+function ModelCombobox({
+  id, value, provider, field, onChange,
+}: {
+  id: string;
+  value: string;
+  provider: Provider;
+  field: ModelFieldKey;
+  onChange: (value: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [activeIndex, setActiveIndex] = useState(0);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const optionsRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const listId = `${id}-options`;
+  const allModels = provider === "gemini" ? geminiModels : openRouterModels;
+  const models = field === "vision" ? allModels.filter((model) => model.supportsVision) : allModels;
+  const currentMissing = value && !models.some((model) => model.id === value)
+    ? [{ id: value, name: "รุ่นปัจจุบัน · คงค่าเดิม", supportsVision: true }]
+    : [];
+  const availableModels = [...currentMissing, ...models];
+  const filteredModels = availableModels.filter((model) =>
+    `${model.name} ${model.id}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
+  const selected = availableModels.find((model) => model.id === value);
+
+  useEffect(() => {
+    if (!open) return;
+    searchRef.current?.focus();
+    const closeOnOutsidePointer = (event: PointerEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
+    };
+    document.addEventListener("pointerdown", closeOnOutsidePointer);
+    return () => document.removeEventListener("pointerdown", closeOnOutsidePointer);
+  }, [open]);
+
+  useEffect(() => { setActiveIndex(0); }, [query]);
+  useEffect(() => {
+    optionsRef.current?.querySelector<HTMLElement>(`[data-index="${activeIndex}"]`)?.scrollIntoView({ block: "nearest" });
+  }, [activeIndex]);
+
+  function handleSearchKeyDown(event: ReactKeyboardEvent<HTMLInputElement>) {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setActiveIndex((index) => Math.min(index + 1, filteredModels.length - 1));
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setActiveIndex((index) => Math.max(index - 1, 0));
+    } else if (event.key === "Enter" && filteredModels[activeIndex]) {
+      event.preventDefault();
+      onChange(filteredModels[activeIndex].id);
+      setOpen(false);
+      setQuery("");
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      setOpen(false);
+      setQuery("");
+    } else if (event.key === "Tab") {
+      setOpen(false);
+    }
+  }
+
+  return <div className="llm-model-select" ref={rootRef}>
+    <button id={id} className="llm-model-trigger" type="button"
+      aria-label={`เลือก ${field} model`} aria-expanded={open} aria-controls={listId}
+      aria-haspopup="listbox" onClick={() => { setOpen((shown) => !shown); setQuery(""); }}>
+      <span><strong>{selected?.name ?? value}</strong><small>{value}</small></span>
+      <ChevronDown size={16} aria-hidden="true" />
+    </button>
+    {open && <div className="llm-model-menu">
+      <div className="llm-model-search"><Search size={15} aria-hidden="true" />
+        <input ref={searchRef} type="search" value={query} placeholder="ค้นหาชื่อหรือ model ID"
+          role="combobox" aria-autocomplete="list" aria-expanded="true" aria-haspopup="listbox"
+          aria-label="ค้นหาโมเดล" aria-controls={listId} aria-activedescendant={filteredModels[activeIndex] ? `${id}-option-${activeIndex}` : undefined}
+          onChange={(event) => setQuery(event.target.value)} onKeyDown={handleSearchKeyDown} />
+      </div>
+      <div className="llm-model-options" role="listbox" id={listId} aria-label="รายการโมเดล" ref={optionsRef}>
+        {filteredModels.length ? filteredModels.map((model, index) => <div key={model.id}
+          id={`${id}-option-${index}`} role="option" aria-selected={value === model.id}
+          data-active={activeIndex === index} data-index={index} className="llm-model-option"
+          onMouseEnter={() => setActiveIndex(index)} onMouseDown={(event) => event.preventDefault()}
+          onClick={() => { onChange(model.id); setOpen(false); setQuery(""); }}>
+          <span><strong>{model.name}</strong><small>{model.id}</small></span>
+          {value === model.id && <Check size={15} aria-hidden="true" />}
+        </div>) : <p className="llm-model-no-results">ไม่พบโมเดลที่ตรงกับคำค้น</p>}
+      </div>
+      <p className="llm-model-count">{filteredModels.length} โมเดล · ใช้ ↑ ↓ และ Enter เพื่อเลือก</p>
+    </div>}
+  </div>;
+}
 
 async function requestJson<T>(path: string, method = "GET", body?: object): Promise<T> {
   const response = await fetch(path, {
@@ -181,8 +309,8 @@ export default function LlmKeysPage() {
               const id = `${provider}-${field.key}-model`;
               const configKey = `${provider}_${field.key}_model` as keyof LlmConfig;
               return <label htmlFor={id} key={field.key}>{field.title}<small>{field.description}</small>
-                <input id={id} value={config[configKey] as string} maxLength={120} minLength={2} required
-                  onChange={(event) => updateModel(provider, field.key, event.target.value)} />
+                <ModelCombobox id={id} value={config[configKey] as string} provider={provider} field={field.key}
+                  onChange={(value) => updateModel(provider, field.key, value)} />
               </label>;
             })}
           </fieldset>)}
