@@ -16,6 +16,7 @@ import {
   X,
 } from "lucide-react";
 import { buildSessionChatRequest, getCatalogStatus, presentChatReply, type ChatSource } from "@/lib/chat-utils";
+import { parseChatAnswer } from "@/lib/chat-answer-format";
 
 type Catalog = {
   products: Array<{ name: string }>;
@@ -403,7 +404,16 @@ export default function HomePage() {
                     {message.kind === "setup_required" && <div className="message-state error-state"><ShieldCheck size={13} /> ต้องตั้งค่า Gemini</div>}
                     {message.kind === "error" && <div className="message-state error-state"><CircleHelp size={13} /> เชื่อมต่อไม่สำเร็จ</div>}
                     <div className={`message-bubble ${message.role === "user" ? "user-bubble" : "assistant-bubble"} ${message.kind === "error" ? "error-bubble" : ""}`}>
-                      <p>{message.text}</p>
+                      {message.role === "assistant" ? parseChatAnswer(message.text).map((block, index) =>
+                        block.type === "text" ? <p key={index}>{block.text}</p> : (
+                          <div className="chat-answer-table-wrap" key={index}>
+                            <table className="chat-answer-table" aria-label="ตารางเปรียบเทียบสินค้า">
+                              <thead><tr>{block.headers.map((header, cell) => <th scope="col" key={cell}>{header}</th>)}</tr></thead>
+                              <tbody>{block.rows.map((row, rowIndex) => <tr key={rowIndex}>{row.map((cell, cellIndex) =>
+                                <td key={cellIndex}>{cell}</td>)}</tr>)}</tbody>
+                            </table>
+                          </div>
+                        )) : <p>{message.text}</p>}
                     </div>
                     {message.kind === "setup_required" && <a className="message-action" href="/llm">ไปที่จัดการ Gemini key</a>}
                     {message.kind === "handoff" && message.handoffSent && (

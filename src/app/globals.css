@@ -221,6 +221,12 @@ button:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visi
 .from-user .message-body { max-width: min(560px, 82%); }
 .message-bubble { padding: 11px 14px; border: 1px solid; border-radius: 3px 11px 11px 11px; }
 .message-bubble p { margin: 0; font-size: var(--chat-font-size); white-space: pre-wrap; overflow-wrap: anywhere; }
+.message-bubble p + p, .message-bubble p + .chat-answer-table-wrap, .message-bubble .chat-answer-table-wrap + p { margin-top: 10px; }
+.chat-answer-table-wrap { max-width: 100%; overflow-x: auto; border: 1px solid #dde5dc; border-radius: 8px; }
+.chat-answer-table { width: 100%; min-width: 380px; border-collapse: collapse; font-size: var(--chat-font-size); line-height: 1.45; }
+.chat-answer-table th, .chat-answer-table td { padding: 8px 10px; border-bottom: 1px solid #e5ebe3; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+.chat-answer-table th { background: #eef4eb; font-weight: 700; }
+.chat-answer-table tr:last-child td { border-bottom: 0; }
 .assistant-bubble { color: #2b342e; background: #f8faf7; border-color: #e8ede8; }
 .user-bubble { color: #fff; background: var(--user-bubble); border-color: var(--user-bubble); border-radius: 11px 3px 11px 11px; }
 .error-bubble { color: #6b382e; background: #fff6f4; border-color: #f0dfdc; }

@@ -85,7 +85,8 @@ class GeminiAnswerer:
                 if result:
                     return result, "llm_grounded"
             except Exception as exc:
-                logger.warning("Gemini call failed: %s", type(exc).__name__)
+                logger.warning("Gemini call failed: %s code=%s", type(exc).__name__,
+                               getattr(exc, "code", None))
         return None, "llm_unavailable"
 
     def extract_intent(self, question: str, history: list[dict[str, Any]],
@@ -185,10 +186,18 @@ class GeminiAnswerer:
             "You are a helpful Thai store assistant. Write a natural answer to this customer's actual needs, "
             "using only SOURCE for product facts. Paraphrase the evidence; do not paste database rows or fixed templates. "
             "Start with the decision or answer, then explain the most relevant evidence in a conversational tone. "
+            "For a single spec question, answer in a few natural sentences; mention only the relevant fact and, "
+            "when useful, what it means for this customer's use. Vary sentence openings and avoid repeating model names, "
+            "formal stock phrases, or the same closing particle in every sentence. Do not sound like a spec sheet. "
             "Do not start with a greeting unless the customer is greeting you. "
             "For compatibility or activity questions, say clearly yes, no, not recommended, or not confirmed, "
             "depending on what SOURCE proves. A rating alone does not prove every use case. "
-            "For comparison, name the better product for the criterion asked when the facts support a conclusion. "
+            "For comparison of two or more products, begin with a short conversational summary, then make a "
+            "Markdown table with the exact product names as column headings and only the spec rows relevant to "
+            "the customer's question. Keep cells short and use plain text inside cells, without HTML. "
+            "After the table, explain which product suits which use "
+            "and recommend the better fit for the customer's stated priority when the facts support it. "
+            "If a compared fact is absent, write ไม่พบข้อมูล in that cell instead of guessing. "
             "For product search, recommend the strongest match and state which needs are met and which are not documented. "
             "For troubleshooting, use only the chosen FAQ resolution. Summarize steps naturally; "
             "do not ask for contact details or order numbers unless the customer requests escalation. "
