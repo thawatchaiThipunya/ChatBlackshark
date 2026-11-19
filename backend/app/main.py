@@ -23,6 +23,7 @@ from .engine_v2 import ProductChatEngine, get_catalog
 from .store import SupabaseStore
 from .chat_inputs import normalize_chat_input
 from .shopee_products import lookup_shopee_item
+from .product_identity import match_catalog_product
 from .admin_auth import ADMIN_SESSION_COOKIE, require_admin as require_admin_session
 from .vision import describe_batch_with_key_rotation, describe_media_batch, describe_openrouter_batch
 from .ai_usage import set_usage_reference, reset_usage_reference
@@ -96,6 +97,9 @@ class ChatTurn(BaseModel):
     role: Literal["user", "assistant"]
     content: str = Field(min_length=1, max_length=4000)
     product_name: str | None = Field(default=None, max_length=200)
+    product_names: list[str] = Field(default_factory=list, max_length=10)
+    card_title: str | None = Field(default=None, max_length=300)
+    card_product_names: list[str] = Field(default_factory=list, max_length=10)
 
 
 class ChatRequest(BaseModel):
@@ -503,10 +507,18 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
         raise
     except Exception:
         raise HTTPException(status_code=503, detail="chat_store_unavailable")
-    history = [{"role": row["role"], "content": row["content"],
-                "product_name": row.get("payload", {}).get("product_name")}
-               for row in prior[-12:]]
     is_item_event = event.message_type in ("item", "variation_card", "bundle_message") and bool(event.item_ids)
+    history = []
+    for row in prior[-12:]:
+        payload = row.get("payload") or {}
+        cards = payload.get("product_cards") if isinstance(payload.get("product_cards"), list) else []
+        history.append({"role": row["role"], "content": row["content"],
+                        "product_name": payload.get("product_name"),
+                        "card_title": payload.get("card_title"),
+                        "product_names": ((payload.get("intent_analysis") or {}).get("product_names", [])
+                                          if isinstance(payload.get("intent_analysis"), dict) else []),
+                        "card_product_names": [card.get("product_name") for card in cards
+                                               if isinstance(card, dict) and card.get("product_name")]})
     listings = []
     if is_item_event:
         for item_id in event.item_ids:
@@ -516,6 +528,47 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
                     listings.append(listing)
             except Exception:
                 logger.exception("shopee_card_lookup_failed item_id=%s", item_id)
+    stored_cards: list[dict] = []
+    stored_card_index = -1
+    for index, row in enumerate(prior):
+        payload = row.get("payload") or {}
+        cards = payload.get("product_cards") if isinstance(payload.get("product_cards"), list) else []
+        if cards:
+            stored_card_index = index
+            stored_cards = [card for card in cards if isinstance(card, dict)]
+    card_knowledge = None
+    if listings or stored_cards:
+        try:
+            card_knowledge = store.knowledge()
+        except Exception:
+            logger.warning("card_kb_unavailable")
+    catalog_products = (card_knowledge or {}).get("products", [])
+    for listing in listings:
+        listing["product_name"] = match_catalog_product(listing["name"], catalog_products)
+    prior_card_context = [{
+        "item_id": str(card.get("item_id") or "")[:100],
+        "name": str(card.get("name") or "")[:300],
+        "description": str(card.get("description") or "")[:5000],
+        "image_url": str(card.get("image_url") or "")[:2048],
+        "product_name": match_catalog_product(str(card.get("name") or ""), catalog_products),
+    } for card in stored_cards]
+    current_card_context = listings if is_item_event and listings else prior_card_context
+    card_models = list(dict.fromkeys(card["product_name"] for card in current_card_context if card.get("product_name")))
+    product_anchor = None
+    if not is_item_event:
+        try:
+            product_anchor = store.chat_action(guest, "product_anchor", session_id)
+        except Exception:
+            product_anchor = None
+    anchored_name = None
+    if stored_card_index >= 0 and not is_item_event:
+        later_names = [row.get("payload", {}).get("product_name") for row in prior[stored_card_index + 1:]
+                       if isinstance(row.get("payload"), dict) and row.get("payload", {}).get("product_name")]
+        anchored_name = later_names[-1] if later_names else (card_models[0] if len(card_models) == 1 else None)
+    elif len(card_models) == 1:
+        anchored_name = card_models[0]
+    elif not current_card_context and product_anchor:
+        anchored_name = product_anchor.get("product_name")
     descriptions = [""] * len(request.attachment_ids)
     pending = []
     for index, attachment_id in enumerate(request.attachment_ids):
@@ -548,7 +601,8 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
                 store.chat_action(guest, "update_vision", session_id,
                     {"id": attachment_id, "status": "failed", "description": ""})
                 descriptions[index] = "[ไม่สามารถอ่านภาพหรือวิดีโอได้]"
-    product_cards = [{"item_id": item["item_id"], "name": item["name"], "image_url": item["image_url"]}
+    product_cards = [{"item_id": item["item_id"], "name": item["name"], "image_url": item["image_url"],
+                      "product_name": item.get("product_name"), "description": item["description"][:5000]}
                      for item in listings]
     user_content = request.question if plain_item_ids and request.question.strip() else question
     try:
@@ -557,43 +611,34 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
                         "order_sn": event.order_sn, "media": list(event.media),
                         "attachment_ids": request.attachment_ids, "vision_descriptions": descriptions,
                         "product_cards": product_cards,
+                        "product_name": product_cards[0].get("product_name") if len(product_cards) == 1 else None,
                         "card_title": product_cards[0]["name"] if len(product_cards) == 1 else None,
                         "image_url": product_cards[0]["image_url"] if len(product_cards) == 1 else None}})
     except Exception:
         raise HTTPException(status_code=503, detail="chat_save_failed")
     if is_item_event:
         if listings:
-            knowledge = store.knowledge()
-            matched_names = []
+            unique_models = list(dict.fromkeys(item.get("product_name") for item in listings if item.get("product_name")))
             for listing in listings:
-                title = " ".join(listing["name"].lower().split())
-                matches = [p["name"] for p in knowledge["products"]
-                           if " ".join(p["name"].lower().split()) in title]
-                matched_names.append(matches[0] if len(matches) == 1 else None)
-            unique_models = list(dict.fromkeys(name for name in matched_names if name))
-            for listing, matched in zip(listings, matched_names):
                 store.chat_action(guest, "save_product", session_id, {"item_id": listing["item_id"],
-                    "product_name": matched, "source": "customer_card",
+                    "product_name": listing.get("product_name"), "source": "customer_card",
                     "is_anchor": len(listings) == 1 or len(unique_models) == 1,
-                    "card_snapshot": {"name": listing["name"]}})
-            evidence = "\n\n".join(
-                f"รหัสสินค้า: {listing['item_id']}\nชื่อสินค้า: {listing['name']}\nรายละเอียดสินค้า:\n{listing['description'][:5000]}"
-                for listing in listings
-            )
-            model_label = " / ".join(unique_models) if unique_models else " / ".join(item["name"] for item in listings)
+                    "card_snapshot": {"name": listing["name"], "description": listing["description"][:5000],
+                                      "image_url": listing["image_url"]}})
             if plain_item_ids:
-                question = "จากสินค้าที่ส่งมา ช่วยบอกชื่อรุ่นและสรุปจุดเด่นที่ระบุในข้อมูลสินค้า"
-            answer, _ = engine.answerer.answer(
-                question, evidence, product_name=model_label, intent="product_info", history=history)
+                question = "ช่วยสรุปชื่อสินค้าและจุดเด่นจากรายการสินค้าที่ส่งมา"
+            reply = engine.answer(question, product_name=unique_models[0] if len(unique_models) == 1 else None,
+                                  history=history, session_id=session_id,
+                                  vision_evidence=descriptions, card_context=listings)
             found_ids = {listing["item_id"] for listing in listings}
             missing_ids = [item_id for item_id in event.item_ids if item_id not in found_ids]
-            fallback = "พบสินค้า: " + "; ".join(item["name"] for item in listings)
             if missing_ids:
-                fallback += f"\nส่วนรหัส {' และ '.join(missing_ids)} ยังไม่พบในรายการร้าน"
-            reply = {"status": "answered", "answer": answer or fallback,
-                     "product_name": unique_models[0] if len(unique_models) == 1 else None,
-                     "item_id": listings[0]["item_id"] if len(listings) == 1 else None,
-                     "source_type": "shopee_exact_item", "product_cards": product_cards}
+                reply["answer"] = (reply.get("answer", "") +
+                    f"\n\nส่วนรหัส {' และ '.join(missing_ids)} ยังไม่พบในรายการร้านครับ").strip()
+                reply["unresolved_item_ids"] = missing_ids
+            reply.update({"product_name": unique_models[0] if len(unique_models) == 1 else reply.get("product_name"),
+                          "item_id": listings[0]["item_id"] if len(listings) == 1 else None,
+                          "source_type": "shopee_exact_item", "product_cards": product_cards})
         else:
             reply = {"status": "need_model", "answer": "ผมหาสินค้าจาก item_id ที่ส่งมาในรายการร้านไม่พบครับ ลองตรวจเลขอีกครั้งได้ไหมครับ",
                      "unresolved_item_ids": list(event.item_ids)}
@@ -611,11 +656,9 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
     elif event.message_type == "unknown":
         reply = {"status": "need_model", "answer": "ผมยังอ่านข้อมูลที่ส่งมาไม่ครบครับ ช่วยพิมพ์สิ่งที่อยากให้ดูอีกนิดได้ไหมครับ"}
     else:
-        anchor = store.chat_action(guest, "product_anchor", session_id)
-        anchored_name = anchor.get("product_name") if anchor else None
         reply = engine.answer(question or "ช่วยดูภาพหรือวิดีโอที่ส่งมา", product_name=request.product_name or anchored_name,
                               model_name=request.model_name, history=history, session_id=session_id,
-                              vision_evidence=descriptions)
+                              vision_evidence=descriptions, card_context=current_card_context)
     try:
         store.chat_action(guest, "save_message", session_id, {"role": "assistant",
             "content": reply.get("answer", ""), "payload": reply})

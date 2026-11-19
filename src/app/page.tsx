@@ -19,11 +19,12 @@ import {
   UserRound,
   X,
 } from "lucide-react";
-import { buildSessionChatRequest, getCatalogStatus, presentChatReply, type ChatSource } from "@/lib/chat-utils";
+import { buildSessionChatRequest, getCatalogStatus, mergeLoadedSessions, presentChatReply,
+  shouldApplyInitialSession, type ChatReply, type ChatSource } from "@/lib/chat-utils";
 import { parseChatAnswer } from "@/lib/chat-answer-format";
 
 type Catalog = {
-  products: Array<{ name: string }>;
+  products: Array<{ name: string; category?: string | null }>;
   support_models: string[];
   counts: { products: number; support_models: number; faq_entries: number };
 };
@@ -36,11 +37,12 @@ type ChatMessage = {
   text: string;
   sources?: ChatSource[];
   productName?: string;
+  productNames?: string[];
   handoffSent?: boolean;
   caseId?: number;
   imageUrl?: string;
   cardTitle?: string;
-  productCards?: Array<{ itemId: string; title: string; imageUrl?: string }>;
+  productCards?: Array<{ itemId: string; title: string; imageUrl?: string; productName?: string }>;
   attachments?: string[];
 };
 type ChatSession = { id: string; title: string; updatedAt: number; messages: ChatMessage[] };
@@ -62,7 +64,8 @@ function readProductCards(value: unknown) {
     const card = candidate as Record<string, unknown>;
     if (typeof card.name !== "string") return [];
     return [{ itemId: typeof card.item_id === "string" ? card.item_id : "",
-      title: card.name, imageUrl: typeof card.image_url === "string" ? card.image_url : undefined }];
+      title: card.name, imageUrl: typeof card.image_url === "string" ? card.image_url : undefined,
+      ...(typeof card.product_name === "string" ? { productName: card.product_name } : {}) }];
   });
 }
 
@@ -80,11 +83,16 @@ function fromStoredSession(row: StoredSession): ChatSession {
 
 function fromStoredMessage(row: StoredMessage): ChatMessage {
   const payload = row.payload || {};
+  const analysis = payload.intent_analysis && typeof payload.intent_analysis === "object"
+    ? payload.intent_analysis as Record<string, unknown> : {};
+  const productNames = Array.isArray(analysis.product_names)
+    ? analysis.product_names.filter((name): name is string => typeof name === "string") : [];
   return {
     id: row.id, role: row.role, text: row.content,
     kind: row.role === "user" ? "answer" : payload.status === "escalated" ? "handoff" :
       payload.status === "need_model" ? "need_model" : "answer",
     productName: typeof payload.product_name === "string" ? payload.product_name : undefined,
+    productNames,
     sources: Array.isArray(payload.sources) ? payload.sources as ChatSource[] : [],
     handoffSent: payload.handoff_sent === true,
     caseId: typeof payload.case_id === "number" ? payload.case_id : undefined,
@@ -133,6 +141,7 @@ export default function HomePage() {
   const [sessionSearch, setSessionSearch] = useState("");
   const listRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const navigationVersionRef = useRef(0);
 
   async function loadCatalog() {
     setCatalogLoading(true);
@@ -151,15 +160,17 @@ export default function HomePage() {
   useEffect(() => {
     void loadCatalog();
     void (async () => {
+      const startNavigationVersion = navigationVersionRef.current;
       try {
         const response = await fetch("/api/chat/sessions", { cache: "no-store" });
         const data = response.ok ? await response.json() as { sessions: StoredSession[] } : { sessions: [] };
         if (!response.ok && response.status !== 401) throw new Error("chat_store_unavailable");
         const initial = (Array.isArray(data.sessions) ? data.sessions : []).map(fromStoredSession);
-        setSessions(initial);
+        setSessions((current) => mergeLoadedSessions(initial, current));
         const preferred = new URLSearchParams(window.location.search).get("session");
         const selected = initial.find((session) => session.id === preferred);
-        if (selected) {
+        if (selected && shouldApplyInitialSession(preferred, startNavigationVersion,
+          navigationVersionRef.current)) {
           setActiveSessionId(selected.id);
           await loadMessages(selected.id);
         }
@@ -213,6 +224,7 @@ export default function HomePage() {
   }
 
   async function startNewChat() {
+    navigationVersionRef.current += 1;
     try {
       const session = fromStoredSession(await createRemoteSession());
       setSessions((current) => [session, ...current]);
@@ -226,6 +238,7 @@ export default function HomePage() {
   }
 
   function selectSession(sessionId: string) {
+    navigationVersionRef.current += 1;
     setActiveSessionId(sessionId);
     window.history.replaceState(null, "", `?session=${sessionId}`);
     void loadMessages(sessionId).catch(() => setComposerErrors((current) => ({ ...current, [sessionId]: "โหลดประวัติแชทไม่ได้" })));
@@ -246,6 +259,11 @@ export default function HomePage() {
           role: message.role,
           content: message.text,
           ...(message.productName ? { product_name: message.productName } : {}),
+          ...(message.productNames?.length ? { product_names: message.productNames } : {}),
+          ...(message.cardTitle ? { card_title: message.cardTitle } : {}),
+          ...(message.productCards?.length ? {
+            card_product_names: message.productCards.flatMap((card) => card.productName ? [card.productName] : []),
+          } : {}),
         } as const))
         .slice(-12);
       payload = buildSessionChatRequest(session.id, draft || (itemIds[session.id] ? "ช่วยดูสินค้าจากการ์ดนี้" : mediaFiles[session.id]?.length ? "ช่วยดูภาพหรือวิดีโอนี้" : ""), history);
@@ -290,7 +308,12 @@ export default function HomePage() {
           ...(itemId ? { event: { type: "item", item_id: itemId, text: draft } } : {}) }),
       });
       if (!response.ok) throw new Error("chat_unavailable");
-      const presented = presentChatReply(await response.json());
+      const reply = await response.json() as ChatReply;
+      const presented = presentChatReply(reply);
+      const analysis = reply.intent_analysis && typeof reply.intent_analysis === "object"
+        ? reply.intent_analysis as Record<string, unknown> : {};
+      const productNames = Array.isArray(analysis.product_names)
+        ? analysis.product_names.filter((name): name is string => typeof name === "string") : [];
       updateSession(session.id, (current) => ({
         ...current,
         updatedAt: Date.now(),
@@ -300,6 +323,7 @@ export default function HomePage() {
           kind: presented.kind,
           text: presented.answer,
           sources: presented.sources,
+          productNames,
           handoffSent: presented.handoffSent,
           ...(presented.productName ? { productName: presented.productName } : {}),
           ...(presented.caseId !== undefined ? { caseId: presented.caseId } : {}),

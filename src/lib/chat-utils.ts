@@ -43,7 +43,28 @@ export function buildUnifiedChatRequest(selectedName: string, question: string) 
   return { question: cleanQuestion, model_name: cleanName };
 }
 
-export type ChatHistoryTurn = { role: "user" | "assistant"; content: string; product_name?: string };
+export type ChatHistoryTurn = {
+  role: "user" | "assistant";
+  content: string;
+  product_name?: string;
+  product_names?: string[];
+  card_title?: string;
+  card_product_names?: string[];
+};
+
+export function mergeLoadedSessions<T extends { id: string; updatedAt?: number }>(loaded: T[], current: T[]): T[] {
+  const currentById = new Map(current.map((session) => [session.id, session]));
+  const loadedIds = new Set(loaded.map((session) => session.id));
+  return [
+    ...loaded.map((session) => currentById.get(session.id) ?? session),
+    ...current.filter((session) => !loadedIds.has(session.id)),
+  ].sort((left, right) => (right.updatedAt ?? 0) - (left.updatedAt ?? 0));
+}
+
+export function shouldApplyInitialSession(preferredId: string | null, startVersion: number,
+                                          currentVersion: number): boolean {
+  return Boolean(preferredId) && startVersion === currentVersion;
+}
 
 export function buildSessionChatRequest(sessionId: string, question: string, history: ChatHistoryTurn[]) {
   const cleanQuestion = question.trim();

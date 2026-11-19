@@ -25,11 +25,13 @@ test("unified chat sends one model selection for specs and troubleshooting", () 
 
 test("keeps the bot's recommended product attached to its own chat history", () => {
   assert.deepEqual(chatUtils.buildSessionChatRequest?.("session-1", "แล้ว Strava ล่ะ", [
-    { role: "assistant", content: "ขอแนะนำรุ่นนี้ครับ", product_name: "Black Shark GS3" },
+    { role: "assistant", content: "ขอแนะนำรุ่นนี้ครับ", product_name: "Black Shark GS3",
+      product_names: ["Black Shark GS3", "Black Shark GS3 Ultra"] },
   ]), {
     session_id: "session-1",
     question: "แล้ว Strava ล่ะ",
-    history: [{ role: "assistant", content: "ขอแนะนำรุ่นนี้ครับ", product_name: "Black Shark GS3" }],
+    history: [{ role: "assistant", content: "ขอแนะนำรุ่นนี้ครับ", product_name: "Black Shark GS3",
+      product_names: ["Black Shark GS3", "Black Shark GS3 Ultra"] }],
   });
 });
 
@@ -86,4 +88,19 @@ test("reports catalog connection state accurately", () => {
   assert.equal(chatUtils.getCatalogStatus?.(true, false), "loading");
   assert.equal(chatUtils.getCatalogStatus?.(false, true), "offline");
   assert.equal(chatUtils.getCatalogStatus?.(false, false), "ready");
+});
+
+test("preserves a locally created chat when the initial server list arrives late", () => {
+  assert.deepEqual(chatUtils.mergeLoadedSessions?.(
+    [{ id: "old", title: "เก่า", updatedAt: 1 }],
+    [{ id: "new", title: "ใหม่", updatedAt: 2 }],
+  ), [
+    { id: "new", title: "ใหม่", updatedAt: 2 },
+    { id: "old", title: "เก่า", updatedAt: 1 },
+  ]);
+});
+
+test("does not restore a stale preferred chat after the user has navigated", () => {
+  assert.equal(chatUtils.shouldApplyInitialSession?.("old", 0, 1), false);
+  assert.equal(chatUtils.shouldApplyInitialSession?.("old", 1, 1), true);
 });
