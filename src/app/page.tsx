@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
+import { Fragment, useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import {
   ArrowUp,
   Bot,
@@ -59,6 +59,14 @@ function readProductCards(value: unknown) {
     if (typeof card.name !== "string") return [];
     return [{ itemId: typeof card.item_id === "string" ? card.item_id : "",
       title: card.name, imageUrl: typeof card.image_url === "string" ? card.image_url : undefined }];
+  });
+}
+
+function renderLinkedText(text: string) {
+  return text.split(/(https?:\/\/[^\s<]+)/g).map((part, index) => {
+    if (!part.startsWith("http://") && !part.startsWith("https://")) return part;
+    const url = part.replace(/[.,!?;:)\]]+$/, "");
+    return <Fragment key={`${index}-${url}`}><a href={url} target="_blank" rel="noreferrer">{url}</a>{part.slice(url.length)}</Fragment>;
   });
 }
 
@@ -322,7 +330,7 @@ export default function HomePage() {
           </div>
         </div>
         <div className="topbar-actions">
-          <a className="llm-link" href="/llm">จัดการ Gemini key</a>
+          <a className="llm-link" href="/llm">ตั้งค่าโมเดลและ API key</a>
           <button className="topbar-settings" type="button" onClick={() => setSessionsOpen(true)} aria-label="เปิดรายการแชท" title="รายการแชท">
             <MessageCircle size={17} />
           </button>
@@ -405,7 +413,7 @@ export default function HomePage() {
                     {message.kind === "error" && <div className="message-state error-state"><CircleHelp size={13} /> เชื่อมต่อไม่สำเร็จ</div>}
                     <div className={`message-bubble ${message.role === "user" ? "user-bubble" : "assistant-bubble"} ${message.kind === "error" ? "error-bubble" : ""}`}>
                       {message.role === "assistant" ? parseChatAnswer(message.text).map((block, index) =>
-                        block.type === "text" ? <p key={index}>{block.text}</p> : (
+                        block.type === "text" ? <p key={index}>{renderLinkedText(block.text)}</p> : (
                           <div className="chat-answer-table-wrap" key={index}>
                             <table className="chat-answer-table" aria-label="ตารางเปรียบเทียบสินค้า">
                               <thead><tr>{block.headers.map((header, cell) => <th scope="col" key={cell}>{header}</th>)}</tr></thead>
@@ -415,7 +423,7 @@ export default function HomePage() {
                           </div>
                         )) : <p>{message.text}</p>}
                     </div>
-                    {message.kind === "setup_required" && <a className="message-action" href="/llm">ไปที่จัดการ Gemini key</a>}
+                    {message.kind === "setup_required" && <a className="message-action" href="/llm">ไปตั้งค่าโมเดลและ API key</a>}
                     {message.kind === "handoff" && message.handoffSent && (
                       <p className="handoff-note">ส่งเรื่องให้เจ้าหน้าที่จริงแล้ว{message.caseId !== undefined ? ` · เคส #${message.caseId}` : ""} ทีมงานจะติดต่อกลับ</p>
                     )}

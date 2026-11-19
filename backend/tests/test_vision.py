@@ -4,6 +4,21 @@ from backend.app.vision import VisionResult, describe_with_key_rotation, describ
 
 
 class VisionKeyRotationTests(unittest.TestCase):
+    def test_batch_retries_all_keys_until_last_key_succeeds(self):
+        keys = iter([(f"key-{i}", i, 5) for i in range(5)])
+        used = []
+        def describe(items, question, key):
+            used.append(key)
+            if key != "key-4":
+                raise RuntimeError("provider failed")
+            return [VisionResult("เห็นสาย", "gemini-test")]
+
+        result = describe_batch_with_key_rotation([(b"image", "image/png")], "ดูสาย",
+            lambda: next(keys), describe)
+
+        self.assertEqual(result[0].description, "เห็นสาย")
+        self.assertEqual(used, [f"key-{i}" for i in range(5)])
+
     def test_batch_describes_five_media_in_one_provider_call(self):
         media = [(bytes([index]), "image/webp") for index in range(5)]
         calls = []

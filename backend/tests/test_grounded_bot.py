@@ -17,9 +17,94 @@ class FakeStore:
 
 
 class IntentFlowTests(unittest.TestCase):
+    def test_all_ten_rate_limited_keys_stop_with_temporary_error(self):
+        class RateLimited(Exception):
+            code = 429
+        used = []
+        def generate(key, prompt):
+            used.append(key)
+            raise RateLimited()
+        products = [{"name": "Black Shark GS3", "description": "สาย 22 มม.", "source": {}}]
+        store = FakeStore(products)
+        store.key_cycle = lambda: [(f"key-{index}", index) for index in range(10)]
+        engine = ProductChatEngine(store=store, answerer=GeminiAnswerer(store, generate))
+
+        result = engine.answer("อยากทราบวิธีเปลี่ยนสาย gs3")
+
+        self.assertEqual(result["reason"], "llm_rate_limited")
+        self.assertEqual(result["status"], "temporarily_unavailable")
+        self.assertFalse(result["handoff_sent"])
+        self.assertNotIn("เจ้าหน้าที่", result["answer"])
+        self.assertEqual(used, [f"key-{index}" for index in range(10)])
+
+    def test_rate_limited_faq_selection_stops_before_answer_call(self):
+        prompts = []
+        class RateLimited(Exception):
+            code = 429
+        def generate(key, prompt):
+            prompts.append(prompt)
+            if "Return ONLY JSON with keys: intent" in prompt:
+                return json.dumps({"intent": "troubleshooting", "topic": "strap", "needs": ["change strap"],
+                                   "product_names": ["Black Shark GS3"], "unresolved": False})
+            raise RateLimited()
+        engine = self.engine([{"name": "Black Shark GS3", "description": "วิธีใส่สาย youtu.be/Oen126kBRzI", "source": {}}],
+                             generate, [{"model_name": "Black Shark GS3 Smart Watch", "question": "เปลี่ยนสายได้ไหม",
+                                         "answer": "เปลี่ยนสายได้", "source": {}}])
+
+        result = engine.answer("เปลี่ยนสาย GS3 อย่างไร")
+
+        self.assertEqual(result["status"], "temporarily_unavailable")
+        self.assertEqual(result["reason"], "llm_rate_limited")
+        self.assertEqual(len(prompts), 2)
+        self.assertFalse(result["handoff_sent"])
+
     def engine(self, products, generate, faqs=()):
         store = FakeStore(products, faqs)
         return ProductChatEngine(store=store, answerer=GeminiAnswerer(store, generate))
+
+    def test_usage_answer_can_use_product_guide_alongside_faq(self):
+        prompts = []
+        def generate(key, prompt):
+            prompts.append(prompt)
+            if "Return ONLY JSON with keys: intent" in prompt:
+                return json.dumps({"intent": "troubleshooting", "topic": "change watch strap",
+                    "needs": ["how to change strap"], "product_names": ["Black Shark GS3"], "unresolved": False})
+            if "Select the single FAQ" in prompt:
+                return '{"index":0}'
+            return "GS3 เปลี่ยนสายได้ครับ ดูวิธีใส่สายที่ https://youtu.be/Oen126kBRzI"
+        engine = self.engine([{"name": "Black Shark GS3",
+            "description": "วิธีการใส่สายนาฬิกา: https://youtu.be/Oen126kBRzI",
+            "source": {"file": "product.xlsx"}}], generate,
+            [{"model_name": "Black Shark GS3 Smart Watch", "question": "เปลี่ยนสายได้ไหม",
+              "answer": "สามารถเปลี่ยนสายได้", "source": {"file": "faq.xlsx"}}])
+
+        result = engine.answer("อยากทราบวิธีเปลี่ยนสาย gs3")
+
+        self.assertEqual(result["status"], "answered")
+        self.assertIn("youtu.be/Oen126kBRzI", result["answer"])
+        self.assertIn("วิธีการใส่สายนาฬิกา", prompts[-1])
+        self.assertIn("https://youtu.be/Oen126kBRzI", prompts[-1])
+        self.assertIn("สามารถเปลี่ยนสายได้", prompts[-1])
+        self.assertEqual(len(result["sources"]), 2)
+
+    def test_usage_answer_uses_product_guide_when_faq_has_no_match(self):
+        def generate(key, prompt):
+            if "Return ONLY JSON with keys: intent" in prompt:
+                return json.dumps({"intent": "troubleshooting", "topic": "change watch strap",
+                    "needs": ["how to change strap"], "product_names": ["Black Shark GS3"], "unresolved": False})
+            if "Select the single FAQ" in prompt:
+                return '{"index":null}'
+            return "ดูวิธีใส่สาย GS3 ได้ที่ https://youtu.be/Oen126kBRzI"
+        engine = self.engine([{"name": "Black Shark GS3",
+            "description": "วิธีการใส่สายนาฬิกา: https://youtu.be/Oen126kBRzI",
+            "source": {"file": "product.xlsx"}}], generate,
+            [{"model_name": "Black Shark GS3 Smart Watch", "question": "เปลี่ยนสายได้ไหม",
+              "answer": "สามารถเปลี่ยนสายได้", "source": {"file": "faq.xlsx"}}])
+
+        result = engine.answer("อยากทราบวิธีเปลี่ยนสาย gs3")
+
+        self.assertEqual(result["status"], "answered")
+        self.assertIn("youtu.be/Oen126kBRzI", result["answer"])
 
     def test_intent_extracts_needs_and_product_from_this_chat(self):
         prompts = []
@@ -108,7 +193,7 @@ class IntentFlowTests(unittest.TestCase):
                                                                      "product_name": "Black Shark GS3"}])
         self.assertEqual(result["intent"], "troubleshooting")
         self.assertEqual(result["matched_question"], "ชาร์จไม่เข้า")
-        self.assertEqual(result["sources"][0]["file"], "faq.xlsx")
+        self.assertEqual(result["sources"][1]["file"], "faq.xlsx")
 
     def test_long_faq_model_name_stays_with_the_most_specific_product(self):
         selected_options = []

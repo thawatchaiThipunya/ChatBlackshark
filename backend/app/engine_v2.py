@@ -22,6 +22,15 @@ def handoff(reason: str, intent: str = "handoff") -> dict[str, Any]:
             "handoff_mock": True, "handoff_sent": False, "sources": []}
 
 
+def provider_failure(reason: str, intent: str, session_id: str | None = None) -> dict[str, Any]:
+    message = ("ตอนนี้ผู้ให้บริการ AI จำกัดจำนวนคำขอชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย"
+               if reason == "llm_rate_limited" else
+               "ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย")
+    return {"status": "temporarily_unavailable", "intent": intent, "reason": reason,
+            "answer": message, "sources": [], "session_id": session_id,
+            "handoff_mock": False, "handoff_sent": False}
+
+
 def supported_wording(answer: str, evidence: str, question: str = "", *, intent: str = "product_info") -> bool:
     """Protect credentials without rejecting ordinary Thai paraphrases."""
     return not PRIVATE_PATTERN.search(answer) and not SECRET_PATTERN.search(answer)
@@ -60,20 +69,27 @@ def persona_instruction(persona: dict[str, Any]) -> str:
         "medium": "ตอบความยาวปานกลาง อธิบายเหตุผลหรือจุดเด่นที่เกี่ยวข้องโดยไม่ยืดเยื้อ",
         "long": "ตอบละเอียดขึ้นพร้อมเหตุผลและรายละเอียดที่เกี่ยวข้อง จัดเป็นย่อหน้าหรือรายการเมื่อช่วยให้อ่านง่าย",
     }
-    tones = {
-        "friendly": "ใช้ภาษาเป็นกันเอง อบอุ่น เหมือนพนักงานร้านคุยกับลูกค้าอย่างธรรมชาติ",
-        "normal": "ใช้ภาษาปกติ ชัดเจน เป็นธรรมชาติ",
-        "very_polite": "ใช้ภาษาสุภาพมาก ระมัดระวังคำพูด แต่ไม่แข็งทื่อ",
-    }
     voices = {
         "male": "ใช้รูปแบบคำลงท้ายแบบชาย เช่น ครับ อย่างเป็นธรรมชาติ ไม่ต้องลงท้ายทุกประโยค",
         "female": "ใช้รูปแบบคำลงท้ายแบบหญิง เช่น ค่ะ/คะ ให้ถูกบริบท ไม่ต้องลงท้ายทุกประโยค",
     }
+    friendliness = int(persona.get("friendliness", 50) or 0)
+    detail_level = int(persona.get("detail_level", 50) or 0)
+    tone = ("เป็นทางการ สุภาพ และเว้นระยะตามกาลเทศะ" if friendliness < 25 else
+            "สุภาพ เป็นมิตร และไม่สนิทสนมเกินไป" if friendliness < 50 else
+            "เป็นกันเองและอบอุ่น คุยเหมือนพนักงานที่พร้อมช่วยเหลือ" if friendliness < 75 else
+            "เป็นกันเองมาก อบอุ่น เห็นใจลูกค้า ใช้คำพูดเป็นธรรมชาติ ไม่ฝืนเล่นมุกหรือใช้อีโมจิเกินจำเป็น")
+    detail = ("กระชับที่สุด ตอบตรงคำถามใน 1–3 ประโยค แต่ต้องครอบคลุมทุก need" if detail_level < 34 else
+              "ให้รายละเอียดพอดี ตอบครบทุก need พร้อมเหตุผลหรือจุดเด่นที่เกี่ยวข้อง" if detail_level < 67 else
+              "อธิบายละเอียดเป็นลำดับ เพิ่มบริบทที่ช่วยตัดสินใจ โดยไม่พูดซ้ำหรือเติมข้อมูลนอกหลักฐาน")
     return "; ".join((
+        f"ชื่อที่ใช้แทนตัวเองคือ {str(persona.get('bot_name') or 'ผู้ช่วยร้าน')[:80]}",
+        f"บุคลิกที่ผู้ดูแลร้านกำหนด: {str(persona.get('persona_text') or '')[:2000]}",
+        f"ระดับความเป็นกันเอง {friendliness}/100: {tone}",
         lengths.get(persona.get("length"), lengths["medium"]),
-        tones.get(persona.get("tone"), tones["normal"]),
+        f"ระดับรายละเอียด {detail_level}/100: {detail}",
         voices.get(persona.get("voice"), voices["male"]),
-        "หากลูกค้าขอคำตอบสั้นหรือรายละเอียดเป็นพิเศษ ให้ทำตามที่ลูกค้าขอ; ห้ามตัดคำตอบของ need ที่ถาม และ persona ไม่เปลี่ยนข้อเท็จจริงใน SOURCE",
+        "หากลูกค้าขอรูปแบบหรือความยาวเป็นพิเศษ ให้ทำตาม; persona กำหนดเพียงสไตล์ ห้ามเปลี่ยนข้อเท็จจริงหรือเติมข้อมูลนอก SOURCE",
     ))
 
 
@@ -110,25 +126,34 @@ class GeminiAnswerer:
                 return None, "llm_unavailable"
         model = config.get(f"gemini_{stage}_model") or os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
         try:
-            count = self.store.next_key()[2]
+            if callable(getattr(self.store, "key_cycle", None)):
+                candidates = self.store.key_cycle()
+            else:
+                first = self.store.next_key()
+                count = first[2]
+                candidates = [first[:2]] + [self.store.next_key()[:2] for _ in range(max(0, count - 1))]
         except Exception:
             return None, "key_store_unavailable"
-        if not count:
+        if not candidates:
             return None, "llm_key_missing"
         attempted: set[int] = set()
-        for _ in range(count):
+        rate_limited = False
+        for key, key_id in candidates:
+            if not key or key_id is None or key_id in attempted:
+                continue
+            attempted.add(key_id)
             try:
-                key, key_id, _ = self.store.next_key()
-                if not key or key_id in attempted:
-                    continue
-                attempted.add(key_id)
                 result = (self.generate(key, prompt) if self.generate else self._generate(key, prompt, model)).strip()
                 if result:
                     return result, "llm_grounded"
             except Exception as exc:
-                logger.warning("Gemini call failed: %s code=%s", type(exc).__name__,
-                               getattr(exc, "code", None))
-        return None, "llm_unavailable"
+                code = getattr(exc, "code", None) or getattr(exc, "status_code", None)
+                rate_limited = rate_limited or str(code) == "429"
+                logger.warning("Gemini call failed key_id=%s code=%s error_type=%s",
+                               key_id, code, type(exc).__name__)
+        logger.warning("Gemini key cycle exhausted stage=%s attempted=%s rate_limited=%s",
+                       stage, len(attempted), rate_limited)
+        return None, "llm_rate_limited" if rate_limited else "llm_unavailable"
 
     def extract_intent(self, question: str, history: list[dict[str, Any]],
                        product_names: list[str], vision_evidence: list[str] | None = None) -> tuple[dict[str, Any] | None, str]:
@@ -200,9 +225,9 @@ class GeminiAnswerer:
 
     def select_faq(self, question: str, candidates: list[dict[str, Any]],
                    history: list[dict[str, Any]] | None = None,
-                   needs: list[str] | None = None) -> int | None:
+                   needs: list[str] | None = None) -> tuple[int | None, str]:
         if not candidates:
-            return None
+            return None, "faq_not_found"
         options = [{"index": index, "issue": item["question"], "resolution": item["answer"]}
                    for index, item in enumerate(candidates)]
         prompt = (
@@ -215,10 +240,14 @@ class GeminiAnswerer:
             f"CUSTOMER: {json.dumps(question, ensure_ascii=False)}\n"
             f"FAQS: {json.dumps(options, ensure_ascii=False)}"
         )
-        raw, _ = self._call(prompt)
+        raw, reason = self._call(prompt)
+        if raw is None:
+            return None, reason
         parsed = _json_object(raw or "")
         index = parsed.get("index") if parsed else None
-        return index if isinstance(index, int) and not isinstance(index, bool) and 0 <= index < len(candidates) else None
+        if isinstance(index, int) and not isinstance(index, bool) and 0 <= index < len(candidates):
+            return index, "faq_selected"
+        return None, "faq_not_found"
 
     def answer(self, question: str, evidence: str, product_name: str | None = None,
                intent: str = "product_info", history: list[dict[str, Any]] | None = None,
@@ -245,7 +274,10 @@ class GeminiAnswerer:
             "and recommend the better fit for the customer's stated priority when the facts support it. "
             "If a compared fact is absent, write ไม่พบข้อมูล in that cell instead of guessing. "
             "For product search, recommend the strongest match and state which needs are met and which are not documented. "
-            "For troubleshooting, use only the chosen FAQ resolution. Summarize steps naturally; "
+            "For troubleshooting, use the selected FAQ together with relevant usage instructions in the product record. "
+            "If a product record contains a link that demonstrates the requested operation, include its full clickable URL in the answer. "
+            "If no FAQ fits or its answer lacks the requested detail, answer from the selected product record. "
+            "Summarize steps naturally; "
             "do not ask for contact details or order numbers unless the customer requests escalation. "
             "If SOURCE contradicts itself on a requested fact, state both conflicting values and that it cannot be confirmed. "
             "If a requested fact is absent, say so plainly. Never invent specs, numbers, price, stock, actions, or policies. "
@@ -283,19 +315,24 @@ class ProductChatEngine:
     def _reply(self, question: str, intent: str, needs: list[str], selected: list[dict[str, Any]],
                history: list[dict[str, Any]], session_id: str | None,
                matched_question: str | None = None, evidence_override: str | None = None,
-               source_override: dict[str, Any] | None = None) -> dict[str, Any]:
+               source_override: dict[str, Any] | list[dict[str, Any]] | None = None) -> dict[str, Any]:
         names = [item["name"] for item in selected]
         evidence = evidence_override if evidence_override is not None else "\n\n".join(
             f"สินค้า: {item['name']}\n{item.get('description') or ''}" for item in selected)
-        sources = [source_override] if source_override else [item.get("source") or {} for item in selected]
+        sources = (source_override if isinstance(source_override, list) else [source_override]) if source_override else [item.get("source") or {} for item in selected]
         answer, reason = self.answerer.answer(question, evidence, product_name=" / ".join(names) or None,
                                               intent=intent, history=history, needs=needs)
         if not answer:
             if reason == "llm_key_missing":
                 return {"status": "key_required", "intent": intent, "reason": reason,
-                        "answer": "ยังไม่ได้เพิ่ม Gemini API key ครับ เพิ่มคีย์แล้วถามใหม่ได้เลย",
+                        "answer": "ยังไม่ได้ตั้งค่า API key ของผู้ให้บริการ AI ครับ เพิ่มคีย์แล้วถามใหม่ได้เลย",
                         "sources": sources, "product_name": names[0] if len(names) == 1 else None,
                         "session_id": session_id, "handoff_mock": False, "handoff_sent": False}
+            if reason in {"llm_rate_limited", "llm_unavailable", "llm_config_unavailable", "key_store_unavailable"}:
+                result = provider_failure(reason, intent, session_id)
+                result["product_name"] = names[0] if len(names) == 1 else None
+                result["sources"] = sources
+                return result
             return {**handoff(reason, intent), "product_name": names[0] if len(names) == 1 else None,
                     "session_id": session_id}
         mentioned = [name for name in names if name.casefold() in answer.casefold()]
@@ -325,8 +362,10 @@ class ProductChatEngine:
         if not plan:
             if reason == "llm_key_missing":
                 return {"status": "key_required", "intent": "intent", "reason": reason,
-                        "answer": "ยังไม่ได้เพิ่ม Gemini API key ครับ เพิ่มคีย์แล้วถามใหม่ได้เลย",
+                        "answer": "ยังไม่ได้ตั้งค่า API key ของผู้ให้บริการ AI ครับ เพิ่มคีย์แล้วถามใหม่ได้เลย",
                         "sources": [], "session_id": session_id, "handoff_mock": False, "handoff_sent": False}
+            if reason in {"llm_rate_limited", "llm_unavailable", "llm_config_unavailable", "key_store_unavailable"}:
+                return provider_failure(reason, "intent", session_id)
             return {**handoff(reason, "intent"), "session_id": session_id}
         intent, needs = plan["intent"], plan["needs"]
         names = [name for name in plan["product_names"] if name in catalog]
@@ -379,6 +418,8 @@ class ProductChatEngine:
         if intent == "product_search":
             selected_names, select_reason = self.answerer.select_products(question, needs, products)
             if selected_names is None:
+                if select_reason in {"llm_rate_limited", "llm_unavailable", "llm_config_unavailable", "key_store_unavailable"}:
+                    return finish(provider_failure(select_reason, intent, session_id))
                 return finish({**handoff(select_reason, intent), "session_id": session_id})
             selected = [catalog[name] for name in selected_names if name in catalog]
             if not selected:
@@ -404,16 +445,24 @@ class ProductChatEngine:
                 return max(matches, key=len) if matches else None
 
             faqs = [faq for faq in data.get("faqs", []) if faq_product(faq) in names]
-            index = self.answerer.select_faq(question, faqs, history, needs)
+            index, faq_reason = self.answerer.select_faq(question, faqs, history, needs)
+            if index is None and faq_reason in {"llm_rate_limited", "llm_unavailable", "llm_config_unavailable", "key_store_unavailable"}:
+                return finish(provider_failure(faq_reason, intent, session_id))
+            product = selected[0]
+            description = str(product.get("description") or "")
+            description = re.sub(r"(?<!https://)(?<!http://)(?<!www\.)\byoutu\.be/",
+                                 "https://youtu.be/", description, flags=re.I)
+            product_evidence = f"สินค้า: {product['name']}\n{description}"
             if index is None:
-                return finish({"status": "answered", "intent": intent, "reason": "faq_not_found",
-                               "answer": f"ข้อมูลของ {names[0]} ยังไม่มีวิธีแก้อาการนี้ที่ยืนยันได้ครับ เล่าอาการเพิ่มอีกนิดได้ไหมครับ",
-                               "sources": [], "product_name": names[0], "session_id": session_id,
-                               "handoff_mock": False, "handoff_sent": False})
+                return finish(self._reply(question, intent, needs, selected[:1], history, session_id,
+                                          evidence_override=product_evidence))
             faq = faqs[index]
+            combined_evidence = (product_evidence + "\n\nข้อมูล FAQ ที่เกี่ยวข้อง:\n"
+                                 f"คำถาม FAQ: {faq['question']}\nคำตอบ FAQ: {faq['answer']}")
+            sources = [product.get("source") or {}, faq.get("source") or {}]
             return finish(self._reply(question, intent, needs, selected[:1], history, session_id,
-                                      matched_question=faq["question"], evidence_override=faq["answer"],
-                                      source_override=faq.get("source") or {}))
+                                      matched_question=faq["question"], evidence_override=combined_evidence,
+                                      source_override=sources))
         return finish(self._reply(question, intent, needs, selected, history, session_id))
 
 

@@ -347,3 +347,4 @@ kbd { min-width: 20px; padding: 0 4px; color: #4a564e; background: #f1f4f0; bord
 .media-loading { color: var(--muted); font-size: 12px; }
  .composer-media-count { display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--muted); }
  .composer-media-count button { border: 0; background: none; color: var(--maroon); cursor: pointer; font: inherit; text-decoration: underline; }
+.assistant-bubble a { color: var(--maroon); text-decoration: underline; text-underline-offset: 2px; overflow-wrap: anywhere; }
