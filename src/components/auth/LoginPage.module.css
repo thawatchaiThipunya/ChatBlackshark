@@ -1,0 +1,206 @@
+.page,
+.fallback {
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  min-height: var(--app-vh, 100dvh);
+  overflow: hidden;
+  isolation: isolate;
+  perspective: 1300px;
+  perspective-origin: 50% 45%;
+  background: #0b2340;
+}
+
+.sceneWrap {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  background: #03040b;
+  transform-origin: 50% 45%;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: auto;
+}
+
+.shade {
+  position: fixed;
+  z-index: 1;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 36% 40% at var(--shade-x, 50%) var(--shade-y, 45%), rgba(5, 6, 20, 0.08) 0%, rgba(4, 5, 18, 0.30) 44%, rgba(1, 2, 11, 0.88) 100%),
+    radial-gradient(ellipse 64% 88% at 11% 43%, rgba(6, 9, 27, 0.54), transparent 74%),
+    radial-gradient(ellipse 66% 84% at 88% 58%, rgba(10, 6, 29, 0.48), transparent 72%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+  border: 0;
+}
+
+.portalLayer {
+  position: fixed;
+  z-index: 4;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.portalCore {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  width: min(104vmin, 128vw);
+  height: min(132vmin, 150vh);
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(1, 2, 9, 0.88) 0 23%, rgba(3, 4, 16, 0.78) 39%, rgba(9, 8, 30, 0.48) 55%, rgba(30, 33, 97, 0.14) 70%, transparent 82%);
+  filter: blur(2.5px);
+  opacity: 0;
+  transform-origin: center;
+  box-shadow: 0 0 92px 22px rgba(19, 26, 82, 0.32);
+}
+
+.portalBloom {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  width: min(148vmin, 176vw);
+  height: min(180vmin, 220vh);
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(181, 208, 255, 0.62) 0 2%, rgba(111, 151, 236, 0.52) 11%, rgba(107, 91, 207, 0.34) 28%, rgba(99, 53, 153, 0.22) 45%, rgba(23, 47, 105, 0.14) 62%, transparent 78%),
+    radial-gradient(ellipse at 35% 42%, rgba(148, 100, 226, 0.28), transparent 64%),
+    radial-gradient(ellipse at 66% 56%, rgba(78, 154, 234, 0.27), transparent 62%),
+    conic-gradient(from 10deg at 50% 50%, transparent 0 14%, rgba(128, 117, 255, 0.12) 19%, transparent 27%, rgba(91, 176, 255, 0.15) 35%, transparent 46%, rgba(172, 130, 255, 0.11) 57%, transparent 68%, rgba(117, 194, 255, 0.12) 81%, transparent 92%);
+  filter: blur(27px) saturate(1.35);
+  mix-blend-mode: screen;
+  opacity: 0;
+  pointer-events: none;
+  transform-origin: center;
+  will-change: transform, opacity;
+}
+
+.entering .sceneWrap {
+  will-change: transform, opacity;
+}
+
+.fallback {
+  background: #0b2340 url("/login/torii-lake.jpg") center 45% / cover no-repeat;
+}
+
+.page {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: clamp(24px, 6vw, 88px);
+  color: #f4f0e8;
+  background: #131719;
+}
+
+.page::before {
+  position: fixed;
+  z-index: 1;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(10, 15, 17, .89) 0%, rgba(10, 15, 17, .74) 30%, rgba(10, 15, 17, .18) 68%, rgba(10, 15, 17, .06) 100%),
+    linear-gradient(0deg, rgba(9, 14, 15, .58), transparent 32%, transparent 76%, rgba(9, 14, 15, .16));
+}
+
+.sceneWrap { z-index: 0; }
+.shade { z-index: 2; }
+
+.loginPanel {
+  position: relative;
+  z-index: 3;
+  width: min(448px, 100%);
+  margin-left: clamp(0px, 3vw, 48px);
+  padding: clamp(28px, 3.6vw, 44px);
+  color: #f4f0e8;
+  background: rgba(19, 23, 25, .9);
+  border: 1px solid rgba(244, 240, 232, .2);
+  border-top: 2px solid #d59b3f;
+  box-shadow: 0 30px 100px rgba(0, 0, 0, .32);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
+.loginBrand { display: flex; align-items: center; gap: 12px; margin-bottom: 38px; }
+.loginBrandMark {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border: 1px solid #d59b3f;
+  border-radius: 10px 10px 10px 2px;
+}
+.loginBrandMark::before, .loginBrandMark::after { position: absolute; content: ""; background: #d59b3f; }
+.loginBrandMark::before { width: 15px; height: 2px; top: 10px; left: 8px; }
+.loginBrandMark::after { width: 2px; height: 11px; top: 10px; left: 15px; }
+.loginBrand strong, .loginBrand small { display: block; }
+.loginBrand strong { font-size: 13px; font-weight: 800; letter-spacing: .14em; }
+.loginBrand small { margin-top: 4px; color: #b7b3a7; font-size: 9px; letter-spacing: .17em; }
+
+.loginPanel h1 { margin: 0 0 12px; font-size: clamp(30px, 3.1vw, 42px); line-height: 1.26; font-weight: 720; letter-spacing: -.025em; }
+.loginDescription { max-width: 33ch; margin: 0; color: #c8c7c0; font-size: 14px; line-height: 1.8; }
+.loginError { margin: 20px 0 0; padding: 11px 13px; color: #ffe3da; background: rgba(155, 50, 53, .28); border: 1px solid rgba(221, 127, 114, .55); font-size: 12px; line-height: 1.55; }
+.loginButton {
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 29px;
+  padding: 0 17px 0 19px;
+  color: #171b1b;
+  background: #d59b3f;
+  border: 1px solid #d59b3f;
+  font-size: 13px;
+  font-weight: 750;
+  text-decoration: none;
+  transition: color .18s ease, background-color .18s ease, border-color .18s ease, transform .18s ease;
+}
+.loginButton:hover { color: #101414; background: #edb858; border-color: #edb858; transform: translateY(-2px); }
+.loginButton:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.loginButtonDisabled { opacity: .72; cursor: wait; transform: none; }
+.loginButtonArrow { flex: 0 0 auto; }
+.loginHelper { margin: 13px 0 0; color: #aaa99f; font-size: 11px; line-height: 1.55; }
+.loginFooter { position: absolute; z-index: 3; right: 28px; bottom: 22px; display: flex; align-items: center; gap: 10px; color: rgba(244, 240, 232, .78); font-size: 9px; letter-spacing: .12em; }
+.loginFooter span { color: #e3b05e; font-weight: 800; }
+.loginFooter i { width: 20px; height: 1px; background: rgba(244, 240, 232, .45); }
+
+@media (max-width: 700px) {
+  .page { align-items: flex-end; padding: 16px 16px max(18px, env(safe-area-inset-bottom)); }
+  .page::before { background: linear-gradient(180deg, rgba(10, 15, 17, .04) 8%, rgba(10, 15, 17, .12) 36%, rgba(10, 15, 17, .72) 64%, rgba(10, 15, 17, .88)); }
+  .sceneWrap { background-position: 50% 43%; }
+  .loginPanel { width: min(520px, 100%); margin: 0 auto; padding: 24px; }
+  .loginBrand { margin-bottom: 25px; }
+  .loginPanel h1 { margin-top: 12px; font-size: clamp(28px, 8vw, 38px); }
+  .loginDescription { font-size: 13px; }
+  .loginButton { margin-top: 21px; }
+  .loginFooter { right: 20px; top: 18px; bottom: auto; }
+}
+
+@media (max-height: 700px) and (min-width: 701px) {
+  .page { padding-top: 18px; padding-bottom: 18px; }
+  .loginBrand { margin-bottom: 24px; }
+  .loginPanel { padding-top: 27px; padding-bottom: 27px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sceneWrap { will-change: auto; }
+  .loginButton { transition: none; }
+}

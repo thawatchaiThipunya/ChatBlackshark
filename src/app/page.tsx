@@ -11,8 +11,12 @@ import {
   Info,
   LoaderCircle,
   MessageCircle,
+  Paperclip,
+  Plus,
   RefreshCw,
+  Search,
   ShieldCheck,
+  UserRound,
   X,
 } from "lucide-react";
 import { buildSessionChatRequest, getCatalogStatus, presentChatReply, type ChatSource } from "@/lib/chat-utils";
@@ -117,6 +121,8 @@ export default function HomePage() {
   const [sendingSessions, setSendingSessions] = useState<Set<string>>(new Set());
   const [composerErrors, setComposerErrors] = useState<Record<string, string>>({});
   const [sessionsOpen, setSessionsOpen] = useState(false);
+  const [knowledgeOpen, setKnowledgeOpen] = useState(false);
+  const [sessionSearch, setSessionSearch] = useState("");
   const listRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -141,13 +147,14 @@ export default function HomePage() {
         const response = await fetch("/api/chat/sessions", { cache: "no-store" });
         const data = response.ok ? await response.json() as { sessions: StoredSession[] } : { sessions: [] };
         if (!response.ok && response.status !== 401) throw new Error("chat_store_unavailable");
-        const rows = data.sessions.length ? data.sessions : [await createRemoteSession()];
-        const initial = rows.map(fromStoredSession);
+        const initial = (Array.isArray(data.sessions) ? data.sessions : []).map(fromStoredSession);
         setSessions(initial);
         const preferred = new URLSearchParams(window.location.search).get("session");
-        const selected = initial.find((session) => session.id === preferred) || initial[0];
-        setActiveSessionId(selected.id);
-        await loadMessages(selected.id);
+        const selected = initial.find((session) => session.id === preferred);
+        if (selected) {
+          setActiveSessionId(selected.id);
+          await loadMessages(selected.id);
+        }
       } catch {
         setComposerErrors({ "": "โหลดประวัติแชทจากฐานข้อมูลไม่ได้ กรุณารีเฟรชหน้า" });
       } finally { setSessionsReady(true); }
@@ -172,6 +179,7 @@ export default function HomePage() {
   const draft = drafts[activeSessionId] ?? "";
   const sending = sendingSessions.has(activeSessionId);
   const composerError = composerErrors[activeSessionId] ?? "";
+  const attachedFiles = mediaFiles[activeSessionId] ?? [];
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
@@ -179,6 +187,9 @@ export default function HomePage() {
 
   const catalogStatus = getCatalogStatus(catalogLoading, catalogError);
   const activeProduct = [...messages].reverse().find((message) => message.productName)?.productName;
+  const normalizedSessionSearch = sessionSearch.trim().toLocaleLowerCase();
+  const visibleSessions = sessions.filter((session) => !normalizedSessionSearch ||
+    `${session.title} ${session.messages.map((message) => message.text).join(" ")}`.toLocaleLowerCase().includes(normalizedSessionSearch));
 
   function updateSession(sessionId: string, update: (session: ChatSession) => ChatSession) {
     setSessions((current) => current.map((session) => session.id === sessionId ? update(session) : session));
@@ -201,6 +212,7 @@ export default function HomePage() {
       window.history.replaceState(null, "", `?session=${session.id}`);
       setDrafts((current) => ({ ...current, [session.id]: "" }));
       setSessionsOpen(false);
+      setKnowledgeOpen(false);
       setTimeout(() => textareaRef.current?.focus(), 0);
     } catch { setComposerErrors((current) => ({ ...current, [activeSessionId]: "สร้างแชทในฐานข้อมูลไม่ได้" })); }
   }
@@ -210,6 +222,7 @@ export default function HomePage() {
     window.history.replaceState(null, "", `?session=${sessionId}`);
     void loadMessages(sessionId).catch(() => setComposerErrors((current) => ({ ...current, [sessionId]: "โหลดประวัติแชทไม่ได้" })));
     setSessionsOpen(false);
+    setKnowledgeOpen(false);
     setTimeout(() => textareaRef.current?.focus(), 0);
   }
 
@@ -311,72 +324,60 @@ export default function HomePage() {
 
   return (
     <div className={`app-shell ${sessionsOpen ? "settings-open" : ""}`}>
-      <header className="topbar">
-        <div className="brand-block">
-          <a className="brand" href="/" aria-label="Black Shark หน้าหลัก">
-            <span className="brand-mark" aria-hidden="true"><span /></span>
-          </a>
-          <div className="brand-copy">
-            <h1>ทดสอบบอท — Black Shark</h1>
-            <p><span className={`online-dot is-${catalogStatus}`} /> {catalogStatus === "loading" ? "กำลังโหลดข้อมูล" : catalogStatus === "offline" ? "ยังเชื่อมต่อไม่ได้" : "ผู้ช่วยข้อมูลสินค้า"}</p>
-          </div>
-        </div>
-        <div className="topbar-actions">
-          <a className="llm-link" href="/llm">จัดการ Gemini key</a>
-          <button className="topbar-settings" type="button" onClick={() => setSessionsOpen(true)} aria-label="เปิดรายการแชท" title="รายการแชท">
-            <MessageCircle size={17} />
-          </button>
-        </div>
-      </header>
-
       <main className="page-wrap">
-        <nav className="mode-switcher-bar" aria-label="ขอบเขตการตอบ">
-          <strong className="unified-chat-label">ถามข้อมูลสินค้าได้เลย ไม่ต้องเลือกสินค้าก่อน</strong>
-        </nav>
-
         <div className="chat-workspace">
           <aside className="setup-panel" aria-label="รายการแชท">
             <div className="setup-title-row">
               <div className="section-icon"><MessageCircle size={18} strokeWidth={1.8} /></div>
               <h2>บทสนทนา</h2>
+              <span className="session-total">{sessions.length}</span>
+              <button className="session-add-button" type="button" onClick={startNewChat} aria-label="เริ่มแชทใหม่">
+                <Plus size={17} strokeWidth={2} />
+              </button>
               <button className="settings-close" type="button" onClick={() => setSessionsOpen(false)} aria-label="ปิดรายการแชท">
                 <X size={16} />
               </button>
             </div>
 
-            <button className="new-chat-button session-create-button" type="button" onClick={startNewChat}>
-              <MessageCircle size={15} strokeWidth={1.8} /><span>เริ่มแชทใหม่</span>
-            </button>
+            <label className="session-search"><Search size={15} /><input type="search" value={sessionSearch} onChange={(event) => setSessionSearch(event.target.value)} placeholder="ค้นหาบทสนทนา" aria-label="ค้นหาบทสนทนา" /></label>
 
             <div className="session-list" role="list" aria-label="แชทที่บันทึกไว้">
               {!sessionsReady && <p className="field-help">กำลังโหลดแชท...</p>}
-              {sessions.map((session) => (
-                <div key={session.id} role="listitem">
-                  <button
-                    className={`session-item ${session.id === activeSessionId ? "is-active" : ""}`}
-                    type="button"
-                    onClick={() => selectSession(session.id)}
-                    aria-current={session.id === activeSessionId ? "page" : undefined}
-                  >
-                    <span className="session-item-title">{session.title}</span>
-                    <span className="session-item-status">
-                      {sendingSessions.has(session.id) ? <><LoaderCircle size={12} className="spin" /> กำลังตอบ</> : `${session.messages.filter((message) => message.role === "user").length} คำถาม`}
-                    </span>
-                  </button>
-                </div>
-              ))}
+              {visibleSessions.map((session) => {
+                const preview = [...session.messages].reverse().find((message) => message.role === "user")?.text || "เริ่มบทสนทนาใหม่";
+                const updatedAt = Number.isNaN(session.updatedAt) ? "" : new Intl.DateTimeFormat("th-TH", { hour: "2-digit", minute: "2-digit" }).format(session.updatedAt);
+                return (
+                  <div key={session.id} role="listitem">
+                    <button
+                      className={`session-item ${session.id === activeSessionId ? "is-active" : ""}`}
+                      type="button"
+                      onClick={() => selectSession(session.id)}
+                      aria-current={session.id === activeSessionId ? "page" : undefined}
+                    >
+                      <span className="session-item-avatar"><MessageCircle size={15} /></span>
+                      <span className="session-item-copy">
+                        <span className="session-item-line"><span className="session-item-title">{session.title}</span><time>{updatedAt}</time></span>
+                        <span className="session-item-preview">{preview}</span>
+                        <span className="session-item-status">{sendingSessions.has(session.id) ? <><LoaderCircle size={12} className="spin" /> กำลังตอบ</> : `${session.messages.filter((message) => message.role === "user").length} ข้อความ`}</span>
+                      </span>
+                    </button>
+                  </div>
+                );
+              })}
+              {sessionsReady && visibleSessions.length === 0 && <p className="session-empty">ไม่พบบทสนทนาที่ค้นหา</p>}
             </div>
           </aside>
 
           <section className="conversation-panel" aria-label="แชทถามตอบสินค้า">
+            {activeSession ? <>
             <div className="conversation-header">
               <div className="conversation-identity">
                 <div className="bot-avatar"><Bot size={18} strokeWidth={1.8} /></div>
                 <div>
-                  <h2>ผู้ช่วย Black Shark</h2>
+                  <h2>{activeSession?.title || "ผู้ช่วย Black Shark"}</h2>
                   <p className="conversation-status">
                     <span className={`online-dot is-${catalogStatus}`} />
-                    {catalogStatus === "ready" ? "พร้อมค้นข้อมูล" : catalogStatus === "loading" ? "กำลังโหลดข้อมูลสินค้า" : "เชื่อมต่อฐานข้อมูลไม่ได้"}
+                    ผู้ช่วย Black Shark · {catalogStatus === "ready" ? "พร้อมค้นข้อมูล" : catalogStatus === "loading" ? "กำลังโหลดข้อมูลสินค้า" : "เชื่อมต่อฐานข้อมูลไม่ได้"}
                     <span className="status-divider">·</span>
                     <span className="selected-product" title={activeProduct || "รุ่นจะตรวจจากบริบทแชท"}>{activeProduct || "ตรวจรุ่นจากแชทนี้"}</span>
                   </p>
@@ -387,6 +388,9 @@ export default function HomePage() {
               </button>
               <button className="new-chat-button" type="button" onClick={startNewChat} aria-label="เริ่มแชทใหม่">
                 <MessageCircle size={16} strokeWidth={1.8} /><span>เริ่มใหม่</span>
+              </button>
+              <button className="conversation-info-toggle" type="button" onClick={() => setKnowledgeOpen((open) => !open)} aria-expanded={knowledgeOpen} aria-label="เปิดข้อมูลแชท">
+                <Info size={16} strokeWidth={1.8} /><span>ข้อมูล</span>
               </button>
             </div>
 
@@ -469,14 +473,22 @@ export default function HomePage() {
             </div>
 
             <form className="composer" onSubmit={(event) => void sendQuestion(event)}>
-              <label>ภาพ/วิดีโอ
-                <input type="file" accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
-                  multiple onChange={(event) => {
-                    const selected = Array.from(event.target.files || []);
-                    setMediaFiles((current) => ({ ...current,
-                      [activeSessionId]: [...(current[activeSessionId] || []), ...selected].slice(0, 10) }));
-                    event.target.value = "";
+              <label className="upload-control">
+                <input type="file" aria-label="แนบภาพหรือวิดีโอ" accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
+                  multiple disabled={!activeSession || sending}
+                  onChange={(event) => {
+                    const selected = Array.from(event.currentTarget.files || []);
+                    const current = mediaFiles[activeSessionId] || [];
+                    const remaining = Math.max(0, 10 - current.length);
+                    const accepted = selected.slice(0, remaining);
+                    setMediaFiles((files) => ({ ...files, [activeSessionId]: [...(files[activeSessionId] || []), ...accepted] }));
+                    setComposerErrors((errors) => ({ ...errors, [activeSessionId]: selected.length > remaining ? "แนบได้สูงสุด 10 ไฟล์ต่อคำถาม" : "" }));
+                    event.currentTarget.value = "";
                   }} />
+                <span className="upload-control-button"><Paperclip size={16} strokeWidth={1.9} /> แนบภาพหรือวิดีโอ</span>
+                <span className={`upload-control-status ${attachedFiles.length ? "has-files" : ""}`} title={attachedFiles.map((file) => file.name).join(", ")}>
+                  {attachedFiles.length ? `${attachedFiles[0].name}${attachedFiles.length > 1 ? ` +${attachedFiles.length - 1} ไฟล์` : ""}` : "JPG · PNG · MP4 · สูงสุด 10 ไฟล์"}
+                </span>
               </label>
               {!!mediaFiles[activeSessionId]?.length && <div className="composer-media-count" role="status">
                 แนบแล้ว {mediaFiles[activeSessionId].length}/10 ไฟล์
@@ -511,15 +523,23 @@ export default function HomePage() {
                 <span><kbd>Enter</kbd> ส่ง · <kbd>Shift</kbd> + <kbd>Enter</kbd> ขึ้นบรรทัดใหม่</span>
               </div>
             </form>
+            </> : <div className="conversation-empty" role="status" aria-live="polite">
+              <div className="conversation-empty-mark"><UserRound size={25} strokeWidth={1.8} /></div>
+              <h2>{sessionsReady ? "เลือกบทสนทนาเพื่อดูรายละเอียด" : "กำลังโหลดบทสนทนา"}</h2>
+              <p>{sessions.length ? "แชทและข้อความจะแสดงที่นี่เมื่อเลือกจากรายการ" : "เริ่มบทสนทนาใหม่เพื่อทดลองผู้ช่วยข้อมูลสินค้า"}</p>
+              {!sessions.length && sessionsReady && <button className="empty-new-chat" type="button" onClick={startNewChat}><MessageCircle size={15} /> เริ่มบทสนทนาใหม่</button>}
+              <button className="empty-sessions-toggle" type="button" onClick={() => setSessionsOpen(true)}>ดูรายการบทสนทนา</button>
+            </div>}
           </section>
 
-          <aside className="info-panel" aria-label="ข้อมูลแชทและฐานความรู้">
+          {knowledgeOpen && <aside className="info-panel" aria-label="ข้อมูลแชทและฐานความรู้">
             <div className="info-title-row">
               <div className="section-icon"><Info size={18} strokeWidth={1.8} /></div>
               <div>
                 <h2>ข้อมูลแชท</h2>
                 <p>สถานะและข้อมูลที่ใช้ตอบ</p>
               </div>
+              <button className="info-close" type="button" onClick={() => setKnowledgeOpen(false)} aria-label="ปิดข้อมูลแชท"><X size={16} /></button>
             </div>
 
             <div className="info-status" role="status">
@@ -551,7 +571,7 @@ export default function HomePage() {
               <ShieldCheck size={15} strokeWidth={1.8} />
               <p>ประวัติแต่ละแชทแยกกันและบันทึกไว้ในฐานข้อมูล</p>
             </div>
-          </aside>
+          </aside>}
         </div>
       </main>
       {sessionsOpen && <button className="settings-backdrop" type="button" aria-label="ปิดรายการแชท" onClick={() => setSessionsOpen(false)} />}

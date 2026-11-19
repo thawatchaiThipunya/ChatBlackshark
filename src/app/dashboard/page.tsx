@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Activity, CalendarDays, KeyRound, MessageCircle, RefreshCw, ShieldCheck, Users } from "lucide-react";
+import { Activity, ArrowUpRight, CalendarDays, LayoutDashboard, RefreshCw } from "lucide-react";
+import { ConsolePage } from "@/components/ConsolePage";
 
 type ActivityRow = { id: number; actor_email: string; action: string; metadata: Record<string, unknown>; created_at: string };
 type DashboardData = {
@@ -43,28 +44,27 @@ export default function DashboardPage() {
 
   useEffect(() => { void load(); }, [load]);
   const maxSessions = Math.max(1, ...data.sessions_by_day.map((item) => item.count));
-  const metrics = [
-    { label: "แชททั้งหมด", value: data.total_sessions, icon: MessageCircle },
-    { label: "แชทวันนี้", value: data.sessions_today, icon: Users },
-    { label: "ข้อความวันนี้", value: data.messages_today, icon: Activity },
-    { label: "Gemini keys", value: data.key_count, icon: KeyRound },
-  ];
-
-  return <main className="admin-page">
-    <div className="admin-page-inner">
-      <header className="admin-page-header">
-        <div><h1>Dashboard</h1><p>ภาพรวมการใช้งานระบบและกิจกรรมล่าสุดของทีม</p></div>
-        <button className="header-action" type="button" onClick={() => void load()} disabled={loading}><RefreshCw size={15} /> รีเฟรชข้อมูล</button>
-      </header>
-      <section className="dashboard-welcome">
-        <div><span className="dashboard-kicker"><ShieldCheck size={14} /> พื้นที่ทำงานของทีม</span><h2>ยินดีต้อนรับสู่ Black Shark Console</h2><p>จัดการแชท คีย์สำหรับบอท และการตั้งค่าการแสดงผลได้จากเมนูด้านข้าง</p></div>
-        <img src="/mascot/cat-girl-pixel.png" alt="มาสคอตแมวพิกเซล" />
+  return <ConsolePage icon={LayoutDashboard} title="แดชบอร์ด" subtitle="ภาพรวมการใช้งานระบบและกิจกรรมล่าสุด"
+    actions={<button className="header-action" type="button" onClick={() => void load()} disabled={loading}><RefreshCw size={15} /> รีเฟรชข้อมูล</button>}>
+      <section className="dashboard-summary">
+        <div className="dashboard-summary-copy">
+          <h2>สถานีดูแลบทสนทนา</h2>
+          <p>สรุปข้อมูลที่บันทึกไว้ในระบบ พร้อมตรวจสอบกิจกรรมล่าสุดของทีม</p>
+          <span className="dashboard-summary-note"><Activity size={14} /> ข้อมูลจริงจากระบบหลังบ้าน</span>
+        </div>
+        <div className="dashboard-mascot-station">
+          <div className="dashboard-mascot-copy"><span>ผู้ช่วยประจำทีม</span><strong>ชาร์คกี้</strong><small>คอยดูแลแชทสินค้า</small></div>
+          <img className="dashboard-summary-mascot" src="/mascot/cat-girl-pixel.png" alt="มาสคอตสาวแมวชาร์คกี้" />
+        </div>
       </section>
       {error && <p className="load-error" role="alert">{error}</p>}
-      <section className="metric-grid" aria-label="ตัวเลขสรุป">
-        {metrics.map(({ label, value, icon: Icon }) => <article className="metric-block" key={label}>
-          <span><Icon size={15} /> {label}</span><strong>{loading ? "…" : value.toLocaleString("th-TH")}</strong>
-        </article>)}
+      <section className="dashboard-metrics" aria-label="ตัวเลขสรุปการใช้งาน">
+        <dl>
+          <div><dt>บทสนทนาทั้งหมด</dt><dd>{loading ? "—" : data.total_sessions.toLocaleString("th-TH")}</dd></div>
+          <div><dt>เริ่มวันนี้</dt><dd>{loading ? "—" : data.sessions_today.toLocaleString("th-TH")}</dd></div>
+          <div><dt>ข้อความวันนี้</dt><dd>{loading ? "—" : data.messages_today.toLocaleString("th-TH")}</dd></div>
+          <div><dt>Gemini keys</dt><dd>{loading ? "—" : data.key_count.toLocaleString("th-TH")}</dd></div>
+        </dl>
       </section>
       <div className="dashboard-lower">
         <section className="panel" aria-labelledby="sessions-title">
@@ -77,13 +77,12 @@ export default function DashboardPage() {
           </div> : <p className="empty-copy">{loading ? "กำลังโหลดข้อมูล…" : "ยังไม่มีข้อมูลแชทในช่วงนี้"}</p>}
           <p className="chart-footnote">ข้อความสะสมทั้งหมด {data.total_messages.toLocaleString("th-TH")} รายการ</p>
         </section>
-        <section className="panel" aria-labelledby="activity-title">
-          <div className="panel-heading"><div><h2 id="activity-title">กิจกรรมล่าสุด</h2><p>รายการจากบันทึกผู้ดูแลระบบ</p></div><Link href="/logs" aria-label="ดูบันทึกทั้งหมด">ดูทั้งหมด</Link></div>
+        <section className="panel dashboard-operations" aria-labelledby="overview-title">
+          <div className="panel-heading"><div><h2 id="overview-title">กิจกรรมล่าสุด</h2><p>รายการจากบันทึกผู้ดูแลระบบ</p></div><Link href="/logs" aria-label="ดูบันทึกทั้งหมด">ดูทั้งหมด <ArrowUpRight size={14} aria-hidden="true" /></Link></div>
           {data.recent_activity.length ? <div className="activity-list">{data.recent_activity.map((row) => <article className="activity-row" key={row.id}>
-            <strong>{row.action}</strong><span>{row.actor_email}</span><time dateTime={row.created_at}>{formatDate(row.created_at)}</time>
+            <time dateTime={row.created_at}>{formatDate(row.created_at)}</time><strong>{row.action}</strong><span>{row.actor_email}</span>
           </article>)}</div> : <p className="empty-copy">{loading ? "กำลังโหลดข้อมูล…" : "ยังไม่มีกิจกรรมที่บันทึกไว้"}</p>}
         </section>
       </div>
-    </div>
-  </main>;
+  </ConsolePage>;
 }
