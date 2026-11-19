@@ -173,6 +173,10 @@
 .llm-form { display: grid; gap: 8px; }
 .llm-form label { margin-top: 7px; color: var(--muted); font-size: 12px; font-weight: 700; }
 .llm-form input { width: 100%; min-height: 42px; padding: 0 11px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 8px; font: inherit; font-size: 13px; }
+.llm-form select { width: 100%; min-height: 42px; padding: 0 11px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 8px; font: inherit; font-size: 13px; }
+.llm-model-group { display: grid; gap: 10px; margin: 12px 0 0; padding: 14px; border: 1px solid var(--line); border-radius: 8px; }
+.llm-model-group legend { padding: 0 5px; font-size: 13px; font-weight: 700; }
+.llm-model-group label { display: block; margin: 0 0 5px; }
 .llm-form button { min-height: 42px; margin-top: 9px; color: white; background: var(--maroon); border: 0; border-radius: 8px; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
 .llm-form button:disabled { opacity: .55; cursor: not-allowed; }
 .llm-note { margin: 12px 0 0; color: var(--muted); font-size: 11px; }

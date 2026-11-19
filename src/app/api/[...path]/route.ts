@@ -5,10 +5,10 @@ async function proxy(request: Request, context: RouteContext) {
   const endpoint = path.join("/");
   const getRoutes = [
     "catalog", "health", "chat/sessions", "auth/me", "auth/sso/login", "auth/sso/callback",
-    "admin/dashboard", "admin/preferences", "admin/logs", "llm/keys",
+    "admin/dashboard", "admin/preferences", "admin/logs", "llm/keys", "llm/config",
   ];
   if (!((request.method === "GET" && (getRoutes.includes(endpoint) || /^chat\/sessions\/[0-9a-f-]+\/messages$/.test(endpoint) || /^chat\/sessions\/[0-9a-f-]+\/media\/[0-9a-f-]+$/.test(endpoint))) ||
-    (request.method === "POST" && (["chat", "chat/sessions", "chat/media/upload-url", "auth/logout", "admin/preferences", "llm/keys"].includes(endpoint))) ||
+    (request.method === "POST" && (["chat", "chat/sessions", "chat/media/upload-url", "auth/logout", "admin/preferences", "llm/keys", "llm/config", "llm/openrouter-key"].includes(endpoint))) ||
     (request.method === "DELETE" && /^llm\/keys\/\d+$/.test(endpoint)))) {
     return Response.json({ error: "not_found" }, { status: 404 });
   }

@@ -21,6 +21,7 @@ class SupabaseStore:
         self.token = token or os.getenv("LLM_KEY_STORE_TOKEN", "")
         self.encryption_key = encryption_key or os.getenv("LLM_KEY_ENCRYPTION_KEY", "")
         self._cache: tuple[float, dict[str, Any]] | None = None
+        self._runtime_cache: tuple[float, dict[str, Any]] | None = None
 
     def _request(self, path: str, payload: dict[str, Any] | None = None) -> Any:
         if not self.url or not self.publishable_key:
@@ -114,6 +115,40 @@ class SupabaseStore:
             return None, None, 0
         key = Fernet(self.encryption_key.encode()).decrypt(selected["ciphertext"].encode()).decode()
         return key, selected["id"], selected["count"]
+
+    def llm_config_action(self, action: str, session_token: str | None = None,
+                          payload: dict[str, Any] | None = None) -> dict[str, Any]:
+        if not self.token:
+            raise RuntimeError("LLM configuration store is not configured")
+        return self._request("rpc/bot_llm_config_action", {
+            "p_app_token": self.token, "p_session_token": session_token,
+            "p_action": action, "p_payload": payload or {},
+        })
+
+    def runtime_config(self) -> dict[str, Any]:
+        if self._runtime_cache and time.monotonic() - self._runtime_cache[0] < 15:
+            return self._runtime_cache[1]
+        config = self.llm_config_action("get_runtime")
+        if config.get("openrouter_key_ciphertext"):
+            config["openrouter_key"] = Fernet(self.encryption_key.encode()).decrypt(
+                config.pop("openrouter_key_ciphertext").encode()).decode()
+        self._runtime_cache = (time.monotonic(), config)
+        return config
+
+    def save_llm_config(self, session_token: str, payload: dict[str, Any]) -> dict[str, Any]:
+        result = self.llm_config_action("save_config", session_token, payload)
+        self._runtime_cache = None
+        return result
+
+    def set_openrouter_key(self, session_token: str, key: str) -> dict[str, Any]:
+        clean = key.strip()
+        if len(clean) < 10:
+            raise ValueError("OpenRouter key is too short")
+        ciphertext = Fernet(self.encryption_key.encode()).encrypt(clean.encode()).decode()
+        result = self.llm_config_action("set_openrouter_key", session_token,
+            {"ciphertext": ciphertext, "last4": clean[-4:]})
+        self._runtime_cache = None
+        return result
 
     def escalate(self, session_id: str, model_name: str, question: str,
                  transcript: list[dict[str, Any]]) -> dict[str, Any] | None:

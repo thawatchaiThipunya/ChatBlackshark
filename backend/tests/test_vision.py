@@ -1,9 +1,20 @@
 import unittest
 
-from backend.app.vision import VisionResult, describe_with_key_rotation
+from backend.app.vision import VisionResult, describe_with_key_rotation, describe_batch_with_key_rotation
 
 
 class VisionKeyRotationTests(unittest.TestCase):
+    def test_batch_describes_five_media_in_one_provider_call(self):
+        media = [(bytes([index]), "image/webp") for index in range(5)]
+        calls = []
+        def describe(items, question, key):
+            calls.append((items, question, key))
+            return [VisionResult(f"ภาพ {index}", "gemini-test") for index in range(len(items))]
+
+        result = describe_batch_with_key_rotation(media, "ดูภาพ", lambda: ("key", 1, 1), describe)
+
+        self.assertEqual(len(calls), 1)
+        self.assertEqual([item.description for item in result], [f"ภาพ {index}" for index in range(5)])
     def test_tries_another_key_after_provider_error(self):
         keys = iter([("bad-key", 3, 2), ("good-key", 4, 2)])
         used = []

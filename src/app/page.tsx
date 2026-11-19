@@ -471,9 +471,17 @@ export default function HomePage() {
             <form className="composer" onSubmit={(event) => void sendQuestion(event)}>
               <label>ภาพ/วิดีโอ
                 <input type="file" accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
-                  multiple onChange={(event) => setMediaFiles((current) => ({ ...current,
-                    [activeSessionId]: Array.from(event.target.files || []).slice(0, 5) }))} />
+                  multiple onChange={(event) => {
+                    const selected = Array.from(event.target.files || []);
+                    setMediaFiles((current) => ({ ...current,
+                      [activeSessionId]: [...(current[activeSessionId] || []), ...selected].slice(0, 10) }));
+                    event.target.value = "";
+                  }} />
               </label>
+              {!!mediaFiles[activeSessionId]?.length && <div className="composer-media-count" role="status">
+                แนบแล้ว {mediaFiles[activeSessionId].length}/10 ไฟล์
+                <button type="button" onClick={() => setMediaFiles((current) => ({ ...current, [activeSessionId]: [] }))}>ล้างไฟล์</button>
+              </div>}
               <input type="text" inputMode="numeric" value={itemIds[activeSessionId] || ""}
                 onChange={(event) => setItemIds((current) => ({ ...current, [activeSessionId]: event.target.value }))}
                 placeholder="item_id จากการ์ดสินค้า (ถ้ามี)" aria-label="item_id จากการ์ดสินค้า"

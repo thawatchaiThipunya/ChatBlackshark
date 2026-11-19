@@ -24,7 +24,7 @@ from .store import SupabaseStore
 from .chat_inputs import normalize_chat_input
 from .shopee_products import lookup_shopee_item
 from .admin_auth import ADMIN_SESSION_COOKIE, require_admin as require_admin_session
-from .vision import describe_with_key_rotation
+from .vision import describe_batch_with_key_rotation, describe_media_batch, describe_openrouter_batch
 
 
 app = FastAPI(
@@ -96,7 +96,7 @@ class ChatTurn(BaseModel):
 class ChatRequest(BaseModel):
     question: str = Field(default="", max_length=1000)
     event: dict | None = None
-    attachment_ids: list[str] = Field(default_factory=list, max_length=5)
+    attachment_ids: list[str] = Field(default_factory=list, max_length=10)
     product_name: str | None = None
     model_name: str | None = None
     session_id: str | None = Field(default=None, min_length=1, max_length=100)
@@ -398,6 +398,20 @@ class KeyRequest(BaseModel):
     key: str = Field(min_length=10, max_length=300)
 
 
+class LlmConfigRequest(BaseModel):
+    provider: Literal["gemini", "openrouter"]
+    gemini_intent_model: str = Field(min_length=2, max_length=120)
+    gemini_vision_model: str = Field(min_length=2, max_length=120)
+    gemini_answer_model: str = Field(min_length=2, max_length=120)
+    openrouter_intent_model: str = Field(min_length=2, max_length=120)
+    openrouter_vision_model: str = Field(min_length=2, max_length=120)
+    openrouter_answer_model: str = Field(min_length=2, max_length=120)
+
+
+class OpenRouterKeyRequest(BaseModel):
+    key: str = Field(min_length=10, max_length=500)
+
+
 @app.get("/api/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
@@ -488,29 +502,38 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
                     listings.append(listing)
             except Exception:
                 logger.exception("shopee_card_lookup_failed item_id=%s", item_id)
-    descriptions = []
-    for attachment_id in request.attachment_ids:
+    descriptions = [""] * len(request.attachment_ids)
+    pending = []
+    for index, attachment_id in enumerate(request.attachment_ids):
         attachment = store.chat_action(guest, "get_attachment", session_id, {"id": valid_session(attachment_id)})
         if not attachment:
             raise HTTPException(status_code=422, detail="attachment_not_found")
         if attachment["status"] == "complete":
-            descriptions.append(attachment["vision_description"])
+            descriptions[index] = attachment["vision_description"]
             continue
-        stage = "download"
+        pending.append((index, attachment_id, attachment))
+    for start in range(0, len(pending), 5):
+        batch = pending[start:start + 5]
         try:
-            media = store.media_bytes(attachment["object_path"])
-            stage = "vision"
-            result = describe_with_key_rotation(media, attachment["mime_type"], question, store.next_key)
-            stage = "save"
-            store.chat_action(guest, "update_vision", session_id,
-                {"id": attachment_id, "status": "complete", "model": result.model, "description": result.description})
-            descriptions.append(result.description)
+            media = [(store.media_bytes(item[2]["object_path"]), item[2]["mime_type"]) for item in batch]
+            config = store.runtime_config()
+            if config.get("provider") == "openrouter":
+                results = describe_openrouter_batch(media, question, config["openrouter_key"],
+                                                    config["openrouter_vision_model"])
+            else:
+                results = describe_batch_with_key_rotation(media, question, store.next_key,
+                    lambda items, prompt, key: describe_media_batch(items, prompt, key,
+                        config.get("gemini_vision_model")))
+            for (index, attachment_id, _), result in zip(batch, results):
+                store.chat_action(guest, "update_vision", session_id,
+                    {"id": attachment_id, "status": "complete", "model": result.model, "description": result.description})
+                descriptions[index] = result.description
         except Exception as exc:
-            logger.warning("vision_failed stage=%s error_type=%s error_code=%s", stage,
-                           type(exc).__name__, getattr(exc, "code", None))
-            store.chat_action(guest, "update_vision", session_id,
-                {"id": attachment_id, "status": "failed", "description": ""})
-            descriptions.append("[ไม่สามารถอ่านภาพหรือวิดีโอได้]")
+            logger.warning("vision_batch_failed error_type=%s error_code=%s", type(exc).__name__, getattr(exc, "code", None))
+            for index, attachment_id, _ in batch:
+                store.chat_action(guest, "update_vision", session_id,
+                    {"id": attachment_id, "status": "failed", "description": ""})
+                descriptions[index] = "[ไม่สามารถอ่านภาพหรือวิดีโอได้]"
     product_cards = [{"item_id": item["item_id"], "name": item["name"], "image_url": item["image_url"]}
                      for item in listings]
     user_content = request.question if plain_item_ids and request.question.strip() else question
@@ -599,6 +622,30 @@ def list_llm_keys(admin: dict = Depends(current_admin)) -> dict:
         return {"keys": store.list_keys(admin["token"])}
     except Exception:
         raise HTTPException(status_code=503, detail="key_store_unavailable")
+
+
+@app.get("/api/llm/config")
+def get_llm_config(admin: dict = Depends(current_admin)) -> dict:
+    try:
+        return store.llm_config_action("get_config", admin["token"])
+    except Exception:
+        raise HTTPException(status_code=503, detail="llm_config_unavailable")
+
+
+@app.post("/api/llm/config")
+def save_llm_config(request: LlmConfigRequest, admin: dict = Depends(current_admin)) -> dict:
+    try:
+        return store.save_llm_config(admin["token"], request.model_dump())
+    except Exception:
+        raise HTTPException(status_code=503, detail="llm_config_save_failed")
+
+
+@app.post("/api/llm/openrouter-key")
+def set_openrouter_key(request: OpenRouterKeyRequest, admin: dict = Depends(current_admin)) -> dict:
+    try:
+        return store.set_openrouter_key(admin["token"], request.key)
+    except Exception:
+        raise HTTPException(status_code=503, detail="openrouter_key_save_failed")
 
 
 @app.post("/api/llm/keys")

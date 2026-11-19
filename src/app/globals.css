@@ -345,3 +345,5 @@ kbd { min-width: 20px; padding: 0 4px; color: #4a564e; background: #f1f4f0; bord
 .message-attachments { display: grid; gap: 8px; margin-top: 8px; }
 .message-media { display: block; max-width: min(100%, 420px); max-height: 360px; border-radius: 12px; object-fit: contain; background: var(--paper); }
 .media-loading { color: var(--muted); font-size: 12px; }
+ .composer-media-count { display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--muted); }
+ .composer-media-count button { border: 0; background: none; color: var(--maroon); cursor: pointer; font: inherit; text-decoration: underline; }
