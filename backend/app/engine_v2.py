@@ -8,6 +8,7 @@ import re
 from typing import Any, Callable
 
 from .store import SupabaseStore
+from .openrouter import complete as openrouter_complete
 
 logger = logging.getLogger(__name__)
 INTENTS = {"smalltalk", "product_search", "product_info", "compatibility", "comparison", "troubleshooting", "image_understanding", "store_support", "out_of_scope"}
@@ -55,19 +56,35 @@ def _safe_history(history: list[dict[str, Any]] | None) -> list[dict[str, str]]:
 
 class GeminiAnswerer:
     def __init__(self, store: SupabaseStore, generate: Callable[[str, str], str] | None = None):
-        self.store, self.generate = store, generate or self._generate
+        self.store, self.generate = store, generate
 
     @staticmethod
-    def _generate(key: str, prompt: str) -> str:
+    def _generate(key: str, prompt: str, model: str) -> str:
         from google import genai
         from google.genai import types
         with genai.Client(api_key=key) as client:
             response = client.models.generate_content(
-                model=os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite"), contents=prompt,
+                model=model, contents=prompt,
                 config=types.GenerateContentConfig(temperature=0, max_output_tokens=900))
             return (response.text or "").strip()
 
-    def _call(self, prompt: str) -> tuple[str | None, str]:
+    def _call(self, prompt: str, stage: str = "intent") -> tuple[str | None, str]:
+        try:
+            config = self.store.runtime_config() if hasattr(self.store, "runtime_config") else {}
+        except Exception:
+            return None, "llm_config_unavailable"
+        if config.get("provider") == "openrouter":
+            key = config.get("openrouter_key")
+            if not key:
+                return None, "llm_key_missing"
+            try:
+                result = openrouter_complete(key, config[f"openrouter_{stage}_model"], prompt)
+                return result, "llm_grounded"
+            except Exception as exc:
+                logger.warning("OpenRouter call failed: %s code=%s", type(exc).__name__,
+                               getattr(exc, "code", None))
+                return None, "llm_unavailable"
+        model = config.get(f"gemini_{stage}_model") or os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
         try:
             count = self.store.next_key()[2]
         except Exception:
@@ -81,7 +98,7 @@ class GeminiAnswerer:
                 if not key or key_id in attempted:
                     continue
                 attempted.add(key_id)
-                result = self.generate(key, prompt).strip()
+                result = (self.generate(key, prompt) if self.generate else self._generate(key, prompt, model)).strip()
                 if result:
                     return result, "llm_grounded"
             except Exception as exc:
@@ -210,7 +227,7 @@ class GeminiAnswerer:
             f"HISTORY: {json.dumps(_safe_history(history), ensure_ascii=False)}\n"
             f"CUSTOMER: {json.dumps(question, ensure_ascii=False)}\nSOURCE:\n{evidence}"
         )
-        raw, reason = self._call(prompt)
+        raw, reason = self._call(prompt, "answer")
         if raw is None:
             return None, reason
         if not supported_wording(raw, evidence, question, intent=intent):

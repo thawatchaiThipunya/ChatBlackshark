@@ -42,6 +42,10 @@
 
 หลัง SSO สำเร็จ เปิด `/llm` เพื่อเพิ่ม Gemini API key ได้หลายคีย์ บอทใช้ลำดับ round robin จาก Supabase และลองคีย์ถัดไปเมื่อเรียกคีย์หนึ่งล้มเหลว หน้าเว็บเห็นเพียงชื่อและท้ายคีย์ 4 ตัว คีย์เต็มเข้ารหัสด้วย Fernet ก่อนเก็บในตาราง `bot_private.llm_keys`
 
+Apply `backend/migrations/005_llm_provider_routing.sql` before deploying this version. `/llm` now selects Gemini or OpenRouter and saves separate Intent, Vision, and Answer model IDs for each provider in `bot_private.llm_runtime_config`. Product selection and FAQ selection use the Intent model. OpenRouter uses one encrypted API key stored through the same admin page; Gemini keeps its rotating keys. Switching provider restores that provider's saved models. The OpenRouter Vision model must support the uploaded image or video modality. OpenRouter media is limited to 12 MB per file because it is sent inline to the provider.
+
+One chat message accepts up to 10 media files. Vision processes pending files in batches of five, saves a separate description per attachment, then Intent and Answer run once for the message. Thus a single message with 10 images normally makes two Vision calls, one Intent call, and one Answer call; product search or FAQ matching can add another Intent-stage call. Failed provider calls may retry with another Gemini key.
+
 หน้าเว็บเรียก `/api/*` บนโดเมนตัวเอง แล้ว Next.js ส่งต่อไปยัง Python API ฝั่ง server จึงไม่ต้องเปิด CORS ให้โดเมนสาธารณะ และไม่เปิดเผย Gemini key ใน browser
 
 ## ขอบเขตการตอบ
