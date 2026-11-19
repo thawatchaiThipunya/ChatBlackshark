@@ -25,6 +25,7 @@ from .chat_inputs import normalize_chat_input
 from .shopee_products import lookup_shopee_item
 from .admin_auth import ADMIN_SESSION_COOKIE, require_admin as require_admin_session
 from .vision import describe_batch_with_key_rotation, describe_media_batch, describe_openrouter_batch
+from .ai_usage import set_usage_reference, reset_usage_reference
 
 
 app = FastAPI(
@@ -53,11 +54,15 @@ logging.getLogger("uvicorn.access").addFilter(RedactSsoAccessLog())
 async def log_requests(request: Request, call_next):
     started = time.perf_counter()
     request_id = request.headers.get("x-request-id") or secrets.token_hex(8)
+    # Keep Hub references opaque even when a caller supplies a custom request ID.
+    usage_reference = set_usage_reference(secrets.token_hex(8))
     try:
         response = await call_next(request)
     except Exception:
         logger.exception("request_failed %s %s request_id=%s", request.method, request.url.path, request_id)
         raise
+    finally:
+        reset_usage_reference(usage_reference)
     elapsed_ms = round((time.perf_counter() - started) * 1000)
     if request.url.path != "/api/health":
         logger.info(json.dumps({

@@ -1,6 +1,7 @@
 import json
 import unittest
-from unittest.mock import patch
+from types import SimpleNamespace
+from unittest.mock import MagicMock, patch
 
 from backend.app.engine_v2 import GeminiAnswerer
 from backend.app.vision import describe_openrouter_batch
@@ -70,6 +71,30 @@ class RoutingTests(unittest.TestCase):
         with patch.object(GeminiAnswerer, "_generate", return_value="{}") as generate:
             GeminiAnswerer(store)._call("prompt", "intent")
         self.assertEqual(generate.call_args.args, ("gemini-secret", "prompt", "gemini-intent"))
+
+    def test_gemini_key_rotation_reports_each_real_generation_attempt(self):
+        store = FakeStore("gemini")
+        store.key_cycle = lambda: [("first", 1), ("second", 2)]
+        client = MagicMock()
+        client.__enter__.return_value = client
+        responses = iter([RuntimeError("provider failed"), SimpleNamespace(text="ตอบได้")])
+
+        def generate(*args, **kwargs):
+            response = next(responses)
+            if isinstance(response, BaseException):
+                raise response
+            return response
+
+        with patch("google.genai.Client", return_value=client), patch(
+            "backend.app.engine_v2.call_gemini", side_effect=generate
+        ) as call_gemini:
+            result, reason = GeminiAnswerer(store)._call("prompt", "answer")
+
+        self.assertEqual((result, reason), ("ตอบได้", "llm_grounded"))
+        self.assertEqual(call_gemini.call_count, 2)
+        self.assertEqual([call.kwargs["attempt"] for call in call_gemini.call_args_list], [1, 2])
+        self.assertEqual([call.kwargs["source"] for call in call_gemini.call_args_list],
+                         ["chat.answer", "chat.answer"])
 
     @patch("backend.app.vision.openrouter_complete")
     def test_five_images_use_one_openrouter_call_and_preserve_order(self, complete):
