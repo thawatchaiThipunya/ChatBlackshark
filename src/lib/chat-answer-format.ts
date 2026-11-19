@@ -5,7 +5,8 @@ export type ChatAnswerBlock =
 function cells(line: string): string[] | null {
   const trimmed = line.trim();
   if (!trimmed.startsWith("|") || !trimmed.endsWith("|")) return null;
-  return trimmed.slice(1, -1).split("|").map((cell) => cell.trim());
+  return trimmed.slice(1, -1).split("|").map((cell) =>
+    cell.replace(/\s*<br\s*\/?>\s*/gi, ", ").trim());
 }
 
 export function parseChatAnswer(answer: string): ChatAnswerBlock[] {

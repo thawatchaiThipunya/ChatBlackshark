@@ -22,3 +22,9 @@ test('does not turn a malformed table into a table', () => {
     { type: 'text', text: '| เรื่อง | GS3 |\n| แบต | 21 วัน |' },
   ]);
 });
+
+test('shows line breaks inside model cells as readable text', () => {
+  assert.deepEqual(parseChatAnswer('| เรื่อง | GS3 | Ultra |\n|---|---|---|\n| แอป | iOS: Wearable <br> Android: Sport | Track |'), [
+    { type: 'table', headers: ['เรื่อง', 'GS3', 'Ultra'], rows: [['แอป', 'iOS: Wearable, Android: Sport', 'Track']] },
+  ]);
+});
