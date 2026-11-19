@@ -568,7 +568,7 @@ class ProductChatEngine:
                           if _faq_product(faq, {name: catalog[name] for name in names})]
                          if intent in faq_intents else [])
         faq_variant_labels: list[str] = []
-        faq_variant_sources: list[dict[str, Any]] = []
+        faq_variant_sources: list[tuple[str, dict[str, Any]]] = []
         unique_faqs: list[dict[str, Any]] = []
         seen_faq_content: set[tuple[str, str]] = set()
         seen_variant_labels: set[str] = set()
@@ -578,7 +578,7 @@ class ProductChatEngine:
                 seen_variant_labels.add(label)
                 faq_variant_labels.append(label)
                 if faq.get("source"):
-                    faq_variant_sources.append(faq["source"])
+                    faq_variant_sources.append((label, faq["source"]))
             key = (str(faq.get("question") or ""), str(faq.get("answer") or ""))
             if key not in seen_faq_content:
                 seen_faq_content.add(key)
@@ -703,7 +703,6 @@ class ProductChatEngine:
                 evidence_parts.append(card_evidence)
             source_list = [item.get("source") or {} for item in selected]
             source_list.extend(faq.get("source") or {} for faq in selected_faqs)
-            source_list.extend(faq_variant_sources[:8])
             source_list.extend(card_sources)
             seen_sources: set[str] = set()
             sources = []
@@ -714,11 +713,23 @@ class ProductChatEngine:
                     sources.append(source)
             matched_question = selected_faqs[0].get("question") if intent == "troubleshooting" and selected_faqs else None
             product_label = " / ".join(names) if names else None
-            return finish(self._reply(question, intent, needs, selected, history, session_id,
-                                      matched_question=matched_question,
-                                      evidence_override="\n\n".join(part for part in evidence_parts if part),
-                                      source_override=sources,
-                                      product_label=product_label))
+            reply = self._reply(question, intent, needs, selected, history, session_id,
+                                matched_question=matched_question,
+                                evidence_override="\n\n".join(part for part in evidence_parts if part),
+                                source_override=sources,
+                                product_label=product_label)
+            answer_text = str(reply.get("answer") or "").casefold()
+            cited_label_sources = [source for label, source in faq_variant_sources[:20]
+                                   if label.casefold() in answer_text]
+            if cited_label_sources:
+                seen_source_keys = {json.dumps(source, sort_keys=True, ensure_ascii=False)
+                                    for source in reply.get("sources", [])}
+                for source in cited_label_sources:
+                    source_key = json.dumps(source, sort_keys=True, ensure_ascii=False)
+                    if source_key not in seen_source_keys:
+                        reply.setdefault("sources", []).append(source)
+                        seen_source_keys.add(source_key)
+            return finish(reply)
         return finish(self._reply(question, intent, needs, selected, history, session_id))
 
 

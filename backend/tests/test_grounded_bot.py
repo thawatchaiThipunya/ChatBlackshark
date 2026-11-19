@@ -264,6 +264,26 @@ class IntentFlowTests(unittest.TestCase):
         self.assertIn("มาพร้อมสายนาฬิกาถึง 2 เส้น", package_check)
         self.assertIn("source mentions accessory bundle outside the package list", package_check)
 
+    def test_unselected_faqs_are_not_shown_as_answer_sources(self):
+        def generate(key, prompt):
+            if "Return ONLY JSON with keys: intent" in prompt:
+                return json.dumps({"intent": "product_info", "topic": "box contents", "needs": ["package contents"],
+                    "product_names": ["Black Shark GS3"], "unresolved": False})
+            if "Select every FAQ" in prompt:
+                return '{"indices": []}'
+            return "ในกล่องมีตัวเรือน สายผ้า สายชาร์จ และคู่มือครับ"
+        product_source = {"file": "product.xlsx", "cell": "B3"}
+        faqs = [
+            {"model_name": "Black Shark GS3", "question": "ปุ่มกดไม่ได้", "answer": "ลองทำความสะอาดปุ่ม", "source": {"file": "faq.xlsx", "cell": "C9"}},
+            {"model_name": "Black Shark GS3", "question": "ชาร์จไม่เข้า", "answer": "ตรวจสอบขั้วชาร์จ", "source": {"file": "faq.xlsx", "cell": "C17"}},
+        ]
+        engine = self.engine([{"name": "Black Shark GS3", "description": "อุปกรณ์ที่ได้รับในแพ็กเกจ:\nสายผ้า\nสายชาร์จ\nคู่มือ", "source": product_source}], generate, faqs)
+
+        result = engine.answer("GS3 ในกล่องมีอะไรบ้าง")
+
+        self.assertEqual(result["status"], "answered")
+        self.assertEqual(result["sources"], [product_source])
+
     def test_card_listing_context_reaches_answer_while_kb_remains_available(self):
         prompts = []
         def generate(key, prompt):
