@@ -11,6 +11,17 @@ from typing import Any
 from cryptography.fernet import Fernet
 
 
+# The Gemini Models API does not report billing-tier eligibility. Keep this
+# allowlist aligned with the Free Tier column in Google's pricing documentation.
+GEMINI_FREE_CHAT_MODELS = {
+    "gemini-3.8-flash",
+    "gemini-3.6-flash",
+    "gemini-3.5-flash-lite",
+    "gemini-3.1-flash-lite",
+}
+MODEL_CATALOG_TTL_SECONDS = 900
+
+
 class SupabaseStore:
     """Read public knowledge and call the token-gated key-store RPC."""
 
@@ -23,6 +34,7 @@ class SupabaseStore:
         self._cache: tuple[float, dict[str, Any]] | None = None
         self._runtime_cache: tuple[float, dict[str, Any]] | None = None
         self._persona_cache: tuple[float, dict[str, Any]] | None = None
+        self._model_catalog_cache: dict[str, tuple[float, list[dict[str, Any]]]] = {}
 
     def _request(self, path: str, payload: dict[str, Any] | None = None) -> Any:
         if not self.url or not self.publishable_key:
@@ -103,12 +115,16 @@ class SupabaseStore:
         if not clean or not label.strip() or len(label) > 80:
             raise ValueError("label and key are required")
         ciphertext = Fernet(self.encryption_key.encode()).encrypt(clean.encode()).decode()
-        return self.admin_action(session_token, "add_key", {
+        result = self.admin_action(session_token, "add_key", {
             "label": label.strip(), "ciphertext": ciphertext, "last4": clean[-4:],
         })
+        self._model_catalog_cache.pop("gemini", None)
+        return result
 
     def delete_key(self, key_id: int, session_token: str) -> dict[str, Any]:
-        return self.admin_action(session_token, "delete_key", {"id": key_id})
+        result = self.admin_action(session_token, "delete_key", {"id": key_id})
+        self._model_catalog_cache.pop("gemini", None)
+        return result
 
     def next_key(self) -> tuple[str | None, int | None, int]:
         selected = self.key_action("next")
@@ -123,6 +139,85 @@ class SupabaseStore:
         rows = self._request("rpc/bot_llm_key_cycle", {"p_token": self.token})
         cipher = Fernet(self.encryption_key.encode())
         return [(cipher.decrypt(row["ciphertext"].encode()).decode(), row["id"]) for row in rows]
+
+    def model_catalog(self, provider: str) -> list[dict[str, Any]]:
+        if provider not in {"gemini", "openrouter"}:
+            raise ValueError("unsupported model provider")
+        cached = self._model_catalog_cache.get(provider)
+        if cached and time.monotonic() - cached[0] < MODEL_CATALOG_TTL_SECONDS:
+            return [dict(model) for model in cached[1]]
+
+        models = self._fetch_gemini_model_catalog() if provider == "gemini" else self._fetch_openrouter_model_catalog()
+        self._model_catalog_cache[provider] = (time.monotonic(), models)
+        return [dict(model) for model in models]
+
+    def _fetch_gemini_model_catalog(self) -> list[dict[str, Any]]:
+        keys = self.key_cycle()
+        if not keys:
+            return []
+
+        # The API returns the same public catalog for each key; retry the next
+        # stored key if the selected key has expired or lost access.
+        for key, _key_id in keys:
+            try:
+                models: dict[str, dict[str, Any]] = {}
+                page_token: str | None = None
+                for _ in range(10):
+                    params = {"pageSize": 1000}
+                    if page_token:
+                        params["pageToken"] = page_token
+                    request = urllib.request.Request(
+                        "https://generativelanguage.googleapis.com/v1beta/models?" + urllib.parse.urlencode(params),
+                        headers={"x-goog-api-key": key, "Accept": "application/json"},
+                    )
+                    with urllib.request.urlopen(request, timeout=15) as response:
+                        payload = json.load(response)
+                    for model in payload.get("models", []):
+                        model_id = str(model.get("name", "")).removeprefix("models/")
+                        if model_id in GEMINI_FREE_CHAT_MODELS and "generateContent" in model.get("supportedGenerationMethods", []):
+                            models[model_id] = {
+                                "id": model_id,
+                                "name": str(model.get("displayName") or model_id),
+                                "supportsVision": True,
+                            }
+                    page_token = payload.get("nextPageToken")
+                    if not page_token:
+                        break
+                return sorted(models.values(), key=lambda model: model["name"].casefold())
+            except (urllib.error.URLError, TimeoutError, ValueError, json.JSONDecodeError):
+                continue
+        raise RuntimeError("Gemini model catalog is unavailable")
+
+    def _fetch_openrouter_model_catalog(self) -> list[dict[str, Any]]:
+        key = self.runtime_config().get("openrouter_key")
+        if not key:
+            return []
+        request = urllib.request.Request(
+            "https://openrouter.ai/api/v1/models",
+            headers={"Authorization": f"Bearer {key}", "Accept": "application/json"},
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=20) as response:
+                payload = json.load(response)
+        except (urllib.error.URLError, TimeoutError, ValueError, json.JSONDecodeError) as exc:
+            raise RuntimeError("OpenRouter model catalog is unavailable") from exc
+
+        models: dict[str, dict[str, Any]] = {}
+        for model in payload.get("data", []):
+            model_id = str(model.get("id", ""))
+            architecture = model.get("architecture") or {}
+            inputs = architecture.get("input_modalities") or []
+            outputs = architecture.get("output_modalities") or []
+            endpoints = model.get("endpoints") or []
+            if (not model_id or "text" not in inputs or "text" not in outputs
+                    or "/api/v1/chat/completions" not in endpoints):
+                continue
+            models[model_id] = {
+                "id": model_id,
+                "name": str(model.get("name") or model_id),
+                "supportsVision": "image" in inputs,
+            }
+        return sorted(models.values(), key=lambda model: model["name"].casefold())
 
     def llm_config_action(self, action: str, session_token: str | None = None,
                           payload: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -156,6 +251,7 @@ class SupabaseStore:
         result = self.llm_config_action("set_openrouter_key", session_token,
             {"ciphertext": ciphertext, "last4": clean[-4:]})
         self._runtime_cache = None
+        self._model_catalog_cache.pop("openrouter", None)
         return result
 
     def persona_action(self, action: str, session_token: str | None = None,

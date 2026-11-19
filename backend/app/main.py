@@ -641,6 +641,15 @@ def get_llm_config(admin: dict = Depends(current_admin)) -> dict:
         raise HTTPException(status_code=503, detail="llm_config_unavailable")
 
 
+@app.get("/api/llm/models")
+def get_llm_models(provider: Literal["gemini", "openrouter"] = Query(...),
+                   admin: dict = Depends(current_admin)) -> dict:
+    try:
+        return {"provider": provider, "models": store.model_catalog(provider)}
+    except Exception:
+        raise HTTPException(status_code=503, detail="model_catalog_unavailable")
+
+
 @app.get("/api/llm/persona")
 def get_llm_persona(admin: dict = Depends(current_admin)) -> dict:
     try:

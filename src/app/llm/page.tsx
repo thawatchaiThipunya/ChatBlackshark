@@ -26,48 +26,20 @@ const modelFields = [
 
 type ModelFieldKey = typeof modelFields[number]["key"];
 type ModelOption = { id: string; name: string; supportsVision: boolean };
-
-const geminiModels: ModelOption[] = [
-  { id: "gemini-3.8-flash", name: "Gemini 3.8 Flash", supportsVision: true },
-  { id: "gemini-3.7-flash", name: "Gemini 3.7 Flash", supportsVision: true },
-  { id: "gemini-3.6-flash", name: "Gemini 3.6 Flash", supportsVision: true },
-  { id: "gemini-3.5-flash", name: "Gemini 3.5 Flash", supportsVision: true },
-  { id: "gemini-3.5-flash-lite", name: "Gemini 3.5 Flash Lite", supportsVision: true },
-  { id: "gemini-3.1-flash-lite", name: "Gemini 3.1 Flash Lite", supportsVision: true },
-  { id: "gemini-3.1-pro-preview", name: "Gemini 3.1 Pro Preview", supportsVision: true },
-  { id: "gemini-3-flash-preview", name: "Gemini 3 Flash Preview", supportsVision: true },
-  { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", supportsVision: true },
-  { id: "gemini-2.5-pro", name: "Gemini 2.5 Pro", supportsVision: true },
-];
-
-const openRouterModels: ModelOption[] = [
-  { id: "google/gemini-4-neon", name: "Gemini 4 Neon · Google", supportsVision: true },
-  { id: "google/gemini-4-hydrogen", name: "Gemini 4 Hydrogen · Google", supportsVision: true },
-  { id: "google/gemini-4-carbon", name: "Gemini 4 Carbon · Google", supportsVision: true },
-  { id: "google/gemini-3.8-flash", name: "Gemini 3.8 Flash · Google", supportsVision: true },
-  { id: "google/gemini-3.7-flash", name: "Gemini 3.7 Flash · Google", supportsVision: true },
-  { id: "google/gemini-3.1-flash-lite", name: "Gemini 3.1 Flash Lite · Google", supportsVision: true },
-  { id: "google/gemini-2.5-flash", name: "Gemini 2.5 Flash · Google", supportsVision: true },
-  { id: "anthropic/claude-opus-5.5", name: "Claude Opus 5.5 · Anthropic", supportsVision: true },
-  { id: "anthropic/claude-sonnet-5", name: "Claude Sonnet 5 · Anthropic", supportsVision: true },
-  { id: "anthropic/claude-haiku-5.5", name: "Claude Haiku 5.5 · Anthropic", supportsVision: true },
-  { id: "openai/gpt-6-astra", name: "GPT-6 Astra · OpenAI", supportsVision: true },
-  { id: "openai/gpt-6-sol", name: "GPT-6 Sol · OpenAI", supportsVision: true },
-  { id: "deepseek/deepseek-v4.1-flash-1017", name: "DeepSeek V4.1 Flash · DeepSeek", supportsVision: true },
-  { id: "qwen/qwen4-max", name: "Qwen4 Max · Qwen", supportsVision: true },
-  { id: "moonshotai/kimi-k3.1-pro", name: "Kimi K3.1 Pro · Moonshot AI", supportsVision: true },
-  { id: "xiaomi/mimo-v2.6-flash", name: "MiMo V2.6 Flash · Xiaomi", supportsVision: true },
-  { id: "z-ai/glm-5.3", name: "GLM 5.3 · Z.ai", supportsVision: false },
-  { id: "meta/muse-spark-1.3-contributor", name: "Muse Spark 1.3 · Meta", supportsVision: true },
-];
+type ModelCatalogStatus = "idle" | "loading" | "loaded" | "error";
 
 function ModelCombobox({
-  id, value, provider, field, onChange,
+  id, value, provider, field, models, status, emptyMessage, onOpen, onRetry, onChange,
 }: {
   id: string;
   value: string;
   provider: Provider;
   field: ModelFieldKey;
+  models: ModelOption[];
+  status: ModelCatalogStatus;
+  emptyMessage: string;
+  onOpen: () => void;
+  onRetry: () => void;
   onChange: (value: string) => void;
 }) {
   const [open, setOpen] = useState(false);
@@ -77,14 +49,14 @@ function ModelCombobox({
   const optionsRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const listId = `${id}-options`;
-  const allModels = provider === "gemini" ? geminiModels : openRouterModels;
-  const models = field === "vision" ? allModels.filter((model) => model.supportsVision) : allModels;
-  const currentMissing = value && !models.some((model) => model.id === value)
-    ? [{ id: value, name: "รุ่นปัจจุบัน · คงค่าเดิม", supportsVision: true }]
+  const compatibleModels = field === "vision" ? models.filter((model) => model.supportsVision) : models;
+  const currentMissing = value && !compatibleModels.some((model) => model.id === value)
+    ? [{ id: value, name: provider === "gemini" ? "รุ่นเดิม · ไม่อยู่ใน Free tier/catalog" : "รุ่นเดิม · ไม่อยู่ใน catalog", supportsVision: true, selectable: false }]
     : [];
-  const availableModels = [...currentMissing, ...models];
+  const availableModels = [...currentMissing, ...compatibleModels.map((model) => ({ ...model, selectable: true }))];
   const filteredModels = availableModels.filter((model) =>
     `${model.name} ${model.id}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
+  const visibleModels = filteredModels.slice(0, 100);
   const selected = availableModels.find((model) => model.id === value);
 
   useEffect(() => {
@@ -105,13 +77,13 @@ function ModelCombobox({
   function handleSearchKeyDown(event: ReactKeyboardEvent<HTMLInputElement>) {
     if (event.key === "ArrowDown") {
       event.preventDefault();
-      setActiveIndex((index) => Math.min(index + 1, filteredModels.length - 1));
+      if (visibleModels.length) setActiveIndex((index) => Math.min(index + 1, visibleModels.length - 1));
     } else if (event.key === "ArrowUp") {
       event.preventDefault();
-      setActiveIndex((index) => Math.max(index - 1, 0));
-    } else if (event.key === "Enter" && filteredModels[activeIndex]) {
+      if (visibleModels.length) setActiveIndex((index) => Math.max(index - 1, 0));
+    } else if (event.key === "Enter" && visibleModels[activeIndex]?.selectable) {
       event.preventDefault();
-      onChange(filteredModels[activeIndex].id);
+      onChange(visibleModels[activeIndex].id);
       setOpen(false);
       setQuery("");
     } else if (event.key === "Escape") {
@@ -123,10 +95,17 @@ function ModelCombobox({
     }
   }
 
+  function toggleDropdown() {
+    const shouldOpen = !open;
+    setOpen(shouldOpen);
+    setQuery("");
+    if (shouldOpen) onOpen();
+  }
+
   return <div className="llm-model-select" ref={rootRef}>
     <button id={id} className="llm-model-trigger" type="button"
       aria-label={`เลือก ${field} model`} aria-expanded={open} aria-controls={listId}
-      aria-haspopup="listbox" onClick={() => { setOpen((shown) => !shown); setQuery(""); }}>
+      aria-haspopup="listbox" onClick={toggleDropdown}>
       <span><strong>{selected?.name ?? value}</strong><small>{value}</small></span>
       <ChevronDown size={16} aria-hidden="true" />
     </button>
@@ -134,20 +113,24 @@ function ModelCombobox({
       <div className="llm-model-search"><Search size={15} aria-hidden="true" />
         <input ref={searchRef} type="search" value={query} placeholder="ค้นหาชื่อหรือ model ID"
           role="combobox" aria-autocomplete="list" aria-expanded="true" aria-haspopup="listbox"
-          aria-label="ค้นหาโมเดล" aria-controls={listId} aria-activedescendant={filteredModels[activeIndex] ? `${id}-option-${activeIndex}` : undefined}
+          aria-label="ค้นหาโมเดล" aria-controls={listId} aria-activedescendant={visibleModels[activeIndex] ? `${id}-option-${activeIndex}` : undefined}
           onChange={(event) => setQuery(event.target.value)} onKeyDown={handleSearchKeyDown} />
       </div>
       <div className="llm-model-options" role="listbox" id={listId} aria-label="รายการโมเดล" ref={optionsRef}>
-        {filteredModels.length ? filteredModels.map((model, index) => <div key={model.id}
-          id={`${id}-option-${index}`} role="option" aria-selected={value === model.id}
-          data-active={activeIndex === index} data-index={index} className="llm-model-option"
-          onMouseEnter={() => setActiveIndex(index)} onMouseDown={(event) => event.preventDefault()}
-          onClick={() => { onChange(model.id); setOpen(false); setQuery(""); }}>
-          <span><strong>{model.name}</strong><small>{model.id}</small></span>
-          {value === model.id && <Check size={15} aria-hidden="true" />}
-        </div>) : <p className="llm-model-no-results">ไม่พบโมเดลที่ตรงกับคำค้น</p>}
+        {status === "loading" ? <p className="llm-model-no-results">กำลังโหลด catalog ของ {provider === "gemini" ? "Google AI Studio" : "OpenRouter"}…</p>
+          : status === "error" ? <div className="llm-model-empty"><p className="llm-model-no-results">โหลดรายชื่อโมเดลไม่สำเร็จ</p><button type="button" className="llm-model-retry" onMouseDown={(event) => event.preventDefault()} onClick={onRetry}>ลองอีกครั้ง</button></div>
+            : status === "loaded" && compatibleModels.length === 0 ? <p className="llm-model-no-results">{emptyMessage}</p>
+              : visibleModels.length ? <>{visibleModels.map((model, index) => <div key={model.id}
+                id={`${id}-option-${index}`} role="option" aria-selected={value === model.id}
+                aria-disabled={!model.selectable} data-active={activeIndex === index} data-index={index} className="llm-model-option"
+                onMouseEnter={() => setActiveIndex(index)} onMouseDown={(event) => event.preventDefault()}
+                onClick={() => { if (!model.selectable) return; onChange(model.id); setOpen(false); setQuery(""); }}>
+                <span><strong>{model.name}</strong><small>{model.id}</small></span>
+                {value === model.id && <Check size={15} aria-hidden="true" />}
+              </div>)}{filteredModels.length > visibleModels.length && <p className="llm-model-more">พบ {filteredModels.length} รุ่น · พิมพ์ค้นหาเพื่อกรองรายการ</p>}</>
+                : <p className="llm-model-no-results">ไม่พบโมเดลที่ตรงกับคำค้น</p>}
       </div>
-      <p className="llm-model-count">{filteredModels.length} โมเดล · ใช้ ↑ ↓ และ Enter เพื่อเลือก</p>
+      <p className="llm-model-count">{status === "loaded" ? `${compatibleModels.length} รุ่นที่ใช้ได้` : status === "loading" ? "กำลังโหลดรายการ…" : status === "error" ? "โหลดไม่สำเร็จ" : emptyMessage} · ใช้ ↑ ↓ และ Enter เพื่อเลือก</p>
     </div>}
   </div>;
 }
@@ -192,6 +175,36 @@ export default function LlmKeysPage() {
   const [openRouterKey, setOpenRouterKey] = useState("");
   const [showGeminiKey, setShowGeminiKey] = useState(false);
   const [showOpenRouterKey, setShowOpenRouterKey] = useState(false);
+  const [modelCatalogs, setModelCatalogs] = useState<Record<Provider, { models: ModelOption[]; status: ModelCatalogStatus; error: string }>>({
+    gemini: { models: [], status: "idle", error: "" },
+    openrouter: { models: [], status: "idle", error: "" },
+  });
+  const modelCatalogCache = useRef<Record<Provider, ModelOption[] | null>>({ gemini: null, openrouter: null });
+  const modelCatalogRequests = useRef<Partial<Record<Provider, Promise<void>>>>({});
+
+  const loadModelCatalog = useCallback((provider: Provider, force = false): Promise<void> => {
+    if (!force && modelCatalogCache.current[provider] !== null) return Promise.resolve();
+    const inFlight = modelCatalogRequests.current[provider];
+    if (inFlight) return inFlight;
+    setModelCatalogs((current) => ({ ...current, [provider]: { ...current[provider], status: "loading", error: "" } }));
+    const request = (async () => {
+      try {
+        const result = await requestJson<{ models: ModelOption[] }>(`/api/llm/models?provider=${provider}`);
+        const models = Array.isArray(result.models)
+          ? result.models.filter((model) => typeof model.id === "string" && typeof model.name === "string" && typeof model.supportsVision === "boolean")
+          : [];
+        modelCatalogCache.current[provider] = models;
+        setModelCatalogs((current) => ({ ...current, [provider]: { models, status: "loaded", error: "" } }));
+      } catch (reason) {
+        const error = reason instanceof Error ? reason.message : "โหลด catalog ไม่สำเร็จ";
+        setModelCatalogs((current) => ({ ...current, [provider]: { ...current[provider], status: "error", error } }));
+      } finally {
+        delete modelCatalogRequests.current[provider];
+      }
+    })();
+    modelCatalogRequests.current[provider] = request;
+    return request;
+  }, []);
 
   const refresh = useCallback(async () => {
     setBusyAction("refresh");
@@ -205,15 +218,17 @@ export default function LlmKeysPage() {
     if (keyResult.status === "fulfilled") {
       setKeys(Array.isArray(keyResult.value.keys) ? keyResult.value.keys : []);
       setKeysLoaded(true);
+      if (keyResult.value.keys?.length) void loadModelCatalog("gemini", true);
     } else failures.push("รายการ Gemini keys");
     if (configResult.status === "fulfilled") {
       setConfig(configResult.value);
       setSavedConfig(configResult.value);
       setConfigLoaded(true);
+      if (configResult.value.openrouter_key_last4) void loadModelCatalog("openrouter", true);
     } else failures.push("การตั้งค่า provider และโมเดล");
     if (failures.length) setError(`โหลด${failures.join(" และ")}ไม่สำเร็จ กดรีเฟรชเพื่อลองอีกครั้ง`);
     setBusyAction("");
-  }, []);
+  }, [loadModelCatalog]);
 
   useEffect(() => { void refresh(); }, [refresh]);
 
@@ -222,7 +237,12 @@ export default function LlmKeysPage() {
     config.gemini_intent_model, config.gemini_vision_model, config.gemini_answer_model,
     config.openrouter_intent_model, config.openrouter_vision_model, config.openrouter_answer_model,
   ].every((model) => model.trim().length >= 2);
-  const canSaveConfig = !!config && providerChanged && hasModels && !(config.provider === "openrouter" && !config.openrouter_key_last4) && !busyAction;
+  const activeModels = config ? modelCatalogs[config.provider].models : [];
+  const activeModelsValid = !!config && modelFields.every((field) => {
+    const key = `${config.provider}_${field.key}_model` as keyof LlmConfig;
+    return activeModels.some((model) => model.id === config[key] && (field.key !== "vision" || model.supportsVision));
+  });
+  const canSaveConfig = !!config && providerChanged && hasModels && activeModelsValid && !(config.provider === "openrouter" && !config.openrouter_key_last4) && !busyAction;
 
   function updateModel(provider: Provider, field: typeof modelFields[number]["key"], value: string) {
     if (!config) return;
@@ -249,6 +269,7 @@ export default function LlmKeysPage() {
       const saved = await requestJson<LlmConfig>("/api/llm/openrouter-key", "POST", { key: openRouterKey });
       setConfig((current) => current ? { ...current, openrouter_key_last4: saved.openrouter_key_last4 } : saved);
       setSavedConfig((current) => current ? { ...current, openrouter_key_last4: saved.openrouter_key_last4 } : saved);
+      void loadModelCatalog("openrouter", true);
       setOpenRouterKey(""); setShowOpenRouterKey(false); setNotice("บันทึก OpenRouter key แล้ว ระบบจะแสดงเฉพาะ 4 ตัวท้าย");
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "บันทึก OpenRouter key ไม่สำเร็จ");
@@ -262,6 +283,7 @@ export default function LlmKeysPage() {
       await requestJson<{ id: number }>("/api/llm/keys", "POST", { label: geminiLabel, key: geminiKey });
       const result = await requestJson<{ keys: KeyRow[] }>("/api/llm/keys");
       setKeys(Array.isArray(result.keys) ? result.keys : []); setKeysLoaded(true);
+      if (result.keys?.length) void loadModelCatalog("gemini", true);
       setGeminiLabel(""); setGeminiKey(""); setShowGeminiKey(false); setNotice("เพิ่ม Gemini key แล้ว ระบบเก็บค่าแบบเข้ารหัส");
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "เพิ่ม Gemini key ไม่สำเร็จ");
@@ -273,7 +295,13 @@ export default function LlmKeysPage() {
     setBusyAction(`delete-${row.id}`); setError(""); setNotice("");
     try {
       await requestJson<{ id: number }>(`/api/llm/keys/${row.id}`, "DELETE");
-      setKeys((current) => current.filter((key) => key.id !== row.id));
+      const remainingKeys = keys.filter((key) => key.id !== row.id);
+      setKeys(remainingKeys);
+      if (remainingKeys.length) void loadModelCatalog("gemini", true);
+      else {
+        modelCatalogCache.current.gemini = [];
+        setModelCatalogs((current) => ({ ...current, gemini: { models: [], status: "loaded", error: "" } }));
+      }
       setNotice(`ลบ “${row.label}” แล้ว`);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "ลบ Gemini key ไม่สำเร็จ");
@@ -304,12 +332,20 @@ export default function LlmKeysPage() {
 
         <div className="llm-model-grid">
           {(["gemini", "openrouter"] as const).map((provider) => <fieldset className="llm-model-group" data-active={config.provider === provider} key={provider}>
-            <legend>{provider === "gemini" ? "โมเดล Gemini" : "โมเดล OpenRouter"}{config.provider === provider && <span>กำลังใช้งาน</span>}</legend>
+            <legend>{provider === "gemini" ? "โมเดล Gemini · Free tier" : "โมเดล OpenRouter"}{config.provider === provider && <span>กำลังใช้งาน</span>}</legend>
+            <p className="llm-model-source">{provider === "gemini" ? "Google AI Studio · รุ่น chat ที่ใช้ฟรีเท่านั้น" : "OpenRouter · รุ่น chat ที่รองรับกับระบบ"}</p>
             {modelFields.map((field) => {
               const id = `${provider}-${field.key}-model`;
               const configKey = `${provider}_${field.key}_model` as keyof LlmConfig;
+              const hasProviderKey = provider === "gemini" ? keys.length > 0 : !!config.openrouter_key_last4;
+              const emptyMessage = !hasProviderKey
+                ? `เพิ่ม ${provider === "gemini" ? "Gemini API key" : "OpenRouter key"} ก่อนโหลดรายชื่อรุ่น`
+                : provider === "gemini" ? "ไม่พบรุ่น chat ที่รองรับและอยู่ใน free tier" : "ไม่พบรุ่น chat ที่รองรับกับระบบ";
               return <label htmlFor={id} key={field.key}>{field.title}<small>{field.description}</small>
                 <ModelCombobox id={id} value={config[configKey] as string} provider={provider} field={field.key}
+                  models={modelCatalogs[provider].models} status={modelCatalogs[provider].status} emptyMessage={emptyMessage}
+                  onOpen={() => { if (hasProviderKey) void loadModelCatalog(provider); }}
+                  onRetry={() => { if (hasProviderKey) void loadModelCatalog(provider, true); }}
                   onChange={(value) => updateModel(provider, field.key, value)} />
               </label>;
             })}
@@ -317,6 +353,8 @@ export default function LlmKeysPage() {
         </div>
 
         {config.provider === "openrouter" && !config.openrouter_key_last4 && <p className="llm-note" role="status">เพิ่ม OpenRouter key ก่อนบันทึกการสลับ provider</p>}
+        {config.provider === "gemini" && modelCatalogs.gemini.status === "loaded" && !activeModelsValid && <p className="llm-note" role="status">เลือกโมเดลจาก Gemini Free tier ให้ครบทั้ง Intent, Vision และ Answer ก่อนบันทึก</p>}
+        {config.provider === "openrouter" && modelCatalogs.openrouter.status === "loaded" && !activeModelsValid && <p className="llm-note" role="status">เลือกโมเดล chat ที่มีใน catalog ให้ครบทั้ง Intent, Vision และ Answer ก่อนบันทึก</p>}
         <div className="llm-actions">
           <span className="llm-note">โมเดลและ provider มีผลกับคำขอใหม่</span>
           <div className="choice-row">
