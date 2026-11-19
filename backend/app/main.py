@@ -24,7 +24,7 @@ from .store import SupabaseStore
 from .chat_inputs import normalize_chat_input
 from .shopee_products import lookup_shopee_item
 from .admin_auth import ADMIN_SESSION_COOKIE, require_admin as require_admin_session
-from .vision import describe_media
+from .vision import describe_with_key_rotation
 
 
 app = FastAPI(
@@ -496,15 +496,11 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
         if attachment["status"] == "complete":
             descriptions.append(attachment["vision_description"])
             continue
-        stage = "key"
+        stage = "download"
         try:
-            key, _, _ = store.next_key()
-            if not key:
-                raise RuntimeError("Gemini key unavailable")
-            stage = "download"
             media = store.media_bytes(attachment["object_path"])
             stage = "vision"
-            result = describe_media(media, attachment["mime_type"], question, key)
+            result = describe_with_key_rotation(media, attachment["mime_type"], question, store.next_key)
             stage = "save"
             store.chat_action(guest, "update_vision", session_id,
                 {"id": attachment_id, "status": "complete", "model": result.model, "description": result.description})
