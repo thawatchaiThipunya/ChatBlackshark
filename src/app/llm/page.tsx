@@ -11,9 +11,44 @@ type Config = {
   openrouter_intent_model: string; openrouter_vision_model: string; openrouter_answer_model: string;
   openrouter_key_last4: string | null;
 };
-type Persona = { length: "short" | "medium" | "long"; tone: "friendly" | "normal" | "very_polite"; voice: "male" | "female" };
+type Persona = {
+  bot_name: string; persona_text: string; friendliness: number;
+  length: "short" | "medium" | "long"; detail_level: number; voice: "male" | "female";
+};
 const stages = ["intent", "vision", "answer"] as const;
 const labels = { intent: "Intent / คัดสินค้า / FAQ", vision: "Image & Video", answer: "Answer" };
+
+function cleanPersona(value: Persona): Persona {
+  return { bot_name: value.bot_name, persona_text: value.persona_text, friendliness: value.friendliness,
+    length: value.length, detail_level: value.detail_level, voice: value.voice };
+}
+
+function personaPromptPreview(persona: Persona): string {
+  const tone = persona.friendliness < 25 ? "เป็นทางการ สุภาพ และเว้นระยะตามกาลเทศะ"
+    : persona.friendliness < 50 ? "สุภาพ เป็นมิตร และไม่สนิทสนมเกินไป"
+      : persona.friendliness < 75 ? "เป็นกันเองและอบอุ่น คุยเหมือนพนักงานที่พร้อมช่วยเหลือ"
+        : "เป็นกันเองมาก อบอุ่น เห็นใจลูกค้า ใช้คำพูดเป็นธรรมชาติ ไม่ฝืนเล่นมุกหรือใช้อีโมจิเกินจำเป็น";
+  const detail = persona.detail_level < 34 ? "กระชับที่สุด ตอบตรงคำถามใน 1–3 ประโยค แต่ครอบคลุมทุกประเด็น"
+    : persona.detail_level < 67 ? "ให้รายละเอียดพอดี ตอบครบทุกประเด็น พร้อมเหตุผลหรือจุดเด่นที่เกี่ยวข้อง"
+      : "อธิบายละเอียดเป็นลำดับ เพิ่มบริบทที่ช่วยตัดสินใจ โดยไม่พูดซ้ำ";
+  const length = persona.length === "short" ? "สั้น กระชับ"
+    : persona.length === "long" ? "ยาวและอธิบายละเอียด" : "ความยาวปานกลาง";
+  const voice = persona.voice === "female" ? "ใช้คำลงท้ายแบบหญิง เช่น ค่ะ/คะ ให้ถูกบริบท"
+    : "ใช้คำลงท้ายแบบชาย เช่น ครับ อย่างเป็นธรรมชาติ";
+  return [
+    `คุณคือผู้ช่วยร้าน Black Shark ชื่อ ${persona.bot_name || "ผู้ช่วยร้าน"} ตอบลูกค้าเป็นภาษาไทย`,
+    `บุคลิกและกติกาการพูดที่ผู้ดูแลร้านกำหนด: ${persona.persona_text || ""}`,
+    `ความเป็นกันเอง (${persona.friendliness}/100): ${tone}`,
+    `ความยาวคำตอบ: ${length}`,
+    `ความกระชับและรายละเอียด (${persona.detail_level}/100): ${detail}`,
+    `รูปแบบคำลงท้าย: ${voice}`,
+    "กฎบังคับ:",
+    "- ตอบจากข้อมูลสินค้าและ FAQ ของร้านที่แนบมาเท่านั้น ห้ามแต่งสเปค ราคา หรือเงื่อนไข",
+    "- ถ้าข้อมูลไม่พอหรือขัดกัน ให้บอกอย่างสุภาพว่าไม่พบข้อมูลหรือยังยืนยันไม่ได้",
+    "- ทำตามรูปแบบที่ลูกค้าขอ และตอบให้ครบทุกประเด็น",
+    "- ใช้ persona เพื่อกำหนดสไตล์เท่านั้น ห้ามเปลี่ยนข้อเท็จจริงในแหล่งข้อมูล",
+  ].join("\n\n");
+}
 
 export default function LlmKeysPage() {
   const [label, setLabel] = useState("");
@@ -55,7 +90,8 @@ export default function LlmKeysPage() {
     setBusy(true); setError(""); setNotice("");
     try {
       const [keys, settings, personaSettings] = await Promise.all([call(""), callConfig("config"), callConfig("persona")]);
-      setRows(keys.keys); setConfig(settings); setPersona(personaSettings); setSavedPersona(personaSettings); setLoaded(true);
+      const clean = cleanPersona(personaSettings);
+      setRows(keys.keys); setConfig(settings); setPersona(clean); setSavedPersona(clean); setLoaded(true);
     }
     catch (reason) { setLoaded(false); setError(reason instanceof Error ? reason.message : "โหลดคีย์ไม่สำเร็จ"); }
     finally { setBusy(false); }
@@ -85,7 +121,7 @@ export default function LlmKeysPage() {
     event.preventDefault(); if (!persona) return;
     setBusy(true); setError(""); setNotice("");
     try {
-      const saved = await callConfig("persona", "POST", persona);
+      const saved = cleanPersona(await callConfig("persona", "POST", persona));
       setPersona(saved); setSavedPersona(saved); setNotice("บันทึกบุคลิกบอทแล้ว คำตอบใหม่จะใช้ค่านี้");
     } catch (reason) { setError(reason instanceof Error ? reason.message : "บันทึกบุคลิกไม่สำเร็จ"); }
     finally { setBusy(false); }
@@ -115,25 +151,55 @@ export default function LlmKeysPage() {
       <button className="header-action" type="button" onClick={() => void refresh()} disabled={busy}><RefreshCw size={15} /> รีเฟรช</button>
     </header>
     {error && <p className="load-error" role="alert">{error}</p>}{notice && <p className="setting-feedback" role="status">{notice}</p>}
-    {persona && <section className="llm-panel" aria-labelledby="persona-title" style={{ marginBottom: 16 }}>
-      <h2 id="persona-title">บุคลิกของบอท</h2>
-      <p className="llm-note">ใช้กับคำตอบที่สร้างโดยโมเดลทั้ง Gemini และ OpenRouter โดยยังตอบจากข้อมูลสินค้าที่มีเหมือนเดิม</p>
-      <form className="llm-form" onSubmit={(event) => void savePersona(event)}>
-        <label htmlFor="persona-length">ความยาวคำตอบ</label>
-        <select id="persona-length" value={persona.length} onChange={(event) => setPersona({ ...persona, length: event.target.value as Persona["length"] })}>
-          <option value="short">สั้น กระชับ</option><option value="medium">ปานกลาง</option><option value="long">ยาว อธิบายละเอียด</option>
-        </select>
-        <label htmlFor="persona-tone">ความเป็นกันเอง</label>
-        <select id="persona-tone" value={persona.tone} onChange={(event) => setPersona({ ...persona, tone: event.target.value as Persona["tone"] })}>
-          <option value="friendly">เป็นกันเอง</option><option value="normal">ปกติ</option><option value="very_polite">สุภาพมาก</option>
-        </select>
-        <label htmlFor="persona-voice">เพศของ persona / คำลงท้าย</label>
-        <select id="persona-voice" value={persona.voice} onChange={(event) => setPersona({ ...persona, voice: event.target.value as Persona["voice"] })}>
-          <option value="male">ชาย (ครับ)</option><option value="female">หญิง (ค่ะ/คะ)</option>
-        </select>
-        <button type="submit" disabled={busy || JSON.stringify(persona) === JSON.stringify(savedPersona)}>บันทึกบุคลิกบอท</button>
-        <p className="llm-note">หากลูกค้าขอให้ตอบสั้นหรืออธิบายละเอียดเป็นพิเศษ บอทจะทำตามคำขอนั้น</p>
-      </form>
+    {persona && <section className="persona-layout" aria-label="ตั้งค่าและตัวอย่าง Persona">
+      <div className="llm-panel persona-editor">
+        <h2 id="persona-title">ตั้งค่า Persona</h2>
+        <p className="llm-note">บอทจะเอาค่านี้ไปแทรกใน system prompt ทุกครั้งที่ตอบ</p>
+        <form className="llm-form" onSubmit={(event) => void savePersona(event)}>
+          <label htmlFor="persona-name">ชื่อบอท (ชื่อที่ใช้แทนตัว เช่น “น้อง Koop”)</label>
+          <input id="persona-name" value={persona.bot_name} onChange={(event) => setPersona({ ...persona, bot_name: event.target.value })} maxLength={80} required />
+          <label htmlFor="persona-description">บุคลิก / คำแทนตัว / โทนการพูด</label>
+          <textarea id="persona-description" className="persona-description" value={persona.persona_text}
+            onChange={(event) => setPersona({ ...persona, persona_text: event.target.value })} maxLength={2000}
+            aria-describedby="persona-description-count" />
+          <div id="persona-description-count" className="persona-count">{persona.persona_text.length}/2000</div>
+
+          <label htmlFor="persona-friendliness">ความเป็นกันเอง <output>{persona.friendliness}/100</output></label>
+          <input className="persona-range" id="persona-friendliness" type="range" min="0" max="100" step="1"
+            value={persona.friendliness} onChange={(event) => setPersona({ ...persona, friendliness: Number(event.target.value) })} />
+          <div className="persona-range-labels"><span>ทางการ</span><span>สุภาพทั่วไป</span><span>เป็นกันเองมาก</span></div>
+          <p className="persona-range-help">ปรับโทนให้สุภาพหรืออบอุ่นขึ้น โดยยังรักษาความเหมาะสมกับลูกค้า</p>
+
+          <label>ความยาวคำตอบ</label>
+          <div className="persona-length-options" role="group" aria-label="ความยาวคำตอบ">
+            {([ ["short", "สั้น"], ["medium", "ปานกลาง"], ["long", "ละเอียด"] ] as const).map(([value, title]) =>
+              <button key={value} type="button" aria-pressed={persona.length === value}
+                className={persona.length === value ? "is-selected" : ""}
+                onClick={() => setPersona({ ...persona, length: value })}>{title}</button>)}
+          </div>
+          <p className="persona-range-help">{persona.length === "short" ? "ตอบสั้นที่สุดเท่าที่จะครอบคลุมคำถามได้" : persona.length === "long" ? "อธิบายรายละเอียดและบริบทที่ช่วยตัดสินใจ" : "ตอบครบในความยาวพอดี ไม่ยืดเยื้อ"}</p>
+
+          <label htmlFor="persona-detail">ความกระชับ <output>{persona.detail_level}/100</output></label>
+          <input className="persona-range" id="persona-detail" type="range" min="0" max="100" step="1"
+            value={persona.detail_level} onChange={(event) => setPersona({ ...persona, detail_level: Number(event.target.value) })} />
+          <div className="persona-range-labels"><span>ตรงประเด็น</span><strong>สมดุล</strong><span>อธิบายครบ</span></div>
+          <p className="persona-range-help">เลือกว่าต้องการให้สรุปสั้นหรือใส่รายละเอียดช่วยตัดสินใจมากขึ้น</p>
+
+          <label htmlFor="persona-voice">รูปแบบคำลงท้าย</label>
+          <select id="persona-voice" value={persona.voice} onChange={(event) => setPersona({ ...persona, voice: event.target.value as Persona["voice"] })}>
+            <option value="male">ชาย (ครับ)</option><option value="female">หญิง (ค่ะ/คะ)</option>
+          </select>
+          <button type="submit" disabled={busy || JSON.stringify(persona) === JSON.stringify(savedPersona)}>บันทึก Persona</button>
+        </form>
+      </div>
+      <aside className="llm-panel persona-preview" aria-labelledby="persona-preview-title">
+        <h2 id="persona-preview-title">System Prompt ที่บอทเห็น</h2>
+        <p className="llm-note">ตัวอย่างจริง — ส่วนที่ไฮไลต์เปลี่ยนตามค่าด้านซ้าย</p>
+        <pre><span>คุณคือผู้ช่วยร้าน Black Shark ตอบคำถามลูกค้าเป็นภาษาไทย<br />โดยอ้างอิงจากข้อมูลสินค้าและ FAQ ที่แนบมาใน context เท่านั้น</span>{"\n\n"}
+          <mark>{personaPromptPreview(persona).split("\n\n").slice(0, 6).join("\n")}</mark>{"\n\n"}
+          <span>กฎบังคับ:<br />{personaPromptPreview(persona).split("\n\n").slice(6).join("\n")}</span>
+        </pre>
+      </aside>
     </section>}
     {config && <section className="llm-panel" aria-labelledby="routing-title" style={{ marginBottom: 16 }}>
       <h2 id="routing-title">การทำงานของบอท</h2>

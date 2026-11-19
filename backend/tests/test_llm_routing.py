@@ -27,6 +27,30 @@ class FakeStore:
 
 
 class RoutingTests(unittest.TestCase):
+    def test_gemini_attempts_each_distinct_key_until_last_succeeds(self):
+        store = FakeStore("gemini")
+        store.key_cycle = lambda: [(f"key-{i}", i) for i in range(10)]
+        seen = []
+        def generate(key, prompt):
+            seen.append(key)
+            if key != "key-9":
+                raise RuntimeError("provider failed")
+            return "ตอบได้"
+
+        result, reason = GeminiAnswerer(store, generate)._call("prompt", "answer")
+
+        self.assertEqual((result, reason), ("ตอบได้", "llm_grounded"))
+        self.assertEqual(seen, [f"key-{i}" for i in range(10)])
+
+    @patch("backend.app.engine_v2.openrouter_complete")
+    def test_openrouter_error_stops_after_one_call(self, complete):
+        complete.side_effect = RuntimeError("provider failed")
+
+        result, reason = GeminiAnswerer(FakeStore())._call("prompt", "answer")
+
+        self.assertEqual((result, reason), (None, "llm_unavailable"))
+        self.assertEqual(complete.call_count, 1)
+
     @patch("backend.app.engine_v2.openrouter_complete", return_value='{"intent":"smalltalk","needs":[],"product_names":[]}')
     def test_openrouter_intent_uses_own_model_and_one_key(self, complete):
         store = FakeStore()

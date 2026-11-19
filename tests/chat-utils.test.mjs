@@ -51,6 +51,15 @@ test("presents a mock handoff without implying a staff message was sent", () => 
   );
 });
 
+test("shows provider exhaustion as a temporary error, not a staff handoff", () => {
+  const presented = chatUtils.presentChatReply?.({
+    status: "temporarily_unavailable", reason: "llm_rate_limited",
+    answer: "ลองอีกครั้ง", handoff_mock: false, handoff_sent: false,
+  });
+  assert.equal(presented?.kind, "error");
+  assert.equal(presented?.handoffSent, false);
+});
+
 test("truncates overlong history turns so the session stays valid", () => {
   const longText = "ยาว".repeat(2000);
   const request = chatUtils.buildSessionChatRequest?.("session-1", "คำถาม", [

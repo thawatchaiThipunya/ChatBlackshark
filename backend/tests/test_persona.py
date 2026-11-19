@@ -21,7 +21,8 @@ class PersonaPromptTests(unittest.TestCase):
     def test_answer_uses_saved_persona_without_changing_facts(self):
         prompts = []
         answerer = GeminiAnswerer(PersonaStore({
-            "length": "short", "tone": "friendly", "voice": "female",
+            "bot_name": "น้อง Koop", "persona_text": "เห็นใจและให้กำลังใจลูกค้าเสมอ",
+            "friendliness": 100, "length": "short", "detail_level": 20, "voice": "female",
         }), lambda key, prompt: prompts.append(prompt) or "GS3 ใช้ได้ 21 วันค่ะ")
 
         answer, reason = answerer.answer("แบตกี่วัน", "GS3 แบตสูงสุด 21 วัน", "GS3")
@@ -30,14 +31,18 @@ class PersonaPromptTests(unittest.TestCase):
         self.assertEqual(answer, "GS3 ใช้ได้ 21 วันค่ะ")
         self.assertIn("PERSONA:", prompts[0])
         self.assertIn("ตอบกระชับ", prompts[0])
-        self.assertIn("เป็นกันเอง", prompts[0])
+        self.assertIn("เป็นกันเองมาก", prompts[0])
+        self.assertIn("น้อง Koop", prompts[0])
+        self.assertIn("เห็นใจและให้กำลังใจลูกค้าเสมอ", prompts[0])
+        self.assertIn("ระดับรายละเอียด 20/100", prompts[0])
         self.assertIn("ค่ะ/คะ", prompts[0])
         self.assertIn("SOURCE:\nGS3 แบตสูงสุด 21 วัน", prompts[0])
 
     def test_intent_prompt_does_not_include_persona(self):
         prompts = []
         answerer = GeminiAnswerer(PersonaStore({
-            "length": "long", "tone": "very_polite", "voice": "male",
+            "bot_name": "น้อง Koop", "persona_text": "สุภาพ",
+            "friendliness": 50, "length": "long", "detail_level": 80, "voice": "male",
         }), lambda key, prompt: prompts.append(prompt) or '{"intent":"smalltalk","needs":[],"product_names":[]}')
 
         answerer.extract_intent("สวัสดี", [], [])

@@ -117,6 +117,13 @@ class SupabaseStore:
         key = Fernet(self.encryption_key.encode()).decrypt(selected["ciphertext"].encode()).decode()
         return key, selected["id"], selected["count"]
 
+    def key_cycle(self) -> list[tuple[str, int]]:
+        if not self.token:
+            raise RuntimeError("LLM key store is not configured")
+        rows = self._request("rpc/bot_llm_key_cycle", {"p_token": self.token})
+        cipher = Fernet(self.encryption_key.encode())
+        return [(cipher.decrypt(row["ciphertext"].encode()).decode(), row["id"]) for row in rows]
+
     def llm_config_action(self, action: str, session_token: str | None = None,
                           payload: dict[str, Any] | None = None) -> dict[str, Any]:
         if not self.token:
