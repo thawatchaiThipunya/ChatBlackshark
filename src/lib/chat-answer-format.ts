@@ -3,7 +3,7 @@ export type ChatAnswerBlock =
   | { type: "table"; headers: string[]; rows: string[][] };
 
 function cells(line: string): string[] | null {
-  const trimmed = line.trim();
+  const trimmed = line.trim().replace(/\\$/, "").replace(/\\\|/g, "|").trim();
   if (!trimmed.startsWith("|") || !trimmed.endsWith("|")) return null;
   return trimmed.slice(1, -1).split("|").map((cell) =>
     cell.replace(/\s*<br\s*\/?>\s*/gi, ", ").trim());

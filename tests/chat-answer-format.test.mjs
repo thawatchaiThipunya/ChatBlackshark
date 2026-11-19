@@ -28,3 +28,18 @@ test('shows line breaks inside model cells as readable text', () => {
     { type: 'table', headers: ['เรื่อง', 'GS3', 'Ultra'], rows: [['แอป', 'iOS: Wearable, Android: Sport', 'Track']] },
   ]);
 });
+
+test('renders comparison table when provider escapes pipes and line endings', () => {
+  const answer = [
+    '\\| คุณสมบัติ | Black Shark GS3 | Black Shark GS3 Ultra |\\',
+    '\\| :--- | :--- | :--- |\\',
+    '\\| ระบบ GPS | 5 เครือข่าย | Dual-Band 6 เครือข่าย |\\',
+    '\\| แบตเตอรี่ใช้งานทั่วไป | สูงสุด 21 วัน | สูงสุด 18 วัน |\\',
+  ].join('\n');
+  assert.deepEqual(parseChatAnswer(answer), [{
+    type: 'table',
+    headers: ['คุณสมบัติ', 'Black Shark GS3', 'Black Shark GS3 Ultra'],
+    rows: [['ระบบ GPS', '5 เครือข่าย', 'Dual-Band 6 เครือข่าย'],
+      ['แบตเตอรี่ใช้งานทั่วไป', 'สูงสุด 21 วัน', 'สูงสุด 18 วัน']],
+  }]);
+});
