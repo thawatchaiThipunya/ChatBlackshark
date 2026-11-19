@@ -412,6 +412,12 @@ class OpenRouterKeyRequest(BaseModel):
     key: str = Field(min_length=10, max_length=500)
 
 
+class PersonaRequest(BaseModel):
+    length: Literal["short", "medium", "long"]
+    tone: Literal["friendly", "normal", "very_polite"]
+    voice: Literal["male", "female"]
+
+
 @app.get("/api/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
@@ -630,6 +636,22 @@ def get_llm_config(admin: dict = Depends(current_admin)) -> dict:
         return store.llm_config_action("get_config", admin["token"])
     except Exception:
         raise HTTPException(status_code=503, detail="llm_config_unavailable")
+
+
+@app.get("/api/llm/persona")
+def get_llm_persona(admin: dict = Depends(current_admin)) -> dict:
+    try:
+        return store.persona_action("get_config", admin["token"])
+    except Exception:
+        raise HTTPException(status_code=503, detail="persona_unavailable")
+
+
+@app.post("/api/llm/persona")
+def save_llm_persona(request: PersonaRequest, admin: dict = Depends(current_admin)) -> dict:
+    try:
+        return store.save_persona(admin["token"], request.model_dump())
+    except Exception:
+        raise HTTPException(status_code=503, detail="persona_save_failed")
 
 
 @app.post("/api/llm/config")

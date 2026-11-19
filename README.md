@@ -44,6 +44,8 @@
 
 Apply `backend/migrations/005_llm_provider_routing.sql` before deploying this version. `/llm` now selects Gemini or OpenRouter and saves separate Intent, Vision, and Answer model IDs for each provider in `bot_private.llm_runtime_config`. Product selection and FAQ selection use the Intent model. OpenRouter uses one encrypted API key stored through the same admin page; Gemini keeps its rotating keys. Switching provider restores that provider's saved models. The OpenRouter Vision model must support the uploaded image or video modality. OpenRouter media is limited to 12 MB per file because it is sent inline to the provider.
 
+Apply `backend/migrations/006_bot_persona.sql` for the shared bot persona controls on `/llm`. Admins can choose short, medium, or long answers; friendly, normal, or very polite tone; and male or female Thai sentence endings. The settings live in the private `bot_private.bot_persona` table and affect the Answer step for both providers. They do not alter intent classification, vision observations, or the catalog evidence. A customer's explicit request for a different amount of detail takes priority.
+
 One chat message accepts up to 10 media files. Vision processes pending files in batches of five, saves a separate description per attachment, then Intent and Answer run once for the message. Thus a single message with 10 images normally makes two Vision calls, one Intent call, and one Answer call; product search or FAQ matching can add another Intent-stage call. Failed provider calls may retry with another Gemini key.
 
 หน้าเว็บเรียก `/api/*` บนโดเมนตัวเอง แล้ว Next.js ส่งต่อไปยัง Python API ฝั่ง server จึงไม่ต้องเปิด CORS ให้โดเมนสาธารณะ และไม่เปิดเผย Gemini key ใน browser
