@@ -14,7 +14,8 @@ for index in range(start, min(start + count, len(items))):
     item = items[index]
     if kind == "products":
         rows.append({"source_index": index, "name": item["name"], "description": item["description"],
-                     "source": item["source"], "category": category_from_description(item["description"])})
+                     "source": item["source"],
+                     "category": item.get("category") or category_from_description(item["description"])})
     else:
         rows.append({"source_index": index, "model_name": item["model"], "question": item["question"], "answer": item["answer"], "source": item["source"]})
 payload = json.dumps(rows, ensure_ascii=False, separators=(",", ":")).replace("'", "''")
