@@ -12,6 +12,7 @@ from typing import Callable
 from google import genai
 from google.genai import types
 from .openrouter import complete as openrouter_complete, media_part
+from .ai_usage import call_gemini, set_usage_attempt, reset_usage_attempt
 
 
 logger = logging.getLogger("blackshark.vision")
@@ -46,12 +47,14 @@ def describe_media(data: bytes, mime_type: str, question: str, key: str) -> Visi
                 else:
                     raise RuntimeError("Gemini video processing timed out")
                 contents = [uploaded, prompt]
-                response = client.models.generate_content(model=model, contents=contents,
-                    config=types.GenerateContentConfig(temperature=0, max_output_tokens=500))
+                response = call_gemini(client, model=model, contents=contents,
+                    config=types.GenerateContentConfig(temperature=0, max_output_tokens=500),
+                    source="chat.vision", units={"media_processed": 1})
         else:
-            response = client.models.generate_content(model=model,
+            response = call_gemini(client, model=model,
                 contents=[types.Part.from_bytes(data=data, mime_type=mime_type), prompt],
-                config=types.GenerateContentConfig(temperature=0, max_output_tokens=500))
+                config=types.GenerateContentConfig(temperature=0, max_output_tokens=500),
+                source="chat.vision", units={"media_processed": 1})
     description = (response.text or "").strip()
     if not description:
         raise RuntimeError("Gemini returned no media description")
@@ -72,17 +75,22 @@ def describe_with_key_rotation(
     if not candidates:
         raise RuntimeError("Gemini key unavailable")
     attempted: set[int | None] = set()
+    attempt = 0
     last_error: Exception | None = None
     for key, key_id in candidates:
         if not key or key_id in attempted:
             continue
         attempted.add(key_id)
+        attempt += 1
+        usage_token = set_usage_attempt(attempt)
         try:
             return describe(data, mime_type, question, key)
         except Exception as exc:
             logger.warning("Gemini vision failed key_id=%s type=%s code=%s", key_id,
                            type(exc).__name__, getattr(exc, "code", None))
             last_error = exc
+        finally:
+            reset_usage_attempt(usage_token)
     if last_error:
         raise last_error
     raise RuntimeError("Gemini vision key rotation failed")
@@ -123,9 +131,10 @@ def describe_media_batch(media: list[tuple[bytes, str]], question: str, key: str
             else:
                 contents.append(types.Part.from_bytes(data=data, mime_type=mime_type))
         contents.append(prompt)
-        response = client.models.generate_content(model=model, contents=contents,
+        response = call_gemini(client, model=model, contents=contents,
             config=types.GenerateContentConfig(temperature=0, max_output_tokens=1600,
-                response_mime_type="application/json"))
+                response_mime_type="application/json"),
+            source="chat.vision_batch", units={"media_processed": len(media)})
     try:
         descriptions = json.loads(response.text or "")["descriptions"]
     except (ValueError, KeyError, TypeError) as exc:
@@ -149,7 +158,8 @@ def describe_openrouter_batch(media: list[tuple[bytes, str]], question: str,
         f"คำถามลูกค้า: {question[:1000]}"
     )
     content = [{"type": "text", "text": prompt}] + [media_part(data, mime) for data, mime in media]
-    raw = openrouter_complete(key, model, content, max_tokens=1800)
+    raw = openrouter_complete(key, model, content, max_tokens=1800,
+                              source="chat.vision_batch", units={"media_processed": len(media)})
     try:
         parsed = json.loads(raw)
     except ValueError:
@@ -178,17 +188,22 @@ def describe_batch_with_key_rotation(
     if not candidates:
         raise RuntimeError("Gemini key unavailable")
     attempted: set[int | None] = set()
+    attempt = 0
     last_error: Exception | None = None
     for key, key_id in candidates:
         if not key or key_id in attempted:
             continue
         attempted.add(key_id)
+        attempt += 1
+        usage_token = set_usage_attempt(attempt)
         try:
             return describe(media, question, key)
         except Exception as exc:
             logger.warning("Gemini vision batch failed key_id=%s type=%s code=%s", key_id,
                            type(exc).__name__, getattr(exc, "code", None))
             last_error = exc
+        finally:
+            reset_usage_attempt(usage_token)
     if last_error:
         raise last_error
     raise RuntimeError("Gemini vision key rotation failed")

@@ -9,6 +9,7 @@ from typing import Any, Callable
 
 from .store import SupabaseStore
 from .openrouter import complete as openrouter_complete
+from .ai_usage import call_gemini
 
 logger = logging.getLogger(__name__)
 INTENTS = {"smalltalk", "product_search", "product_info", "compatibility", "comparison", "troubleshooting", "image_understanding", "store_support", "out_of_scope"}
@@ -98,16 +99,20 @@ class GeminiAnswerer:
         self.store, self.generate = store, generate
 
     @staticmethod
-    def _generate(key: str, prompt: str, model: str) -> str:
+    def _generate(key: str, prompt: str, model: str, source: str = "chat.intent",
+                  attempt: int = 1) -> Any:
         from google import genai
         from google.genai import types
         with genai.Client(api_key=key) as client:
-            response = client.models.generate_content(
+            return call_gemini(
+                client,
                 model=model, contents=prompt,
-                config=types.GenerateContentConfig(temperature=0, max_output_tokens=1500))
-            return (response.text or "").strip()
+                config=types.GenerateContentConfig(temperature=0, max_output_tokens=1500),
+                source=source, attempt=attempt,
+            )
 
-    def _call(self, prompt: str, stage: str = "intent") -> tuple[str | None, str]:
+    def _call(self, prompt: str, stage: str = "intent", source: str | None = None) -> tuple[str | None, str]:
+        source = source or f"chat.{stage}"
         try:
             config = self.store.runtime_config() if hasattr(self.store, "runtime_config") else {}
         except Exception:
@@ -118,7 +123,8 @@ class GeminiAnswerer:
                 return None, "llm_key_missing"
             try:
                 result = openrouter_complete(key, config[f"openrouter_{stage}_model"], prompt,
-                                             max_tokens=1800 if stage == "answer" else 1200)
+                                             max_tokens=1800 if stage == "answer" else 1200,
+                                             source=source)
                 return result, "llm_grounded"
             except Exception as exc:
                 logger.warning("OpenRouter call failed: %s code=%s", type(exc).__name__,
@@ -137,13 +143,18 @@ class GeminiAnswerer:
         if not candidates:
             return None, "llm_key_missing"
         attempted: set[int] = set()
+        attempt = 0
         rate_limited = False
         for key, key_id in candidates:
             if not key or key_id is None or key_id in attempted:
                 continue
             attempted.add(key_id)
+            attempt += 1
             try:
-                result = (self.generate(key, prompt) if self.generate else self._generate(key, prompt, model)).strip()
+                response = (self.generate(key, prompt) if self.generate else
+                            self._generate(key, prompt, model, source=source, attempt=attempt))
+                text = response if isinstance(response, str) else getattr(response, "text", None)
+                result = text.strip() if isinstance(text, str) else ""
                 if result:
                     return result, "llm_grounded"
             except Exception as exc:
@@ -180,7 +191,7 @@ class GeminiAnswerer:
             f"HISTORY: {json.dumps(_safe_history(history), ensure_ascii=False)}\n"
             f"CUSTOMER: {json.dumps(question, ensure_ascii=False)}"
         )
-        raw, reason = self._call(prompt)
+        raw, reason = self._call(prompt, source="chat.intent")
         if raw is None:
             return None, reason
         parsed = _json_object(raw)
@@ -213,7 +224,7 @@ class GeminiAnswerer:
             f"CUSTOMER: {json.dumps(question, ensure_ascii=False)}\n"
             f"CATALOG_FACTS: {json.dumps(catalog, ensure_ascii=False)}"
         )
-        raw, reason = self._call(prompt)
+        raw, reason = self._call(prompt, source="chat.product_selection")
         if raw is None:
             return None, reason
         parsed = _json_object(raw)
@@ -240,7 +251,7 @@ class GeminiAnswerer:
             f"CUSTOMER: {json.dumps(question, ensure_ascii=False)}\n"
             f"FAQS: {json.dumps(options, ensure_ascii=False)}"
         )
-        raw, reason = self._call(prompt)
+        raw, reason = self._call(prompt, source="chat.faq_selection")
         if raw is None:
             return None, reason
         parsed = _json_object(raw or "")
@@ -289,7 +300,8 @@ class GeminiAnswerer:
             f"HISTORY: {json.dumps(_safe_history(history), ensure_ascii=False)}\n"
             f"CUSTOMER: {json.dumps(question, ensure_ascii=False)}\nSOURCE:\n{evidence}"
         )
-        raw, reason = self._call(prompt, "answer")
+        answer_source = "chat.smalltalk_answer" if intent == "smalltalk" else "chat.answer"
+        raw, reason = self._call(prompt, "answer", source=answer_source)
         if raw is None:
             return None, reason
         if not supported_wording(raw, evidence, question, intent=intent):
