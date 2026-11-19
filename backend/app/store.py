@@ -22,6 +22,7 @@ class SupabaseStore:
         self.encryption_key = encryption_key or os.getenv("LLM_KEY_ENCRYPTION_KEY", "")
         self._cache: tuple[float, dict[str, Any]] | None = None
         self._runtime_cache: tuple[float, dict[str, Any]] | None = None
+        self._persona_cache: tuple[float, dict[str, Any]] | None = None
 
     def _request(self, path: str, payload: dict[str, Any] | None = None) -> Any:
         if not self.url or not self.publishable_key:
@@ -149,6 +150,27 @@ class SupabaseStore:
             {"ciphertext": ciphertext, "last4": clean[-4:]})
         self._runtime_cache = None
         return result
+
+    def persona_action(self, action: str, session_token: str | None = None,
+                       payload: dict[str, Any] | None = None) -> dict[str, Any]:
+        if not self.token:
+            raise RuntimeError("Persona store is not configured")
+        return self._request("rpc/bot_persona_action", {
+            "p_app_token": self.token, "p_session_token": session_token,
+            "p_action": action, "p_payload": payload or {},
+        })
+
+    def persona(self) -> dict[str, Any]:
+        if self._persona_cache and time.monotonic() - self._persona_cache[0] < 15:
+            return self._persona_cache[1]
+        config = self.persona_action("get_runtime")
+        self._persona_cache = (time.monotonic(), config)
+        return config
+
+    def save_persona(self, session_token: str, payload: dict[str, str]) -> dict[str, Any]:
+        config = self.persona_action("save", session_token, payload)
+        self._persona_cache = None
+        return config
 
     def escalate(self, session_id: str, model_name: str, question: str,
                  transcript: list[dict[str, Any]]) -> dict[str, Any] | None:

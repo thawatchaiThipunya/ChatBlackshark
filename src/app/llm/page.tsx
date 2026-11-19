@@ -11,6 +11,7 @@ type Config = {
   openrouter_intent_model: string; openrouter_vision_model: string; openrouter_answer_model: string;
   openrouter_key_last4: string | null;
 };
+type Persona = { length: "short" | "medium" | "long"; tone: "friendly" | "normal" | "very_polite"; voice: "male" | "female" };
 const stages = ["intent", "vision", "answer"] as const;
 const labels = { intent: "Intent / คัดสินค้า / FAQ", vision: "Image & Video", answer: "Answer" };
 
@@ -24,6 +25,8 @@ export default function LlmKeysPage() {
   const [notice, setNotice] = useState("");
   const [config, setConfig] = useState<Config | null>(null);
   const [openrouterKey, setOpenrouterKey] = useState("");
+  const [persona, setPersona] = useState<Persona | null>(null);
+  const [savedPersona, setSavedPersona] = useState<Persona | null>(null);
 
   const call = useCallback(async (path: string, method = "GET", body?: object) => {
     const response = await fetch(`/api/llm/keys${path}`, {
@@ -44,15 +47,15 @@ export default function LlmKeysPage() {
       headers: body ? { "Content-Type": "application/json" } : undefined,
       body: body ? JSON.stringify(body) : undefined });
     if (response.status === 401) { window.location.assign("/login?error=signed_out"); throw new Error("เซสชันหมดอายุ"); }
-    if (!response.ok) throw new Error("บันทึกการตั้งค่าโมเดลไม่สำเร็จ");
+    if (!response.ok) throw new Error("โหลดหรือบันทึกการตั้งค่าบอทไม่สำเร็จ");
     return response.json();
   }, []);
 
   const refresh = useCallback(async () => {
     setBusy(true); setError(""); setNotice("");
     try {
-      const [keys, settings] = await Promise.all([call(""), callConfig("config")]);
-      setRows(keys.keys); setConfig(settings); setLoaded(true);
+      const [keys, settings, personaSettings] = await Promise.all([call(""), callConfig("config"), callConfig("persona")]);
+      setRows(keys.keys); setConfig(settings); setPersona(personaSettings); setSavedPersona(personaSettings); setLoaded(true);
     }
     catch (reason) { setLoaded(false); setError(reason instanceof Error ? reason.message : "โหลดคีย์ไม่สำเร็จ"); }
     finally { setBusy(false); }
@@ -75,6 +78,16 @@ export default function LlmKeysPage() {
       const saved = await callConfig("openrouter-key", "POST", { key: openrouterKey });
       setConfig(saved); setOpenrouterKey(""); setNotice("บันทึก OpenRouter key แล้ว");
     } catch (reason) { setError(reason instanceof Error ? reason.message : "บันทึกคีย์ไม่สำเร็จ"); }
+    finally { setBusy(false); }
+  }
+
+  async function savePersona(event: FormEvent) {
+    event.preventDefault(); if (!persona) return;
+    setBusy(true); setError(""); setNotice("");
+    try {
+      const saved = await callConfig("persona", "POST", persona);
+      setPersona(saved); setSavedPersona(saved); setNotice("บันทึกบุคลิกบอทแล้ว คำตอบใหม่จะใช้ค่านี้");
+    } catch (reason) { setError(reason instanceof Error ? reason.message : "บันทึกบุคลิกไม่สำเร็จ"); }
     finally { setBusy(false); }
   }
 
@@ -102,6 +115,26 @@ export default function LlmKeysPage() {
       <button className="header-action" type="button" onClick={() => void refresh()} disabled={busy}><RefreshCw size={15} /> รีเฟรช</button>
     </header>
     {error && <p className="load-error" role="alert">{error}</p>}{notice && <p className="setting-feedback" role="status">{notice}</p>}
+    {persona && <section className="llm-panel" aria-labelledby="persona-title" style={{ marginBottom: 16 }}>
+      <h2 id="persona-title">บุคลิกของบอท</h2>
+      <p className="llm-note">ใช้กับคำตอบที่สร้างโดยโมเดลทั้ง Gemini และ OpenRouter โดยยังตอบจากข้อมูลสินค้าที่มีเหมือนเดิม</p>
+      <form className="llm-form" onSubmit={(event) => void savePersona(event)}>
+        <label htmlFor="persona-length">ความยาวคำตอบ</label>
+        <select id="persona-length" value={persona.length} onChange={(event) => setPersona({ ...persona, length: event.target.value as Persona["length"] })}>
+          <option value="short">สั้น กระชับ</option><option value="medium">ปานกลาง</option><option value="long">ยาว อธิบายละเอียด</option>
+        </select>
+        <label htmlFor="persona-tone">ความเป็นกันเอง</label>
+        <select id="persona-tone" value={persona.tone} onChange={(event) => setPersona({ ...persona, tone: event.target.value as Persona["tone"] })}>
+          <option value="friendly">เป็นกันเอง</option><option value="normal">ปกติ</option><option value="very_polite">สุภาพมาก</option>
+        </select>
+        <label htmlFor="persona-voice">เพศของ persona / คำลงท้าย</label>
+        <select id="persona-voice" value={persona.voice} onChange={(event) => setPersona({ ...persona, voice: event.target.value as Persona["voice"] })}>
+          <option value="male">ชาย (ครับ)</option><option value="female">หญิง (ค่ะ/คะ)</option>
+        </select>
+        <button type="submit" disabled={busy || JSON.stringify(persona) === JSON.stringify(savedPersona)}>บันทึกบุคลิกบอท</button>
+        <p className="llm-note">หากลูกค้าขอให้ตอบสั้นหรืออธิบายละเอียดเป็นพิเศษ บอทจะทำตามคำขอนั้น</p>
+      </form>
+    </section>}
     {config && <section className="llm-panel" aria-labelledby="routing-title" style={{ marginBottom: 16 }}>
       <h2 id="routing-title">การทำงานของบอท</h2>
       <form className="llm-form" onSubmit={(event) => void saveConfig(event)}>
