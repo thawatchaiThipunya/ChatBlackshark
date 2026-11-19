@@ -85,7 +85,8 @@ class GeminiAnswerer:
                 if result:
                     return result, "llm_grounded"
             except Exception as exc:
-                logger.warning("Gemini call failed: %s", type(exc).__name__)
+                logger.warning("Gemini call failed: %s code=%s", type(exc).__name__,
+                               getattr(exc, "code", None))
         return None, "llm_unavailable"
 
     def extract_intent(self, question: str, history: list[dict[str, Any]],
