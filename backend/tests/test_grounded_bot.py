@@ -236,6 +236,34 @@ class IntentFlowTests(unittest.TestCase):
         self.assertIn("สินค้า: Black Shark GS3\nอุปกรณ์ภายในกล่อง: สายผ้า", prompts[-1])
         self.assertIn("สินค้า: Black Shark GS3 Ultra\nอุปกรณ์ภายในกล่อง: ตัวเรือน สายชาร์จ คู่มือ", prompts[-1])
 
+    def test_package_evidence_is_repeated_at_prompt_end_and_conflicts_are_explicit(self):
+        prompts = []
+        def generate(key, prompt):
+            prompts.append(prompt)
+            if "Return ONLY JSON with keys: intent" in prompt:
+                return json.dumps({"intent": "product_info", "topic": "box contents", "needs": ["package contents"],
+                    "product_names": ["Black Shark GS3"], "unresolved": False})
+            return "ตรวจสอบรายการในกล่องก่อนสั่งซื้อครับ"
+        description = (
+            "จุดเด่นสินค้า:\n"
+            "1. มาพร้อมสายนาฬิกาถึง 2 เส้น เลือกใช้ได้อย่างอิสระ\n"
+            "   สายซิลิโคน เหมาะสำหรับออกกำลังกาย\n"
+            "   สายผ้า Woven Strap ระบายอากาศดี\n\n"
+            "อุปกรณ์ที่ได้รับในแพ็กเกจ:\n"
+            "1. Black Shark GS3\n2. สายผ้า (Woven Strap)\n3. สายชาร์จ\n4. คู่มือการใช้งาน\n\n"
+            "หมายเหตุสำคัญ: ข้อมูลอื่น"
+        )
+        engine = self.engine([{"name": "Black Shark GS3", "description": description, "source": {}}], generate)
+
+        result = engine.answer("GS3 ในกล่องมีสายอะไรบ้าง")
+
+        self.assertEqual(result["status"], "answered")
+        final_prompt = prompts[-1]
+        package_check = final_prompt.split("PACKAGE EVIDENCE CHECK (per exact product)", 1)[1]
+        self.assertIn("สายผ้า (Woven Strap)", package_check)
+        self.assertIn("มาพร้อมสายนาฬิกาถึง 2 เส้น", package_check)
+        self.assertIn("source mentions accessory bundle outside the package list", package_check)
+
     def test_card_listing_context_reaches_answer_while_kb_remains_available(self):
         prompts = []
         def generate(key, prompt):

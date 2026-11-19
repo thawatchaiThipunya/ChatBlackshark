@@ -16,6 +16,18 @@ logger = logging.getLogger(__name__)
 INTENTS = {"smalltalk", "product_search", "product_info", "compatibility", "comparison", "troubleshooting", "image_understanding", "store_support", "out_of_scope"}
 PRIVATE_PATTERN = re.compile(r"system prompt|system instruction|api key|admin_password|password|secret|token|ข้อมูลแชทอื่น|ประวัติแชทอื่น|คำถามจากแชทอื่น", re.I)
 SECRET_PATTERN = re.compile(r"\bAIza[\w-]{20,}\b|(?<![\w])[a-f0-9]{48,}(?![\w])", re.I)
+PRODUCT_BLOCK_RE = re.compile(r"(?m)^\s*(?:สินค้า|KB_PRODUCT):\s*(.+?)\s*$")
+PACKAGE_HEADING_RE = re.compile(
+    r"(?im)^\s*(?:อุปกรณ์ที่ได้รับในแพ็กเกจ|อุปกรณ์ที่ได้รับในกล่อง|อุปกรณ์ภายในกล่อง|"
+    r"อุปกรณ์ในกล่อง|รายการอุปกรณ์ในกล่อง|รายการในกล่อง|ของในกล่อง|package contents|box contents)\s*:\s*(.*)$"
+)
+ACCESSORY_REFERENCE_RE = re.compile(
+    r"สาย|เคส|อุปกรณ์เสริม|หัวชาร์จ|ที่ชาร์จ|ฟิล์ม|ปากกา|สไตลัส|หูฟัง|"
+    r"strap|band|case|adapter|charger|cable|cover|dongle|stylus|earbuds", re.I
+)
+INCLUSION_WORDING_RE = re.compile(
+    r"มาพร้อม|แถม|มี.{0,12}(?:มาให้|ให้)|included|comes with|bundled", re.I
+)
 
 
 def handoff(reason: str, intent: str = "handoff") -> dict[str, Any]:
@@ -36,6 +48,68 @@ def provider_failure(reason: str, intent: str, session_id: str | None = None) ->
 def supported_wording(answer: str, evidence: str, question: str = "", *, intent: str = "product_info") -> bool:
     """Protect credentials without rejecting ordinary Thai paraphrases."""
     return not PRIVATE_PATTERN.search(answer) and not SECRET_PATTERN.search(answer)
+
+
+def _package_evidence_check(evidence: str) -> str:
+    """Put exact package lists and nearby accessory claims at the end of the prompt.
+
+    Product sheets can mention an accessory in highlights while the explicit box
+    list omits it. Keeping both snippets together makes that conflict visible to
+    the answer model without changing catalog identity or source data.
+    """
+    blocks = list(PRODUCT_BLOCK_RE.finditer(evidence or ""))
+    if not blocks:
+        return ""
+
+    summaries: list[str] = []
+    for index, marker in enumerate(blocks):
+        end = blocks[index + 1].start() if index + 1 < len(blocks) else len(evidence)
+        body = evidence[marker.end():end]
+        package_heading = PACKAGE_HEADING_RE.search(body)
+        if not package_heading:
+            continue
+
+        package_lines = [package_heading.group(1).strip()] if package_heading.group(1).strip() else []
+        following_lines = body[package_heading.end():].splitlines()
+        for line in following_lines:
+            if not line.strip():
+                break
+            if re.match(r"^\s*(?:หมายเหตุสำคัญ|การรับประกันสินค้า|important notes?)\s*:", line, re.I):
+                break
+            package_lines.append(line.strip())
+        package_text = " ".join(line for line in package_lines if line)
+        if not package_text:
+            continue
+
+        outside_package = body[:package_heading.start()] + body[package_heading.end():]
+        accessory_lines = list(dict.fromkeys(
+            " ".join(line.split())[:300]
+            for line in outside_package.splitlines()
+            if ACCESSORY_REFERENCE_RE.search(line)
+        ))[:12]
+        bundle_claims = [line for line in accessory_lines if INCLUSION_WORDING_RE.search(line)]
+        conflict = any(line.casefold() not in package_text.casefold() for line in bundle_claims)
+
+        summary = [f"- {marker.group(1).strip()}: explicit package list: {package_text}"]
+        if accessory_lines:
+            summary.append("  Accessory references elsewhere in the same product record: " + " | ".join(accessory_lines))
+        if conflict:
+            summary.append(
+                "  POSSIBLE CONFLICT: source mentions accessory bundle outside the package list; "
+                "report this as unconfirmed and do not say the extra item/count is included."
+            )
+        summaries.extend(summary)
+
+    if not summaries:
+        return ""
+    return (
+        "PACKAGE EVIDENCE CHECK (per exact product)\n"
+        "The explicit package list below is the record of items listed as included. "
+        "Other product highlights can describe an accessory without confirming it is in the box. "
+        "If a possible conflict is marked, say the records differ and the extra item/count is not confirmed; "
+        "do not combine claims across products.\n"
+        + "\n".join(summaries)
+    )
 
 
 def _json_object(raw: str) -> dict[str, Any] | None:
@@ -364,6 +438,9 @@ class GeminiAnswerer:
             f"HISTORY: {json.dumps(_safe_history(history), ensure_ascii=False)}\n"
             f"CUSTOMER: {json.dumps(question, ensure_ascii=False)}\nSOURCE:\n{evidence}"
         )
+        package_check = _package_evidence_check(evidence)
+        if package_check:
+            prompt += "\n\n" + package_check
         answer_source = "chat.smalltalk_answer" if intent == "smalltalk" else "chat.answer"
         raw, reason = self._call(prompt, "answer", source=answer_source)
         if raw is None:
