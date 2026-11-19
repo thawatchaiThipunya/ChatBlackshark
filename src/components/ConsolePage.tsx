@@ -5,13 +5,14 @@ type ConsolePageProps = {
   icon: LucideIcon;
   title: string;
   subtitle: string;
+  className?: string;
   actions?: ReactNode;
   children: ReactNode;
 };
 
-export function ConsolePage({ icon: Icon, title, subtitle, actions, children }: ConsolePageProps) {
+export function ConsolePage({ icon: Icon, title, subtitle, className, actions, children }: ConsolePageProps) {
   return (
-    <main className="admin-page" aria-label={title}>
+    <main className={`admin-page${className ? ` ${className}` : ""}`} aria-label={title}>
       <div className="admin-page-inner">
         <header className="admin-page-header">
           <div className="admin-heading-title">

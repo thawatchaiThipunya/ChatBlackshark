@@ -61,9 +61,10 @@ export function presentChatReply(reply: ChatReply) {
     reply.handoff_mock === true || reply.handoff_sent === true;
   const isMockHandoff = reply.status === "handoff_mock" || reply.handoff_mock === true;
   const needsKey = reply.status === "key_required" || reply.reason === "llm_key_missing";
+  const temporaryFailure = reply.status === "temporarily_unavailable";
 
   return {
-    kind: needsKey ? "setup_required" : isHandoff ? "handoff" : reply.status === "need_model" ? "need_model" : "answer",
+    kind: needsKey ? "setup_required" : isHandoff ? "handoff" : temporaryFailure ? "error" : reply.status === "need_model" ? "need_model" : "answer",
     answer: typeof reply.answer === "string" ? reply.answer : "",
     sources: isMockHandoff ? [] : Array.isArray(reply.sources) ? reply.sources : [],
     handoffSent: reply.handoff_sent === true,

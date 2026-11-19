@@ -1,31 +1,81 @@
 "use client";
 
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type CSSProperties, type FormEvent } from "react";
 import { Check, RefreshCw, RotateCcw, Sparkles, UserRound } from "lucide-react";
 import { ConsolePage } from "@/components/ConsolePage";
 
-type PersonaLength = "short" | "medium" | "long";
-type PersonaTone = "friendly" | "normal" | "very_polite";
-type PersonaVoice = "male" | "female";
-type PersonaConfig = { length: PersonaLength; tone: PersonaTone; voice: PersonaVoice; updated_at?: string | null };
-type PersonaValues = Pick<PersonaConfig, "length" | "tone" | "voice">;
+type ReplyLength = "short" | "medium" | "long";
+type Voice = "male" | "female";
+type PersonaConfig = {
+  bot_name: string;
+  persona_text: string;
+  friendliness: number;
+  length: ReplyLength;
+  detail_level: number;
+  voice: Voice;
+  updated_at?: string | null;
+};
+type PersonaValues = Pick<PersonaConfig, "bot_name" | "persona_text" | "friendliness" | "length" | "detail_level" | "voice">;
 
-const lengthOptions: Array<{ value: PersonaLength; label: string; description: string }> = [
-  { value: "short", label: "สั้น", description: "ตรงประเด็น อ่านจบเร็ว" },
-  { value: "medium", label: "ปานกลาง", description: "มีบริบทพอดี ใช้งานทั่วไป" },
-  { value: "long", label: "ยาว", description: "อธิบายรายละเอียดและทางเลือก" },
+const LENGTH_STEPS: Array<{ value: ReplyLength; label: string }> = [
+  { value: "short", label: "สั้น" },
+  { value: "medium", label: "ปานกลาง" },
+  { value: "long", label: "ละเอียด" },
 ];
 
-const toneOptions: Array<{ value: PersonaTone; label: string; description: string }> = [
-  { value: "friendly", label: "เป็นกันเอง", description: "อบอุ่น เป็นธรรมชาติ" },
-  { value: "normal", label: "ปกติ", description: "ชัดเจน สุภาพแบบทั่วไป" },
-  { value: "very_polite", label: "สุภาพมาก", description: "ถ้อยคำสุภาพและให้เกียรติ" },
-];
+function valuesOf(config: PersonaConfig): PersonaValues {
+  return {
+    bot_name: config.bot_name,
+    persona_text: config.persona_text,
+    friendliness: config.friendliness,
+    length: config.length,
+    detail_level: config.detail_level,
+    voice: config.voice,
+  };
+}
 
-const voiceOptions: Array<{ value: PersonaVoice; label: string; description: string }> = [
-  { value: "male", label: "ผู้ชาย", description: "ใช้สรรพนามและคำลงท้ายเสียงผู้ชาย" },
-  { value: "female", label: "ผู้หญิง", description: "ใช้สรรพนามและคำลงท้ายเสียงผู้หญิง" },
-];
+function lengthPosition(length: ReplyLength) {
+  return length === "short" ? 0 : length === "long" ? 100 : 50;
+}
+
+function lengthFromPosition(position: number): ReplyLength {
+  return position < 34 ? "short" : position < 67 ? "medium" : "long";
+}
+
+function toneDescription(friendliness: number) {
+  if (friendliness < 25) return "เป็นทางการ สุภาพ และเว้นระยะตามกาลเทศะ";
+  if (friendliness < 50) return "สุภาพ เป็นมิตร และไม่สนิทสนมเกินไป";
+  if (friendliness < 75) return "เป็นกันเองและอบอุ่น คุยเหมือนพนักงานที่พร้อมช่วยเหลือ";
+  return "เป็นกันเองมาก อบอุ่น เห็นใจลูกค้า ใช้คำพูดเป็นธรรมชาติ ไม่ฝืนเล่นมุกหรือใช้อีโมจิเกินจำเป็น";
+}
+
+function detailDescription(detailLevel: number) {
+  if (detailLevel < 34) return "กระชับที่สุด ตอบตรงคำถามใน 1–3 ประโยค แต่ต้องครอบคลุมทุก need";
+  if (detailLevel < 67) return "ให้รายละเอียดพอดี ตอบครบทุก need พร้อมเหตุผลหรือจุดเด่นที่เกี่ยวข้อง";
+  return "อธิบายละเอียดเป็นลำดับ เพิ่มบริบทที่ช่วยตัดสินใจ โดยไม่พูดซ้ำหรือเติมข้อมูลนอกหลักฐาน";
+}
+
+function lengthDescription(length: ReplyLength) {
+  if (length === "short") return "ตอบกระชับ 1–3 ประโยค ตอบทุกประเด็นที่ลูกค้าถาม หากเป็นขั้นตอนหรือเทียบหลายรุ่นให้ใช้พื้นที่เท่าที่จำเป็น";
+  if (length === "long") return "ตอบละเอียดขึ้นพร้อมเหตุผลและรายละเอียดที่เกี่ยวข้อง จัดเป็นย่อหน้าหรือรายการเมื่อช่วยให้อ่านง่าย";
+  return "ตอบความยาวปานกลาง อธิบายเหตุผลหรือจุดเด่นที่เกี่ยวข้องโดยไม่ยืดเยื้อ";
+}
+
+function promptPreview(persona: PersonaValues) {
+  const voice = persona.voice === "female"
+    ? "ใช้รูปแบบคำลงท้ายแบบหญิง เช่น ค่ะ/คะ ให้ถูกบริบท ไม่ต้องลงท้ายทุกประโยค"
+    : "ใช้รูปแบบคำลงท้ายแบบชาย เช่น ครับ อย่างเป็นธรรมชาติ ไม่ต้องลงท้ายทุกประโยค";
+
+  return [
+    `ชื่อที่ใช้แทนตัวเองคือ ${persona.bot_name || "ผู้ช่วยร้าน"}`,
+    `บุคลิกที่ผู้ดูแลร้านกำหนด: ${persona.persona_text || "ไม่ได้กำหนดข้อความเพิ่มเติม"}`,
+    `ระดับความเป็นกันเอง ${persona.friendliness}/100: ${toneDescription(persona.friendliness)}`,
+    lengthDescription(persona.length),
+    `ระดับรายละเอียด ${persona.detail_level}/100: ${detailDescription(persona.detail_level)}`,
+    voice,
+    "หากลูกค้าขอรูปแบบหรือความยาวเป็นพิเศษ ให้ทำตาม; persona กำหนดเพียงสไตล์ ห้ามเปลี่ยนข้อเท็จจริงหรือเติมข้อมูลนอก SOURCE",
+  ].join("; ");
+}
 
 async function requestJson<T>(method = "GET", body?: PersonaValues): Promise<T> {
   const response = await fetch("/api/llm/persona", {
@@ -38,12 +88,8 @@ async function requestJson<T>(method = "GET", body?: PersonaValues): Promise<T> 
     window.location.assign("/login?error=signed_out");
     throw new Error("เซสชันหมดอายุ กำลังกลับไปหน้าเข้าสู่ระบบ");
   }
-  if (!response.ok) throw new Error("เชื่อมต่อการตั้งค่าบุคลิกการตอบไม่สำเร็จ");
+  if (!response.ok) throw new Error("โหลดหรือบันทึก Persona ไม่สำเร็จ");
   return await response.json() as T;
-}
-
-function toValues(config: PersonaConfig): PersonaValues {
-  return { length: config.length, tone: config.tone, voice: config.voice };
 }
 
 function formatDate(value?: string | null) {
@@ -51,27 +97,6 @@ function formatDate(value?: string | null) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "ยังไม่มีข้อมูลการบันทึก";
   return new Intl.DateTimeFormat("th-TH", { dateStyle: "medium", timeStyle: "short" }).format(date);
-}
-
-function sampleReply(persona: PersonaValues) {
-  const female = persona.voice === "female";
-  const friendly = persona.tone === "friendly";
-  const veryPolite = persona.tone === "very_polite";
-  const statement = female ? "ค่ะ" : "ครับ";
-  const question = female ? "คะ" : "ครับ";
-  const product = friendly ? "รุ่นนี้รับประกันศูนย์ 2 ปีเลย" : "รุ่นนี้รับประกันศูนย์ 2 ปี";
-  const intro = veryPolite ? "ขออนุญาตแจ้งว่า " : "";
-
-  if (persona.length === "short") return `${intro}${product}${statement}`;
-  if (persona.length === "medium") {
-    if (friendly) return `${product}${statement} สนใจให้ช่วยเช็กเงื่อนไขเพิ่มเติมไหม${question}`;
-    if (veryPolite) return `${intro}${product}${statement} หากต้องการข้อมูลเพิ่มเติม ยินดีช่วยตรวจสอบให้นะ${statement}`;
-    return `${product}${statement} หากต้องการรายละเอียดเพิ่มเติม แจ้งได้เลย${statement}`;
-  }
-
-  if (friendly) return `${product}${statement} ประกันเริ่มนับจากวันที่ซื้อ และเป็นไปตามเงื่อนไขของศูนย์บริการนะ${statement} ถ้ามีเลขคำสั่งซื้อ ส่งมาให้ช่วยเช็กต่อได้เลย${statement}`;
-  if (veryPolite) return `${intro}${product}${statement} ความคุ้มครองเป็นไปตามเงื่อนไขของศูนย์บริการและเริ่มนับจากวันที่ซื้อ หากมีเลขคำสั่งซื้อ ยินดีช่วยตรวจสอบรายละเอียดให้เพิ่มเติมนะ${statement}`;
-  return `${product}${statement} ความคุ้มครองเป็นไปตามเงื่อนไขของศูนย์บริการและเริ่มนับจากวันที่ซื้อ หากมีเลขคำสั่งซื้อ สามารถแจ้งเพื่อให้ช่วยตรวจสอบรายละเอียดเพิ่มเติมได้${statement}`;
 }
 
 export default function PersonaPage() {
@@ -91,7 +116,7 @@ export default function PersonaPage() {
       setPersona(result);
       setSavedPersona(result);
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "โหลดการตั้งค่าบุคลิกไม่สำเร็จ");
+      setError(reason instanceof Error ? reason.message : "โหลดการตั้งค่า Persona ไม่สำเร็จ");
     } finally {
       setLoading(false);
     }
@@ -99,7 +124,8 @@ export default function PersonaPage() {
 
   useEffect(() => { void refresh(); }, [refresh]);
 
-  const changed = !!persona && !!savedPersona && JSON.stringify(toValues(persona)) !== JSON.stringify(toValues(savedPersona));
+  const dirty = !!persona && !!savedPersona && JSON.stringify(valuesOf(persona)) !== JSON.stringify(valuesOf(savedPersona));
+  const prompt = persona ? promptPreview(valuesOf(persona)) : "";
 
   function update<K extends keyof PersonaValues>(key: K, value: PersonaValues[K]) {
     setPersona((current) => current ? { ...current, [key]: value } : current);
@@ -108,78 +134,96 @@ export default function PersonaPage() {
 
   async function save(event: FormEvent) {
     event.preventDefault();
-    if (!persona || !changed) return;
+    if (!persona || !dirty) return;
     setBusy(true);
     setError("");
     setNotice("");
     try {
-      const result = await requestJson<PersonaConfig>("POST", toValues(persona));
+      const result = await requestJson<PersonaConfig>("POST", valuesOf(persona));
       setPersona(result);
       setSavedPersona(result);
-      setNotice("บันทึกบุคลิกการตอบแล้ว");
+      setNotice("บันทึก Persona แล้ว คำตอบใหม่จะใช้ค่าชุดนี้");
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "บันทึกบุคลิกการตอบไม่สำเร็จ");
+      setError(reason instanceof Error ? reason.message : "บันทึก Persona ไม่สำเร็จ");
     } finally {
       setBusy(false);
     }
   }
 
-  return <ConsolePage icon={UserRound} title="บุคลิกการตอบ" subtitle="กำหนดความยาว น้ำเสียง และเสียงของผู้ช่วยสำหรับคำตอบใหม่"
-    actions={<button className="header-action" type="button" onClick={() => void refresh()} disabled={loading || busy}><RefreshCw size={15} /> รีเฟรช</button>}>
+  return <ConsolePage className="persona-page" icon={UserRound} title="ตั้งค่า Persona" subtitle="กำหนดชื่อผู้ช่วย บุคลิก และสไตล์คำตอบที่ใช้ใน system prompt">
     {error && (loading ? <p className="load-error" role="alert">{error}</p> : <div className="persona-inline-error" role="alert"><span>{error}</span><button type="button" onClick={() => void refresh()}>ลองอีกครั้ง</button></div>)}
     {notice && <p className="setting-feedback" role="status">{notice}</p>}
 
-    {loading ? <section className="llm-panel persona-loading" aria-label="กำลังโหลดบุคลิก"><span className="persona-skeleton" /><span className="persona-skeleton" /><span className="persona-skeleton" /></section> : persona && <form onSubmit={(event) => void save(event)}>
-      <div className="persona-layout">
-        <section className="llm-panel persona-editor" aria-labelledby="persona-editor-title">
-          <div className="panel-heading"><div><h2 id="persona-editor-title">รูปแบบการตอบ</h2><p>เลือกค่าที่เหมาะกับวิธีสื่อสารของแบรนด์</p></div><UserRound size={19} /></div>
+    {loading ? <section className="llm-panel persona-loading" aria-label="กำลังโหลด Persona"><span className="persona-skeleton" /><span className="persona-skeleton" /><span className="persona-skeleton" /></section> : persona && <form className="persona-layout" onSubmit={(event) => void save(event)}>
+      <section className="llm-panel persona-editor" aria-labelledby="persona-editor-title">
+        <div className="panel-heading">
+          <div><h2 id="persona-editor-title">ตั้งค่า Persona</h2><p>กำหนดข้อความใน system prompt ทุกครั้งที่บอทตอบ</p></div>
+          <button className="persona-refresh" type="button" onClick={() => void refresh()} disabled={loading || busy} aria-label="รีเฟรช Persona" title="รีเฟรช Persona"><RefreshCw size={16} /></button>
+        </div>
 
-          <fieldset className="persona-choice-group">
-            <legend>ความยาวคำตอบ</legend>
-            <div className="persona-choice-grid">
-              {lengthOptions.map((option) => <label className="persona-choice" key={option.value}>
-                <input type="radio" name="persona-length" value={option.value} checked={persona.length === option.value} onChange={() => update("length", option.value)} />
-                <span><strong>{option.label}</strong><small>{option.description}</small></span>
-              </label>)}
-            </div>
-          </fieldset>
+        <div className="persona-field">
+          <label htmlFor="persona-name">ชื่อบอท <small>ชื่อที่ใช้แทนตัว เช่น “น้อง Koop”</small></label>
+          <input id="persona-name" value={persona.bot_name} onChange={(event) => update("bot_name", event.target.value)} maxLength={80} required />
+        </div>
 
-          <fieldset className="persona-choice-group">
-            <legend>น้ำเสียง</legend>
-            <div className="persona-choice-grid">
-              {toneOptions.map((option) => <label className="persona-choice" key={option.value}>
-                <input type="radio" name="persona-tone" value={option.value} checked={persona.tone === option.value} onChange={() => update("tone", option.value)} />
-                <span><strong>{option.label}</strong><small>{option.description}</small></span>
-              </label>)}
-            </div>
-          </fieldset>
+        <div className="persona-field">
+          <label htmlFor="persona-text">บุคลิก / คำแทนตัว / โทนการพูด</label>
+          <textarea id="persona-text" value={persona.persona_text} onChange={(event) => update("persona_text", event.target.value)} maxLength={2000} aria-describedby="persona-text-count" />
+          <span id="persona-text-count" className="persona-count">{persona.persona_text.length}/2000</span>
+        </div>
 
-          <fieldset className="persona-choice-group">
-            <legend>เสียงของผู้ช่วย</legend>
-            <div className="persona-choice-grid is-voice">
-              {voiceOptions.map((option) => <label className="persona-choice" key={option.value}>
-                <input type="radio" name="persona-voice" value={option.value} checked={persona.voice === option.value} onChange={() => update("voice", option.value)} />
-                <span><strong>{option.label}</strong><small>{option.description}</small></span>
-              </label>)}
-            </div>
-          </fieldset>
+        <fieldset className="persona-slider-group">
+          <legend>ความเป็นกันเอง <output htmlFor="persona-friendliness">{persona.friendliness}/100</output></legend>
+          <input className="persona-range" id="persona-friendliness" type="range" min="0" max="100" step="1" value={persona.friendliness}
+            style={{ "--range-progress": `${persona.friendliness}%` } as CSSProperties}
+            onChange={(event) => update("friendliness", Number(event.target.value))} />
+          <div className="persona-range-labels"><span>ทางการ</span><span className={persona.friendliness >= 25 && persona.friendliness < 75 ? "is-current" : ""}>สุภาพทั่วไป</span><span className={persona.friendliness >= 75 ? "is-current" : ""}>เป็นกันเองมาก</span></div>
+          <p>{toneDescription(persona.friendliness)}</p>
+        </fieldset>
 
-          <div className="persona-save-row">
-            <span className="persona-updated">บันทึกล่าสุด {formatDate(savedPersona?.updated_at)}</span>
-            <div className="choice-row">
-              {changed && <button className="setting-choice" type="button" disabled={busy} onClick={() => { setPersona(savedPersona); setNotice(""); setError(""); }}><RotateCcw size={14} /> คืนค่า</button>}
-              <button className="llm-primary-action" type="submit" disabled={!changed || busy}><Check size={15} /> {busy ? "กำลังบันทึก…" : "บันทึกบุคลิก"}</button>
-            </div>
+        <fieldset className="persona-slider-group">
+          <legend>ความยาวคำตอบ</legend>
+          <input className="persona-range" id="persona-length" type="range" min="0" max="100" step="1" value={lengthPosition(persona.length)}
+            style={{ "--range-progress": `${lengthPosition(persona.length)}%` } as CSSProperties}
+            onChange={(event) => update("length", lengthFromPosition(Number(event.target.value)))} aria-label="ความยาวคำตอบ" />
+          <div className="persona-range-labels">{LENGTH_STEPS.map((step) => <span key={step.value} className={persona.length === step.value ? "is-current" : ""}>{step.label}</span>)}</div>
+          <p>{lengthDescription(persona.length)}</p>
+        </fieldset>
+
+        <fieldset className="persona-slider-group">
+          <legend>ความกระชับ <output htmlFor="persona-detail">{persona.detail_level}/100</output></legend>
+          <input className="persona-range" id="persona-detail" type="range" min="0" max="100" step="1" value={persona.detail_level}
+            style={{ "--range-progress": `${persona.detail_level}%` } as CSSProperties}
+            onChange={(event) => update("detail_level", Number(event.target.value))} />
+          <div className="persona-range-labels"><span className={persona.detail_level < 34 ? "is-current" : ""}>ตรงประเด็น</span><span className={persona.detail_level >= 34 && persona.detail_level < 67 ? "is-current" : ""}>สมดุล</span><span className={persona.detail_level >= 67 ? "is-current" : ""}>อธิบายครบ</span></div>
+          <p>{detailDescription(persona.detail_level)}</p>
+        </fieldset>
+
+        <fieldset className="persona-slider-group persona-voice-group">
+          <legend>รูปแบบคำลงท้าย</legend>
+          <div className="persona-voice-options" role="group" aria-label="เสียงของผู้ช่วย">
+            <button type="button" className={persona.voice === "male" ? "is-selected" : ""} aria-pressed={persona.voice === "male"} onClick={() => update("voice", "male")}>ชาย <small>ครับ</small></button>
+            <button type="button" className={persona.voice === "female" ? "is-selected" : ""} aria-pressed={persona.voice === "female"} onClick={() => update("voice", "female")}>หญิง <small>ค่ะ / คะ</small></button>
           </div>
-        </section>
+        </fieldset>
 
-        <aside className="llm-panel persona-preview" aria-labelledby="persona-preview-title" aria-live="polite">
-          <div className="panel-heading"><div><h2 id="persona-preview-title">ตัวอย่างคำตอบ</h2><p>ปรับตามตัวเลือกทันที</p></div><Sparkles size={19} /></div>
-          <p className="persona-preview-question">คำถามตัวอย่าง · “รุ่นนี้มีประกันกี่ปี?”</p>
-          <div className="persona-preview-answer">{sampleReply(persona)}</div>
-          <p className="persona-preview-caption">ตัวอย่างนี้ใช้ประกอบการตั้งค่า คำตอบจริงจะอ้างอิงข้อมูลสินค้าและเงื่อนไขในระบบ</p>
-        </aside>
-      </div>
+        <div className="persona-save-row">
+          <span className="persona-updated">บันทึกล่าสุด {formatDate(savedPersona?.updated_at)}</span>
+          <div className="choice-row">
+            {dirty && <button className="setting-choice" type="button" disabled={busy} onClick={() => { setPersona(savedPersona); setError(""); setNotice(""); }}><RotateCcw size={14} /> คืนค่า</button>}
+            <button className="llm-primary-action" type="submit" disabled={!dirty || busy || !persona.bot_name.trim()}><Check size={15} /> {busy ? "กำลังบันทึก…" : "บันทึก Persona"}</button>
+          </div>
+        </div>
+      </section>
+
+      <aside className="llm-panel persona-preview" aria-labelledby="persona-preview-title" aria-live="polite">
+        <div className="panel-heading"><div><h2 id="persona-preview-title">System Prompt ที่บอทเห็น</h2><p>ตัวอย่างจริง — ส่วนที่ไฮไลต์เปลี่ยนตามค่าด้านซ้าย</p></div><Sparkles size={19} /></div>
+        <pre className="persona-prompt-preview"><span>PERSONA: </span><mark>{prompt}</mark>{"\n\n"}
+          <span>INTENT · TOPIC NEEDS · PRODUCTS · HISTORY · CUSTOMER · SOURCE</span>{"\n"}
+          <span>ถูกเติมจากข้อความและบริบทในแต่ละคำขอ</span>
+        </pre>
+        <p className="persona-preview-caption">แสดงบล็อก PERSONA รูปแบบเดียวกับที่ backend ใช้จริง ข้อมูลคำถาม สินค้า และ SOURCE จะถูกเติมตามแต่ละคำขอ</p>
+      </aside>
     </form>}
   </ConsolePage>;
 }

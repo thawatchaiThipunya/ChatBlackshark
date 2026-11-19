@@ -62,24 +62,27 @@ def describe_with_key_rotation(
     data: bytes, mime_type: str, question: str,
     next_key: Callable[[], tuple[str | None, int | None, int]],
     describe: Callable[[bytes, str, str, str], VisionResult] = describe_media,
+    key_cycle: Callable[[], list[tuple[str, int]]] | None = None,
 ) -> VisionResult:
-    key, key_id, count = next_key()
-    if not key or not count:
+    if key_cycle:
+        candidates = key_cycle()
+    else:
+        first = next_key()
+        candidates = [first[:2]] + [next_key()[:2] for _ in range(max(0, first[2] - 1))]
+    if not candidates:
         raise RuntimeError("Gemini key unavailable")
     attempted: set[int | None] = set()
     last_error: Exception | None = None
-    for _ in range(count):
-        if key and key_id not in attempted:
-            attempted.add(key_id)
-            try:
-                return describe(data, mime_type, question, key)
-            except Exception as exc:
-                logger.warning("Gemini vision failed key_id=%s type=%s code=%s", key_id,
-                               type(exc).__name__, getattr(exc, "code", None))
-                last_error = exc
-                if len(attempted) >= min(count, 3):
-                    break
-        key, key_id, _ = next_key()
+    for key, key_id in candidates:
+        if not key or key_id in attempted:
+            continue
+        attempted.add(key_id)
+        try:
+            return describe(data, mime_type, question, key)
+        except Exception as exc:
+            logger.warning("Gemini vision failed key_id=%s type=%s code=%s", key_id,
+                           type(exc).__name__, getattr(exc, "code", None))
+            last_error = exc
     if last_error:
         raise last_error
     raise RuntimeError("Gemini vision key rotation failed")
@@ -165,24 +168,27 @@ def describe_batch_with_key_rotation(
     media: list[tuple[bytes, str]], question: str,
     next_key: Callable[[], tuple[str | None, int | None, int]],
     describe: Callable[[list[tuple[bytes, str]], str, str], list[VisionResult]] = describe_media_batch,
+    key_cycle: Callable[[], list[tuple[str, int]]] | None = None,
 ) -> list[VisionResult]:
-    key, key_id, count = next_key()
-    if not key or not count:
+    if key_cycle:
+        candidates = key_cycle()
+    else:
+        first = next_key()
+        candidates = [first[:2]] + [next_key()[:2] for _ in range(max(0, first[2] - 1))]
+    if not candidates:
         raise RuntimeError("Gemini key unavailable")
     attempted: set[int | None] = set()
     last_error: Exception | None = None
-    for _ in range(count):
-        if key and key_id not in attempted:
-            attempted.add(key_id)
-            try:
-                return describe(media, question, key)
-            except Exception as exc:
-                logger.warning("Gemini vision batch failed key_id=%s type=%s code=%s", key_id,
-                               type(exc).__name__, getattr(exc, "code", None))
-                last_error = exc
-                if len(attempted) >= min(count, 3):
-                    break
-        key, key_id, _ = next_key()
+    for key, key_id in candidates:
+        if not key or key_id in attempted:
+            continue
+        attempted.add(key_id)
+        try:
+            return describe(media, question, key)
+        except Exception as exc:
+            logger.warning("Gemini vision batch failed key_id=%s type=%s code=%s", key_id,
+                           type(exc).__name__, getattr(exc, "code", None))
+            last_error = exc
     if last_error:
         raise last_error
     raise RuntimeError("Gemini vision key rotation failed")

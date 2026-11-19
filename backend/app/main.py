@@ -413,8 +413,11 @@ class OpenRouterKeyRequest(BaseModel):
 
 
 class PersonaRequest(BaseModel):
+    bot_name: str = Field(min_length=1, max_length=80)
+    persona_text: str = Field(max_length=2000)
+    friendliness: int = Field(ge=0, le=100)
     length: Literal["short", "medium", "long"]
-    tone: Literal["friendly", "normal", "very_polite"]
+    detail_level: int = Field(ge=0, le=100)
     voice: Literal["male", "female"]
 
 
@@ -529,7 +532,7 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
             else:
                 results = describe_batch_with_key_rotation(media, question, store.next_key,
                     lambda items, prompt, key: describe_media_batch(items, prompt, key,
-                        config.get("gemini_vision_model")))
+                        config.get("gemini_vision_model")), key_cycle=store.key_cycle)
             for (index, attachment_id, _), result in zip(batch, results):
                 store.chat_action(guest, "update_vision", session_id,
                     {"id": attachment_id, "status": "complete", "model": result.model, "description": result.description})
