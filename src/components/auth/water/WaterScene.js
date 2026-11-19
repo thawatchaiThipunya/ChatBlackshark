@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 const scenes = {
   torii: {
@@ -1184,9 +1184,6 @@ export default function WaterScene({ subject, loginMode = false, portalProgressR
       activeEvent = { id: selected.id, startedAt: elapsed, duration, cycleDuration, direction, level, variant, weatherControlled: Boolean(selected.weatherControlled) };
       lastEventAt = now;
       nextEventAt = elapsed + activeEvent.duration + 6 + Math.random() * 6;
-      setCreaturePass([16, 18, 27].includes(selected.id)
-        ? { id: selected.id, startedAt: now, duration, cycleDuration, variant, direction, level }
-        : null);
 
       if ([6, 16, 18, 27].includes(selected.id)) {
         const angle = (Math.random() - 0.5) * 0.56;
@@ -1249,7 +1246,6 @@ export default function WaterScene({ subject, loginMode = false, portalProgressR
         }
       } else if (activeEvent.weatherControlled) {
         activeEvent = { id: 0, startedAt: -Infinity, duration: 0, cycleDuration: 1, weatherControlled: false };
-        setCreaturePass(null);
         nextEventAt = elapsed + 5;
       }
       if (!selectedWeather && elapsed >= nextEventAt && elapsed - activeEvent.startedAt >= activeEvent.duration) startRandomEvent(baseProgress, now);
