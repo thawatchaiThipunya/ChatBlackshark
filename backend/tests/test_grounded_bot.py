@@ -365,29 +365,56 @@ class IntentFlowTests(unittest.TestCase):
         self.assertIn("Global Version", prompts[-1])
         self.assertIn("do not infer stock/version", prompts[-1])
 
-    def test_compatibility_answer_receives_all_relevant_conflicting_faqs(self):
+    def test_compatibility_answer_uses_model_facts_without_troubleshooting_faq(self):
         prompts = []
         def generate(key, prompt):
             prompts.append(prompt)
             if "Return ONLY JSON with keys: intent" in prompt:
                 return json.dumps({"intent": "compatibility", "topic": "LINE calling", "needs": ["LINE calls on iOS"],
                                    "product_names": ["Black Shark RUN"], "unresolved": False})
-            if "Select every FAQ" in prompt:
-                return '{"indices":[0,1]}'
-            return "เอกสารมีข้อมูลไม่ตรงกัน จึงยังยืนยันการโทร LINE บน iOS ไม่ได้ครับ"
+            return "Black Shark RUN รับสาย LINE ผ่านนาฬิกาบน iOS ได้ครับ ส่วน Android ยังอยู่ระหว่างการพัฒนา"
+        product_facts = (
+            "ฟีเจอร์ ENC Bluetooth Calling รองรับการรับสาย LINE ผ่านนาฬิกาได้โดยตรงสำหรับ iOS "
+            "ส่วน Android ยังอยู่ระหว่างการพัฒนา"
+        )
         faqs = [
-            {"model_name": "Black Shark RUN Smart Watch Global Version Black", "question": "โทร LINE ไม่ได้",
-             "answer": "ไม่รองรับการโทรผ่านแอปโซเชียลมีเดีย", "source": {"cell": "C62"}},
-            {"model_name": "Black Shark RUN Smart Watch Global Version Yellow", "question": "แจ้งเตือน LINE บน iPhone",
-             "answer": "กรุณาเปิดใช้ฟังก์ชันโทรร่วมกับ iPhone", "source": {"cell": "C93"}},
+            {"model_name": "Black Shark RUN Smart Watch Global Version Black", "question": "ปัญหาโทร LINE ไม่ได้",
+             "answer": "รับสายไลน์ไม่ได้ มีแค่แจ้งเตือน; ไม่รองรับการโทร-รับสายผ่านแอปโซเชียลมีเดีย",
+             "source": {"cell": "C17"}},
         ]
-        engine = self.engine([{"name": "Black Shark RUN", "description": "ใช้แอป Shark Wearable", "source": {}}],
+        engine = self.engine([{"name": "Black Shark RUN", "description": product_facts, "source": {}}],
                              generate, faqs)
+
         result = engine.answer("รับสาย LINE บน iPhone ได้ไหม")
+
         self.assertEqual(result["status"], "answered")
-        self.assertIn("ไม่รองรับการโทรผ่านแอปโซเชียลมีเดีย", prompts[-1])
+        self.assertEqual(result["answer"], "Black Shark RUN รับสาย LINE ผ่านนาฬิกาบน iOS ได้ครับ ส่วน Android ยังอยู่ระหว่างการพัฒนา")
+        self.assertIn(product_facts, prompts[-1])
+        self.assertNotIn("FAQ_EVIDENCE", prompts[-1])
+        self.assertNotIn("Select every FAQ", "\n".join(prompts))
+
+    def test_troubleshooting_answer_still_uses_relevant_faq(self):
+        prompts = []
+        def generate(key, prompt):
+            prompts.append(prompt)
+            if "Return ONLY JSON with keys: intent" in prompt:
+                return json.dumps({"intent": "troubleshooting", "topic": "LINE call not showing", "needs": ["check call settings"],
+                                   "product_names": ["Black Shark RUN"], "unresolved": False})
+            if "Select every FAQ" in prompt:
+                return '{"indices":[0]}'
+            return "ลองตรวจสิทธิ์การแจ้งเตือนและเปิดใช้ฟังก์ชันโทรร่วมกับ iPhone ครับ"
+        faq = {"model_name": "Black Shark RUN Smart Watch Global Version Black",
+               "question": "รับสายไลน์ไม่ได้ มีแค่แจ้งเตือน",
+               "answer": "เปิดสิทธิ์ LINE และเปิดใช้ฟังก์ชันโทรร่วมกับ iPhone",
+               "source": {"cell": "C17"}}
+        engine = self.engine([{"name": "Black Shark RUN", "description": "รองรับ LINE บน iOS", "source": {}}],
+                             generate, [faq])
+
+        result = engine.answer("ใช้ RUN กับ iPhone แล้วสาย LINE ไม่ขึ้นที่นาฬิกา")
+
+        self.assertEqual(result["status"], "answered")
+        self.assertIn("Select every FAQ", prompts[1])
         self.assertIn("เปิดใช้ฟังก์ชันโทรร่วมกับ iPhone", prompts[-1])
-        self.assertEqual(len(result["sources"]), 3)
 
     def test_image_answer_prompt_can_play_with_context_without_forcing_a_product(self):
         prompts = []

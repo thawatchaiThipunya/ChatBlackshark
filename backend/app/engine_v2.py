@@ -688,7 +688,10 @@ class ProductChatEngine:
                            "sources": [], "session_id": session_id, "handoff_mock": False, "handoff_sent": False})
         selected = [catalog[name] for name in names]
         selected_faqs: list[dict[str, Any]] = []
-        if intent in {"troubleshooting", "compatibility", "product_info"} and unique_faqs:
+        # The imported FAQ corpus is the model troubleshooting guide. For product
+        # facts and compatibility, use the exact product record, which also carries
+        # its product-specific Q&A; symptom FAQs must not override those facts.
+        if intent == "troubleshooting" and unique_faqs:
             faq_indexes, faq_reason = self.answerer.select_faqs(question, unique_faqs, history, needs)
             if faq_indexes is None and faq_reason in {
                     "llm_rate_limited", "llm_unavailable", "llm_config_unavailable", "key_store_unavailable"}:
