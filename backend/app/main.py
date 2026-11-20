@@ -7,14 +7,16 @@ import uuid
 import base64
 import json
 import logging
+import re
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta, timezone
-from typing import Literal
+from typing import Any, Literal
+from urllib.parse import urlparse
 
-from fastapi import FastAPI, HTTPException, Cookie, Depends, Query, Request, Response
+from fastapi import FastAPI, HTTPException, Cookie, Depends, Header, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
@@ -28,6 +30,7 @@ from .admin_auth import ADMIN_SESSION_COOKIE, require_admin as require_admin_ses
 from .vision import describe_batch_with_key_rotation, describe_media_batch, describe_openrouter_batch
 from .ai_usage import set_usage_reference, reset_usage_reference
 from .history_context import recent_context
+from . import legacy_data
 
 
 app = FastAPI(
@@ -111,6 +114,17 @@ class ChatRequest(BaseModel):
     model_name: str | None = None
     session_id: str | None = Field(default=None, min_length=1, max_length=100)
     history: list[ChatTurn] = Field(default_factory=list, max_length=24)
+
+
+class TicketAnswerRequest(BaseModel):
+    conversation_id: str = Field(min_length=1, max_length=200)
+    message_id: str = Field(min_length=1, max_length=200)
+    shop_id: str = Field(min_length=1, max_length=100)
+    platform: str = Field(min_length=1, max_length=50)
+
+
+class LegacyEngineAnswerRequest(TicketAnswerRequest):
+    request_id: str | None = Field(default=None, max_length=200)
 
 
 engine = ProductChatEngine()
@@ -452,6 +466,360 @@ def catalog(admin: dict = Depends(current_admin)) -> dict:
         return get_catalog(store)
     except Exception:
         raise HTTPException(status_code=503, detail="knowledge_unavailable")
+
+
+class _ShopKnowledgeStore:
+    """Per-request knowledge view; provider settings and keys remain shared."""
+    def __init__(self, base: SupabaseStore, knowledge: dict[str, Any], scope: dict[str, Any]):
+        self.base, self.data, self.scope = base, knowledge, scope
+
+    def knowledge(self) -> dict[str, Any]:
+        return self.data
+
+    def persona(self) -> dict[str, Any]:
+        global_persona_shop = os.getenv("GLOBAL_PERSONA_SHOP_ID", "1191420560")
+        global_persona_platform = os.getenv("GLOBAL_PERSONA_PLATFORM", "shopee")
+        if self.scope["shop_id"] == global_persona_shop and self.scope["platform"] == global_persona_platform:
+            return self.base.persona()
+        return {"bot_name": "ผู้ช่วยร้าน", "persona_text": f"ตอบในนามร้าน {self.scope['shop_name']} เท่านั้น",
+                "friendliness": 50, "length": "medium", "detail_level": 50, "voice": "male"}
+
+    def __getattr__(self, name: str) -> Any:
+        if name == "escalate":
+            return None
+        return getattr(self.base, name)
+
+
+def _shop_context(platform: str, shop_id: str) -> tuple[dict[str, Any], dict[str, Any]]:
+    try:
+        scope, knowledge = store.knowledge_for_shop(platform, shop_id)
+    except Exception as exc:
+        logger.warning("ticket_shop_scope_unavailable type=%s", type(exc).__name__)
+        raise HTTPException(status_code=503, detail="shop_scope_unavailable")
+    if not scope:
+        raise HTTPException(status_code=403, detail="shop_not_configured_for_knowledge")
+    if not knowledge or not knowledge.get("products"):
+        raise HTTPException(status_code=503, detail="shop_knowledge_not_ready")
+    return scope, knowledge
+
+
+def _ticket_conversation(conversation_id: str, shop_id: str, platform: str,
+                         scopes: list[dict[str, Any]]) -> dict[str, Any]:
+    conversation = legacy_data.get_conversation(conversation_id, shop_id, platform, scopes)
+    if not conversation:
+        raise HTTPException(status_code=404, detail="conversation_not_found_for_shop")
+    return conversation
+
+
+def _trusted_media_url(value: str) -> bool:
+    try:
+        parsed = urlparse(value)
+        host = (parsed.hostname or "").lower().rstrip(".")
+        trusted = host.endswith(".supabase.co") or host.endswith(".susercontent.com") or host in {
+            "cf.shopee.co.th", "img.sp.mms.shopee.sg", "down-th.img.susercontent.com",
+            "down-vn.img.susercontent.com", "down-sg.img.susercontent.com",
+        }
+        return parsed.scheme == "https" and trusted and not parsed.username and not parsed.password and parsed.port in (None, 443)
+    except ValueError:
+        return False
+
+
+class _TrustedMediaRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        if not _trusted_media_url(newurl):
+            return None
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+def _download_legacy_media(item: dict[str, str]) -> tuple[bytes, str]:
+    url = str(item.get("url") or "")
+    if not _trusted_media_url(url):
+        raise ValueError("untrusted_media_host")
+    request = urllib.request.Request(url, headers={"User-Agent": "BlackSharkSupport/1.0"})
+    opener = urllib.request.build_opener(_TrustedMediaRedirect())
+    with opener.open(request, timeout=20) as response:
+        mime = (response.headers.get_content_type() or "").lower()
+        allowed = {"image/jpeg", "image/png", "image/webp", "image/gif", "video/mp4", "video/webm", "video/quicktime"}
+        if mime not in allowed:
+            suffix = urlparse(response.geturl()).path.lower()
+            mime = next((kind for ending, kind in ((".jpg", "image/jpeg"), (".jpeg", "image/jpeg"),
+                        (".png", "image/png"), (".webp", "image/webp"), (".gif", "image/gif"),
+                        (".mp4", "video/mp4"), (".webm", "video/webm"), (".mov", "video/quicktime"))
+                        if suffix.endswith(ending)), "")
+        if mime not in allowed:
+            raise ValueError("unsupported_media_type")
+        max_size = 40 * 1024 * 1024 if mime.startswith("video/") else 15 * 1024 * 1024
+        data = response.read(max_size + 1)
+        if not data or len(data) > max_size:
+            raise ValueError("media_size_invalid")
+        return data, mime
+
+
+def _describe_legacy_media(media_urls: list[dict[str, str]], question: str) -> list[str]:
+    descriptions: list[str] = []
+    unique = []
+    seen: set[str] = set()
+    for item in media_urls:
+        url = str(item.get("url") or "")
+        if url and url not in seen:
+            seen.add(url)
+            unique.append(item)
+    if len(unique) > 10:
+        unique = unique[:10]
+    for start in range(0, len(unique), 5):
+        batch = unique[start:start + 5]
+        try:
+            media = [_download_legacy_media(item) for item in batch]
+            config = store.runtime_config()
+            if config.get("provider") == "openrouter":
+                results = describe_openrouter_batch(media, question,
+                    config.get("openrouter_key", ""), config.get("openrouter_vision_model", ""))
+            else:
+                results = describe_batch_with_key_rotation(media, question, store.next_key,
+                    lambda items, prompt, key: describe_media_batch(items, prompt, key,
+                        config.get("gemini_vision_model")), key_cycle=store.key_cycle)
+            descriptions.extend(result.description for result in results)
+        except Exception as exc:
+            logger.warning("ticket_vision_failed batch=%s type=%s", start // 5 + 1, type(exc).__name__)
+            descriptions.extend([""] * len(batch))
+    return descriptions
+
+
+def _extract_order_number(text: str) -> str:
+    match = re.search(r"(?<![A-Z0-9])[A-Z0-9-]{8,24}(?![A-Z0-9])", text.upper())
+    return match.group(0) if match else ""
+
+
+def _answer_legacy_message(request: TicketAnswerRequest) -> dict[str, Any]:
+    scope, knowledge = _shop_context(request.platform, request.shop_id)
+    try:
+        message = legacy_data.get_inbound_message(request.conversation_id, request.message_id,
+            request.shop_id, scope["platform"], [scope])
+    except Exception as exc:
+        logger.warning("ticket_message_read_failed type=%s", type(exc).__name__)
+        raise HTTPException(status_code=503, detail="legacy_message_unavailable")
+    if not message:
+        raise HTTPException(status_code=404, detail="inbound_message_not_found")
+    conversation = legacy_data.get_conversation(request.conversation_id, request.shop_id,
+                                               scope["platform"], [scope])
+    if not conversation:
+        raise HTTPException(status_code=404, detail="conversation_not_found_for_shop")
+    legacy_shop_name = str(conversation.get("legacy_shop_name") or "")
+    event = message["event"]
+    plain_ids = event.metadata.get("plain_item_ids") is True
+    question = ("ช่วยแนะนำสินค้าจากรหัสที่ส่งมา" if plain_ids else event.text or
+                ("ช่วยดูสินค้าจากการ์ดนี้" if event.item_ids else
+                 "ช่วยดูภาพหรือวิดีโอที่ส่งมา" if message.get("media") else
+                 f"ช่วยเช็กสถานะคำสั่งซื้อ {event.order_sn}" if event.message_type == "order" and event.order_sn else ""))
+    if event.message_type == "faq_liveagent":
+        return {"status": "handoff_required", "bot_status": "handoff_mock", "intent": "store_support",
+                "reason": "customer_requested_agent", "answer": "ลูกค้าขอคุยกับเจ้าหน้าที่ครับ",
+                "handoff_required": True, "handoff_reason": "customer_requested_agent",
+                "conversation_id": request.conversation_id, "message_id": request.message_id,
+                "history_pair_count": 0, "image_description": "", "product_cards": [], "sources": []}
+    if event.message_type == "sticker" and not question:
+        return {"status": "answered", "bot_status": "answered", "intent": "smalltalk", "reason": "sticker_received",
+                "answer": "ได้รับสติกเกอร์แล้วครับ มีอะไรให้ช่วยดูต่อได้เลยครับ",
+                "handoff_required": False, "conversation_id": request.conversation_id,
+                "message_id": request.message_id, "history_pair_count": 0,
+                "image_description": "", "product_cards": [], "sources": []}
+    if event.message_type == "unknown":
+        return {"status": "handoff_required", "bot_status": "need_model", "intent": "unknown",
+                "reason": "unsupported_input_type", "answer": "รูปแบบข้อความนี้ยังอ่านไม่ครบครับ ขอให้เจ้าหน้าที่ช่วยดูต่อ",
+                "handoff_required": True, "handoff_reason": "unsupported_input_type",
+                "conversation_id": request.conversation_id, "message_id": request.message_id,
+                "history_pair_count": 0, "image_description": "", "product_cards": [], "sources": []}
+
+    try:
+        shop_scopes = store.shop_scopes()
+        same_name_scopes = [candidate for candidate in shop_scopes
+                            if candidate["platform"] == scope["platform"]
+                            and candidate["shop_name"].casefold() == scope["shop_name"].casefold()]
+        try:
+            alias_is_unique = legacy_data.shop_alias_is_unique(scope["platform"], request.shop_id, legacy_shop_name)
+        except Exception as exc:
+            logger.warning("ticket_shop_alias_check_failed type=%s", type(exc).__name__)
+            alias_is_unique = False
+        legacy_commerce_is_scoped = scope["platform"] == "shopee" and len(same_name_scopes) == 1 and alias_is_unique
+        history = legacy_data.history_for_conversation(request.conversation_id, request.shop_id,
+            scope["platform"], legacy_shop_name, before=message.get("created_timestamp"), max_pairs=5)
+        prior_users = [turn for turn in history if turn.get("role") == "user"]
+        for turn in prior_users[-2:]:
+            names = turn.get("card_product_names") or turn.get("product_names") or []
+            turn["product_scope"] = {"question": turn.get("content", ""), "product_names": names[:10]}
+        card_lookup_unavailable = False
+        try:
+            card_map = (legacy_data._products_by_ids(list(event.item_ids), legacy_shop_name)
+                        if legacy_commerce_is_scoped else {})
+        except Exception as exc:
+            logger.warning("ticket_current_card_lookup_failed type=%s", type(exc).__name__)
+            card_map = {}
+            card_lookup_unavailable = True
+        listings = list(card_map.values())
+        catalog = {item["name"]: item for item in knowledge["products"]}
+        for listing in listings:
+            listing["product_name"] = match_catalog_product(listing["name"], list(catalog.values()))
+        vision_descriptions = _describe_legacy_media(message.get("media") or [], question)
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.warning("ticket_context_read_failed type=%s", type(exc).__name__)
+        raise HTTPException(status_code=503, detail="legacy_context_unavailable")
+
+    if event.item_ids and not listings:
+        unavailable = card_lookup_unavailable or not legacy_commerce_is_scoped
+        return {"status": "handoff_required" if unavailable else "need_model",
+                "bot_status": "temporarily_unavailable" if unavailable else "need_model",
+                "intent": "product_info", "reason": "card_lookup_unavailable" if unavailable else "item_id_not_found",
+                "answer": ("ตอนนี้ค้นข้อมูลการ์ดสินค้าจากระบบร้านไม่ได้ครับ ขอให้เจ้าหน้าที่ช่วยตรวจสอบก่อน" if unavailable
+                           else "ผมหาสินค้าจาก item_id ที่ส่งมาในรายการร้านไม่พบครับ ลองตรวจเลขอีกครั้งได้ไหมครับ"),
+                "handoff_required": unavailable, "handoff_reason": "card_lookup_unavailable" if unavailable else None,
+                "conversation_id": request.conversation_id, "message_id": request.message_id,
+                "history_pair_count": min(5, (len(history) + 1) // 2), "image_description": "\n".join(
+                    value for value in vision_descriptions if value), "image_descriptions": vision_descriptions,
+                "unresolved_item_ids": list(event.item_ids), "product_cards": [], "sources": []}
+
+    scoped_store = _ShopKnowledgeStore(store, knowledge, scope)
+    shop_engine = ProductChatEngine(store=scoped_store)
+    order_sn = event.order_sn or _extract_order_number(question)
+    def commerce_lookup(intent: str, product_names: list[str], card_context: list[dict[str, Any]]) -> dict[str, Any]:
+        if not legacy_commerce_is_scoped:
+            return {"unavailable": True} if intent in {"order_status", "stock_availability"} else {}
+        if intent == "order_status":
+            order = legacy_data.find_customer_order(str(conversation.get("customer_id") or ""),
+                                                    legacy_shop_name, order_sn)
+            return {"orders": [order] if order else []}
+        product_rows: list[dict[str, Any]] = []
+        item_ids = [str(card.get("item_id") or "") for card in card_context if card.get("item_id")]
+        if item_ids:
+            product_rows.extend(legacy_data._products_by_ids(item_ids, legacy_shop_name).values())
+        if product_names:
+            product_rows.extend(legacy_data.products_for_catalog_names(
+                product_names[:10], knowledge["products"], legacy_shop_name))
+        unique: dict[str, dict[str, Any]] = {}
+        for item in product_rows:
+            if item.get("item_id"):
+                unique[str(item["item_id"])] = item
+        return {"products": list(unique.values())[:10]}
+
+    if not question:
+        question = "ช่วยอ่านข้อความที่ส่งมาและตอบในขอบเขตข้อมูลร้านนี้"
+    try:
+        reply = shop_engine.answer(question, history=history,
+            product_name=listings[0].get("product_name") if len(listings) == 1 else None,
+            card_context=listings, vision_evidence=vision_descriptions,
+            commerce_lookup=commerce_lookup, store_label=scope["shop_name"])
+    except Exception as exc:
+        logger.warning("ticket_answer_failed type=%s", type(exc).__name__)
+        raise HTTPException(status_code=503, detail="answer_engine_unavailable")
+    bot_status = str(reply.get("status") or "handoff_mock")
+    handoff_required = (bot_status in {"handoff_mock", "escalated", "temporarily_unavailable", "key_required"}
+                        or (bot_status == "need_model" and reply.get("reason") == "vision_unavailable")
+                        or reply.get("handoff_sent") is True)
+    reply.update({"bot_status": bot_status, "status": "handoff_required" if handoff_required else bot_status,
+                  "handoff_required": handoff_required,
+                  "handoff_reason": reply.get("reason") if handoff_required else None,
+                  "conversation_id": request.conversation_id, "message_id": request.message_id,
+                  "history_pair_count": min(5, (len(history) + 1) // 2),
+                  "image_description": "\n".join(value for value in vision_descriptions if value),
+                  "image_descriptions": vision_descriptions,
+                  "unresolved_item_ids": [item_id for item_id in event.item_ids if item_id not in card_map]})
+    return reply
+
+
+@app.get("/api/tickets/shops")
+def ticket_shops(admin: dict = Depends(current_admin)) -> dict[str, Any]:
+    try:
+        scopes = store.shop_scopes()
+        return {"shops": [{key: scope[key] for key in ("platform", "platform_name", "shop_id", "shop_name", "files")}
+                           for scope in scopes]}
+    except Exception as exc:
+        logger.warning("ticket_shops_unavailable type=%s", type(exc).__name__)
+        raise HTTPException(status_code=503, detail="shop_scope_unavailable")
+
+
+@app.get("/api/tickets/conversations")
+def ticket_conversations(platform: str = Query(..., min_length=1, max_length=50),
+                         shop_id: str = Query(..., min_length=1, max_length=100),
+                         q: str = Query(default="", max_length=100),
+                         page: int = Query(default=1, ge=1), limit: int = Query(default=60, ge=1, le=100),
+                         admin: dict = Depends(current_admin)) -> dict[str, Any]:
+    try:
+        scopes = store.shop_scopes()
+        return legacy_data.list_conversations(allowed_shops=scopes, query=q, shop_id=shop_id,
+                                              platform=platform, page=page, limit=limit)
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.warning("ticket_conversations_unavailable type=%s", type(exc).__name__)
+        raise HTTPException(status_code=503, detail="legacy_conversations_unavailable")
+
+
+@app.get("/api/tickets/conversations/{conversation_id}/messages")
+def ticket_messages(conversation_id: str, platform: str = Query(..., min_length=1, max_length=50),
+                    shop_id: str = Query(..., min_length=1, max_length=100),
+                    before_at: str | None = Query(default=None, max_length=80),
+                    before_id: str | None = Query(default=None, max_length=200),
+                    limit: int = Query(default=100, ge=1, le=100),
+                    admin: dict = Depends(current_admin)) -> dict[str, Any]:
+    _shop_context(platform, shop_id)
+    try:
+        return legacy_data.list_messages(conversation_id, shop_id, platform,
+            [{"platform": platform.casefold(), "shop_id": shop_id,
+              "shop_name": store.resolve_shop_scope(platform, shop_id)["shop_name"]}],
+            before_at=before_at, before_id=before_id, limit=limit)
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.warning("ticket_messages_unavailable type=%s", type(exc).__name__)
+        raise HTTPException(status_code=503, detail="legacy_messages_unavailable")
+
+
+@app.get("/api/tickets/conversations/{conversation_id}/details")
+def ticket_conversation_details(conversation_id: str, platform: str = Query(..., min_length=1, max_length=50),
+                                shop_id: str = Query(..., min_length=1, max_length=100),
+                                admin: dict = Depends(current_admin)) -> dict[str, Any]:
+    scope, _ = _shop_context(platform, shop_id)
+    try:
+        conversation = _ticket_conversation(conversation_id, shop_id, scope["platform"], [scope])
+        shop_scopes = store.shop_scopes()
+        name_is_unique = sum(1 for candidate in shop_scopes if candidate["platform"] == scope["platform"]
+                             and candidate["shop_name"].casefold() == scope["shop_name"].casefold()) == 1
+        legacy_name = str(conversation.get("legacy_shop_name") or "")
+        orders_unavailable = False
+        try:
+            legacy_alias_is_unique = legacy_data.shop_alias_is_unique(scope["platform"], shop_id, legacy_name)
+            orders = (legacy_data.list_customer_orders(str(conversation.get("customer_id") or ""), legacy_name, 10)
+                      if scope["platform"] == "shopee" and name_is_unique and legacy_alias_is_unique else [])
+        except Exception as exc:
+            logger.warning("ticket_customer_orders_failed type=%s", type(exc).__name__)
+            orders, orders_unavailable = [], True
+        return {"conversation": conversation, "shop": {key: scope[key] for key in
+                ("platform", "platform_name", "shop_id", "shop_name")},
+                "orders": orders, "orders_unavailable": orders_unavailable}
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.warning("ticket_details_unavailable type=%s", type(exc).__name__)
+        raise HTTPException(status_code=503, detail="legacy_customer_details_unavailable")
+
+
+@app.post("/api/tickets/answer")
+def ticket_answer(request: TicketAnswerRequest, admin: dict = Depends(current_admin)) -> dict[str, Any]:
+    return _answer_legacy_message(request)
+
+
+@app.post("/api/engine/answer")
+def legacy_engine_answer(request: LegacyEngineAnswerRequest,
+                         authorization: str | None = Header(default=None)) -> dict[str, Any]:
+    expected = os.getenv("LEGACY_ENGINE_TOKEN", "")
+    supplied = authorization or ""
+    bearer = supplied[7:] if supplied.lower().startswith("bearer ") else ""
+    if not expected or len(expected) < 32 or not hmac.compare_digest(expected, bearer):
+        raise HTTPException(status_code=401, detail="legacy_engine_unauthorized")
+    reply = _answer_legacy_message(request)
+    return {**reply, "source": "chatblackshark", "products": reply.get("product_cards") or [],
+            "image_desc": reply.get("image_description") or "", "request_id": request.request_id}
 
 
 class PreferencesRequest(BaseModel):

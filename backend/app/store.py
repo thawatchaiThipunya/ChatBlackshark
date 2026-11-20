@@ -32,6 +32,8 @@ class SupabaseStore:
         self.token = token or os.getenv("LLM_KEY_STORE_TOKEN", "")
         self.encryption_key = encryption_key or os.getenv("LLM_KEY_ENCRYPTION_KEY", "")
         self._cache: tuple[float, dict[str, Any]] | None = None
+        self._shop_scopes_cache: tuple[float, list[dict[str, Any]]] | None = None
+        self._shop_knowledge_cache: dict[tuple[str, str], tuple[float, dict[str, Any]]] = {}
         self._runtime_cache: tuple[float, dict[str, Any]] | None = None
         self._persona_cache: tuple[float, dict[str, Any]] | None = None
         self._model_catalog_cache: dict[str, tuple[float, list[dict[str, Any]]]] = {}
@@ -60,6 +62,78 @@ class SupabaseStore:
                 "support_models": sorted({item["model_name"] for item in faqs})}
         self._cache = (time.monotonic(), data)
         return data
+
+    def shop_scopes(self) -> list[dict[str, Any]]:
+        """Return shops whose KB files are explicitly attached in Supabase."""
+        if self._shop_scopes_cache and time.monotonic() - self._shop_scopes_cache[0] < 60:
+            return self._shop_scopes_cache[1]
+        platforms = self._request("platforms?select=p_id,code,name&limit=1000")
+        shops = self._request("shopnames?select=s_id,p_id,shop_id,shop_name,status&limit=1000")
+        files = self._request("shop_files?select=s_id,shop_id,file_name&limit=2000")
+        platform_by_id = {str(row.get("p_id")): row for row in platforms if isinstance(row, dict)}
+        files_by_shop: dict[tuple[str, str], list[str]] = {}
+        for row in files:
+            if not isinstance(row, dict) or not row.get("file_name"):
+                continue
+            key = (str(row.get("s_id")), str(row.get("shop_id")))
+            files_by_shop.setdefault(key, []).append(str(row["file_name"]))
+        result = []
+        for row in shops:
+            if not isinstance(row, dict):
+                continue
+            shop_id = str(row.get("shop_id") or "").strip()
+            shop_name = str(row.get("shop_name") or "").strip()
+            platform = platform_by_id.get(str(row.get("p_id"))) or {}
+            code = str(platform.get("code") or "").strip().casefold()
+            attached = list(dict.fromkeys(files_by_shop.get((str(row.get("s_id")), shop_id), [])))
+            if shop_id and shop_name and code and attached:
+                result.append({"platform": code, "platform_name": str(platform.get("name") or code),
+                               "shop_id": shop_id, "shop_name": shop_name,
+                               "files": attached, "status": row.get("status")})
+        file_owners: dict[str, set[tuple[str, str]]] = {}
+        for scope in result:
+            for file_name in scope["files"]:
+                file_owners.setdefault(file_name, set()).add((scope["platform"], scope["shop_id"]))
+        result = [{**scope, "files": [file_name for file_name in scope["files"]
+                    if len(file_owners[file_name]) == 1]}
+                  for scope in result]
+        result = [scope for scope in result if scope["files"]]
+        self._shop_scopes_cache = (time.monotonic(), result)
+        return result
+
+    def resolve_shop_scope(self, platform: str, shop_id: str) -> dict[str, Any] | None:
+        platform_key, shop_key = platform.strip().casefold(), shop_id.strip()
+        if not platform_key or not shop_key:
+            return None
+        return next((scope for scope in self.shop_scopes()
+                     if scope["platform"] == platform_key and scope["shop_id"] == shop_key), None)
+
+    def knowledge_for_shop(self, platform: str, shop_id: str) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
+        """Resolve a shop and return only KB rows from files assigned to that exact shop."""
+        scope = self.resolve_shop_scope(platform, shop_id)
+        if not scope:
+            return None, None
+        key = (scope["platform"], scope["shop_id"])
+        cached = self._shop_knowledge_cache.get(key)
+        if cached and time.monotonic() - cached[0] < 60:
+            return scope, cached[1]
+        global_data = self.knowledge()
+        allowed_files = set(scope["files"])
+
+        def belongs(row: dict[str, Any]) -> bool:
+            source = row.get("source")
+            file_name = source.get("file") if isinstance(source, dict) else None
+            return isinstance(file_name, str) and file_name in allowed_files
+
+        products = [row for row in global_data.get("products", []) if belongs(row)]
+        faqs = [row for row in global_data.get("faqs", []) if belongs(row)]
+        if not products or not faqs:
+            data = {"products": products, "faqs": faqs, "support_models": []}
+        else:
+            data = {"products": products, "faqs": faqs,
+                    "support_models": sorted({str(item["model_name"]) for item in faqs if item.get("model_name")})}
+        self._shop_knowledge_cache[key] = (time.monotonic(), data)
+        return scope, data
 
     def key_action(self, action: str, **kwargs: Any) -> Any:
         if not self.token:

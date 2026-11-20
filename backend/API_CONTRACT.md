@@ -45,3 +45,23 @@ Payment/refund, warranty/claim, tax invoice, unknown products, or missing source
 ```
 
 `key_required` means add a Gemini key through `/llm`. `handoff_mock` only displays a message; no ticket or staff notification is created or sent. Gemini receives evidence for one matched product only and is rejected when it adds unsupported facts.
+
+## Legacy Shopee engine adapter
+
+`POST /api/engine/answer` accepts a server-to-server request from ChatBotProductMS. Set `Authorization: Bearer <LEGACY_ENGINE_TOKEN>`; the token must contain at least 32 characters. The request identifies a message already mirrored to MongoDB:
+
+```json
+{"conversation_id":"legacy-conversation-id","message_id":"inbound-message-id","shop_id":"1191420560","platform":"shopee","request_id":"optional-correlation-id"}
+```
+
+The adapter reads `conversations_shp` and `messages_shp` by the exact platform, shop, conversation, and inbound message ID. It reads at most five prior question/answer pairs, including prior image descriptions from `shadow_replies`. It resolves product cards from `ShpProducts` and checks stock in each active `model_id`; at least one active unit with stock makes the listing available. For order questions it checks `ShpOrders` using the conversation customer ID and exact legacy shop name. Customer and order data are never read from another shop. Current media URLs are described by the configured vision provider in batches of up to five.
+
+The response contains `answer`, `intent`, `reason`, `sources`, `product_cards`, `image_description`, `image_descriptions`, `handoff_required`, `handoff_reason`, `conversation_id`, and `message_id`. It also returns BotWorker-compatible aliases `source`, `products`, `image_desc`, and the caller's `request_id`. When `handoff_required` is true, ChatBotProductMS owns the actual handoff. This endpoint never sends a customer message, writes a shadow reply, opens a ticket, or changes BotWorker state. The caller should persist the answer and `image_description` using its existing BotWorker/shadow reply flow. It should use its existing buffer, debounce, workflow, review, and delivery controls. Retrying a request can regenerate an answer; the legacy caller owns idempotency by message ID.
+
+`GET /api/tickets/shops`, `GET /api/tickets/conversations`, `GET /api/tickets/conversations/{conversation_id}/messages`, `GET /api/tickets/conversations/{conversation_id}/details`, and `POST /api/tickets/answer` power the authenticated `/tickets` read-only test UI. Message pages contain up to 100 rows and return `next_before_at` plus `next_before_id`; pass both as `before_at` and `before_id` to load older history without losing messages that share a timestamp. Testing an answer does not write to the legacy database.
+
+### Shop isolation and configuration
+
+Supabase `platforms`, `shopnames`, and `shop_files` determine supported `(platform, shop_id)` scopes. Product and FAQ rows are included only when their `source.file` is attached to that exact scope. A source filename attached to more than one shop is ambiguous and excluded from all scopes, so uploaded files need unique names per shop. A shop with no unambiguous attached KB files is unavailable to this engine. Commerce collections store only `shopname`, so the adapter also requires the conversation's legacy shop alias to map uniquely to one `shop_id` before reading product or order data. If the mapping is ambiguous, commerce lookup fails closed.
+
+Set `LEGACY_ADMIN_MONGO_URI`, `LEGACY_ADMIN_MONGO_DB`, `LEGACY_COMMERCE_MONGO_URI`, `LEGACY_COMMERCE_MONGO_DB`, and `LEGACY_ENGINE_TOKEN` on the Python API deployment. Collection names default to `conversations_shp`, `messages_shp`, `shadow_replies`, `ShpProducts`, and `ShpOrders`; they can be overridden by the corresponding `LEGACY_*_COLLECTION` variables. The legacy caller needs the deployed API URL and the same engine token. Do not expose either Mongo URI or the token to the browser.

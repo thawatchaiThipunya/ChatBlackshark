@@ -21,7 +21,9 @@ ALIASES = {"item_card": "item", "picture": "image", "faq_liveagents": "faq_livea
            "bundle_deal": "bundle_message"}
 KNOWN = {"text", "image", "image_with_text", "video", "sticker", "item", "variation_card",
          "order", "bundle_message", "notification", "faq_liveagent"}
-PLACEHOLDERS = {"[image]", "[video]", "[sticker]", "[product]", "[order]"}
+PLACEHOLDERS = {"[image]", "[picture]", "[รูปภาพ]", "[video]", "[วิดีโอ]", "[วิดิโอ]",
+                "[sticker]", "[สติกเกอร์]", "[product]", "[item]", "[item_card]",
+                "[variation_card]", "[bundle_message]", "[order]", "[คำสั่งซื้อ]"}
 ITEM_ID_LIST = re.compile(r"\d{8,20}(?:[\s,;，；]+\d{8,20})*")
 
 

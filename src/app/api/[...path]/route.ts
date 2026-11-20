@@ -6,9 +6,11 @@ async function proxy(request: Request, context: RouteContext) {
   const getRoutes = [
     "catalog", "health", "chat/sessions", "auth/me", "auth/sso/login", "auth/sso/callback",
     "admin/dashboard", "admin/preferences", "admin/logs", "llm/keys", "llm/config", "llm/models", "llm/persona",
+    "tickets/shops", "tickets/conversations",
   ];
   if (!((request.method === "GET" && (getRoutes.includes(endpoint) || /^chat\/sessions\/[0-9a-f-]+\/messages$/.test(endpoint) || /^chat\/sessions\/[0-9a-f-]+\/media\/[0-9a-f-]+$/.test(endpoint))) ||
-    (request.method === "POST" && (["chat", "chat/sessions", "chat/media/upload-url", "auth/logout", "admin/preferences", "llm/keys", "llm/config", "llm/persona", "llm/openrouter-key"].includes(endpoint))) ||
+    (request.method === "GET" && /^tickets\/conversations\/[^/]+\/(messages|details)$/.test(endpoint)) ||
+    (request.method === "POST" && (["chat", "chat/sessions", "chat/media/upload-url", "auth/logout", "admin/preferences", "llm/keys", "llm/config", "llm/persona", "llm/openrouter-key", "tickets/answer"].includes(endpoint))) ||
     (request.method === "DELETE" && /^llm\/keys\/\d+$/.test(endpoint)))) {
     return Response.json({ error: "not_found" }, { status: 404 });
   }

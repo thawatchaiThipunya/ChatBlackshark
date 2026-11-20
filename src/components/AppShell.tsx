@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Activity, Bot, ChartNoAxesCombined, ChevronRight, KeyRound, LayoutDashboard,
   LogOut, Menu, MessageCircle, Search, Settings2, ShieldCheck, UserRound, X,
+  MessagesSquare,
 } from "lucide-react";
 
 type AdminUser = { email: string; username: string; name: string; expires_at?: string };
@@ -14,6 +15,7 @@ type NavItem = { href: string; label: string; icon: typeof LayoutDashboard };
 const navItems: NavItem[] = [
   { href: "/dashboard", label: "แดชบอร์ด", icon: LayoutDashboard },
   { href: "/", label: "แชทสินค้า", icon: MessageCircle },
+  { href: "/tickets", label: "Tickets จากระบบร้าน", icon: MessagesSquare },
   { href: "/logs", label: "บันทึกระบบ", icon: ChartNoAxesCombined },
   { href: "/settings", label: "ตั้งค่าการแสดงผล", icon: Settings2 },
   { href: "/llm", label: "โมเดลและ API keys", icon: KeyRound },
@@ -22,7 +24,8 @@ const navItems: NavItem[] = [
 
 const pageLabels: Array<[string, string]> = [
   ["/dashboard", "แดชบอร์ด"], ["/logs", "บันทึกระบบ"], ["/settings", "ตั้งค่าการแสดงผล"],
-  ["/llm", "โมเดลและ API keys"], ["/persona", "บุคลิกการตอบ"], ["/", "แชทสินค้า"],
+  ["/llm", "โมเดลและ API keys"], ["/persona", "บุคลิกการตอบ"],
+  ["/tickets", "Tickets จากระบบร้าน"], ["/", "แชทสินค้า"],
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
