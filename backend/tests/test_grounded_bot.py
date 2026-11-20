@@ -317,6 +317,25 @@ class IntentFlowTests(unittest.TestCase):
         self.assertNotIn("หน้าจอ AMOLED 1.43 นิ้ว", prompts[-1])
         self.assertIn("edition ในรายการขาย", prompts[-1])
 
+    def test_unmapped_available_listing_still_returns_a_product_card(self):
+        def generate(key, prompt):
+            if "Return ONLY JSON with keys: intent" in prompt:
+                return json.dumps({"intent": "product_info", "topic": "product card", "needs": ["what is this"],
+                                   "product_names": [], "unresolved": False})
+            return "การ์ดนี้เป็นรายการแท็บเล็ต Pad 7 ครับ"
+
+        listing = {"item_id": "43524489240", "name": "Black Shark Pad 7 / Pad 7 Pro",
+                   "description": "รายการขายแท็บเล็ต", "availability": "available",
+                   "image_url": "https://example.com/pad7.jpg", "models": []}
+        engine = self.engine([{"name": "Black Shark GS3", "description": "นาฬิกา", "source": {}}], generate)
+
+        result = engine.answer("ช่วยดูการ์ดนี้", card_context=[listing],
+                               commerce_lookup=lambda intent, names, cards: {"products": [listing]})
+
+        self.assertEqual(result["status"], "answered")
+        self.assertEqual(result["product_cards"][0]["item_id"], "43524489240")
+        self.assertEqual(result["product_cards"][0]["image_url"], listing["image_url"])
+
     def test_card_troubleshooting_uses_the_matching_kb_faq(self):
         prompts = []
         faq = {"model_name": "Black Shark GS3 Ultra Smart Watch Global Version",

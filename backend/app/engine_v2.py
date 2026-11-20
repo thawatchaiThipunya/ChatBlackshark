@@ -757,10 +757,15 @@ class ProductChatEngine:
         if not names:
             if card_evidence:
                 card_intent = "product_info" if intent == "comparison" else intent
+                commerce = lookup_commerce()
                 reply = self._reply(question, card_intent, needs, [], history, session_id,
-                                    evidence_override=card_evidence, source_override=card_sources,
+                                    evidence_override="\n\n".join(
+                                        part for part in (card_evidence, commerce_evidence(commerce)) if part),
+                                    source_override=card_sources,
                                     product_label=" / ".join(str(card.get("name") or "") for card in card_context if card.get("name")) or None)
                 reply["product_name"] = None
+                if commerce.get("products"):
+                    reply = include_cards(reply, commerce)
                 return finish(reply)
             return finish({"status": "need_model", "intent": intent, "reason": "product_reference_missing",
                            "answer": "ขอชื่อรุ่นที่หมายถึงอีกนิดครับ จะได้เช็กข้อมูลให้ตรงตัว",
