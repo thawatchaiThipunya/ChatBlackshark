@@ -60,7 +60,8 @@ class CardChatFlowTests(unittest.TestCase):
 
             def chat_action(self, guest, action, session_id=None, payload=None):
                 if action == "load_session":
-                    return [{"role": "assistant", "content": "เทียบรุ่นให้แล้วครับ", "payload": {
+                    return [{"role": "user", "content": "GS3 กับ GS3 Ultra ต่างกันยังไง", "payload": {}},
+                            {"role": "assistant", "content": "เทียบรุ่นให้แล้วครับ", "payload": {
                         "product_name": None,
                         "intent_analysis": {"product_names": ["Black Shark GS3", "Black Shark GS3 Ultra"]},
                     }}]
@@ -81,7 +82,7 @@ class CardChatFlowTests(unittest.TestCase):
         with patch.object(main, "store", fake_store), patch.object(main, "engine", engine_spy):
             main.chat(request, chat_guest="g" * 40)
 
-        self.assertEqual(engine_spy.call[1]["history"][0]["product_names"],
+        self.assertEqual(engine_spy.call[1]["history"][0]["product_scope"]["product_names"],
                          ["Black Shark GS3", "Black Shark GS3 Ultra"])
 
 
