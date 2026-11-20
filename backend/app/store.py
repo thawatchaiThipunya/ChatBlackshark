@@ -76,6 +76,15 @@ class SupabaseStore:
             "p_payload": payload or {},
         })
 
+    def chat_messages_page(self, guest_token: str, session_id: str,
+                           before_created_at: str | None = None,
+                           before_id: str | None = None) -> dict[str, Any]:
+        return self._request("rpc/bot_chat_messages_page", {
+            "p_app_token": self.token, "p_guest_token": guest_token,
+            "p_session_id": session_id, "p_before_created_at": before_created_at,
+            "p_before_id": before_id, "p_limit": 100,
+        })
+
     def admin_action(self, session_token: str | None, action: str,
                      payload: dict[str, Any] | None = None) -> Any:
         if not self.token:

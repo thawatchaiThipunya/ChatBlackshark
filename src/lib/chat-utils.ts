@@ -70,11 +70,8 @@ export function buildSessionChatRequest(sessionId: string, question: string, his
   const cleanQuestion = question.trim();
   if (!cleanQuestion) throw new Error("กรุณาพิมพ์คำถามก่อนส่ง");
   if (!sessionId.trim()) throw new Error("ไม่พบ session ของแชท กรุณาเริ่มแชทใหม่");
-  const trimmedHistory = history.slice(-12).map((turn) => ({
-    ...turn,
-    content: turn.content.length > 900 ? turn.content.slice(0, 900) : turn.content,
-  }));
-  return { session_id: sessionId, question: cleanQuestion, history: trimmedHistory };
+  void history;
+  return { session_id: sessionId, question: cleanQuestion };
 }
 
 export function presentChatReply(reply: ChatReply) {

@@ -27,6 +27,7 @@ from .product_identity import match_catalog_product
 from .admin_auth import ADMIN_SESSION_COOKIE, require_admin as require_admin_session
 from .vision import describe_batch_with_key_rotation, describe_media_batch, describe_openrouter_batch
 from .ai_usage import set_usage_reference, reset_usage_reference
+from .history_context import recent_context
 
 
 app = FastAPI(
@@ -97,7 +98,7 @@ class ChatTurn(BaseModel):
     role: Literal["user", "assistant"]
     content: str = Field(min_length=1, max_length=4000)
     product_name: str | None = Field(default=None, max_length=200)
-    product_names: list[str] = Field(default_factory=list, max_length=10)
+    product_names: list[str] = Field(default_factory=list, max_length=50)
     card_title: str | None = Field(default=None, max_length=300)
     card_product_names: list[str] = Field(default_factory=list, max_length=10)
 
@@ -336,10 +337,20 @@ def list_chat_sessions(chat_guest: str | None = Cookie(default=None)) -> dict:
 
 
 @app.get("/api/chat/sessions/{session_id}/messages")
-def list_chat_messages(session_id: str, chat_guest: str | None = Cookie(default=None)) -> dict:
+def list_chat_messages(session_id: str, before_at: str | None = None,
+                       before_id: str | None = None,
+                       chat_guest: str | None = Cookie(default=None)) -> dict:
     try:
         guest = guest_or_401(chat_guest)
-        return {"messages": store.chat_action(guest, "load_session", valid_session(session_id))}
+        if bool(before_at) != bool(before_id):
+            raise HTTPException(status_code=422, detail="invalid_cursor")
+        if before_at:
+            try:
+                datetime.fromisoformat(before_at.replace("Z", "+00:00"))
+            except ValueError:
+                raise HTTPException(status_code=422, detail="invalid_cursor")
+            valid_session(before_id or "")
+        return store.chat_messages_page(guest, valid_session(session_id), before_at, before_id)
     except HTTPException:
         raise
     except urllib.error.HTTPError as exc:
@@ -508,17 +519,10 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
     except Exception:
         raise HTTPException(status_code=503, detail="chat_store_unavailable")
     is_item_event = event.message_type in ("item", "variation_card", "bundle_message") and bool(event.item_ids)
-    history = []
-    for row in prior[-12:]:
-        payload = row.get("payload") or {}
-        cards = payload.get("product_cards") if isinstance(payload.get("product_cards"), list) else []
-        history.append({"role": row["role"], "content": row["content"],
-                        "product_name": payload.get("product_name"),
-                        "card_title": payload.get("card_title"),
-                        "product_names": ((payload.get("intent_analysis") or {}).get("product_names", [])
-                                          if isinstance(payload.get("intent_analysis"), dict) else []),
-                        "card_product_names": [card.get("product_name") for card in cards
-                                               if isinstance(card, dict) and card.get("product_name")]})
+    history, product_scopes = recent_context(prior)
+    user_turns = [turn for turn in history if turn["role"] == "user"]
+    for turn, scope in zip(user_turns[-2:], product_scopes):
+        turn["product_scope"] = scope
     listings = []
     if is_item_event:
         for item_id in event.item_ids:
@@ -656,6 +660,8 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
     elif event.message_type == "unknown":
         reply = {"status": "need_model", "answer": "ผมยังอ่านข้อมูลที่ส่งมาไม่ครบครับ ช่วยพิมพ์สิ่งที่อยากให้ดูอีกนิดได้ไหมครับ"}
     else:
+        if product_scopes and product_scopes[-1].get("category"):
+            anchored_name = None
         reply = engine.answer(question or "ช่วยดูภาพหรือวิดีโอที่ส่งมา", product_name=request.product_name or anchored_name,
                               model_name=request.model_name, history=history, session_id=session_id,
                               vision_evidence=descriptions, card_context=current_card_context)

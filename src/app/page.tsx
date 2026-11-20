@@ -44,6 +44,7 @@ type ChatMessage = {
   cardTitle?: string;
   productCards?: Array<{ itemId: string; title: string; imageUrl?: string; productName?: string }>;
   attachments?: string[];
+  createdAt?: string;
 };
 type ChatSession = { id: string; title: string; updatedAt: number; messages: ChatMessage[] };
 
@@ -55,7 +56,7 @@ const GREETING: ChatMessage = {
 };
 
 type StoredSession = { id: string; title: string; updated_at: string };
-type StoredMessage = { id: string; role: "user" | "assistant"; content: string; payload?: Record<string, unknown> };
+type StoredMessage = { id: string; role: "user" | "assistant"; content: string; created_at: string; payload?: Record<string, unknown> };
 
 function readProductCards(value: unknown) {
   if (!Array.isArray(value)) return [];
@@ -89,6 +90,7 @@ function fromStoredMessage(row: StoredMessage): ChatMessage {
     ? analysis.product_names.filter((name): name is string => typeof name === "string") : [];
   return {
     id: row.id, role: row.role, text: row.content,
+    createdAt: row.created_at,
     kind: row.role === "user" ? "answer" : payload.status === "escalated" ? "handoff" :
       payload.status === "need_model" ? "need_model" : "answer",
     productName: typeof payload.product_name === "string" ? payload.product_name : undefined,
@@ -140,6 +142,9 @@ export default function HomePage() {
   const [knowledgeOpen, setKnowledgeOpen] = useState(false);
   const [sessionSearch, setSessionSearch] = useState("");
   const listRef = useRef<HTMLDivElement>(null);
+  const loadingOlderRef = useRef(false);
+  const preserveScrollRef = useRef(false);
+  const [hasOlder, setHasOlder] = useState<Record<string, boolean>>({});
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const navigationVersionRef = useRef(0);
 
@@ -189,8 +194,36 @@ export default function HomePage() {
   async function loadMessages(sessionId: string) {
     const response = await fetch(`/api/chat/sessions/${sessionId}/messages`, { cache: "no-store" });
     if (!response.ok) throw new Error("chat_history_unavailable");
-    const data = await response.json() as { messages: StoredMessage[] };
+    const data = await response.json() as { messages: StoredMessage[]; has_more: boolean };
+    setHasOlder((current) => ({ ...current, [sessionId]: data.has_more }));
     updateSession(sessionId, (current) => ({ ...current, messages: [GREETING, ...data.messages.map(fromStoredMessage)] }));
+  }
+
+  async function loadOlderMessages(sessionId: string) {
+    if (loadingOlderRef.current || !hasOlder[sessionId]) return;
+    const session = sessions.find((item) => item.id === sessionId);
+    const oldest = session?.messages.find((message) => message.createdAt);
+    const list = listRef.current;
+    if (!oldest?.createdAt || !list) return;
+    loadingOlderRef.current = true;
+    const previousHeight = list.scrollHeight;
+    try {
+      const params = new URLSearchParams({ before_at: oldest.createdAt, before_id: oldest.id });
+      const response = await fetch(`/api/chat/sessions/${sessionId}/messages?${params}`, { cache: "no-store" });
+      if (!response.ok) throw new Error("chat_history_unavailable");
+      const data = await response.json() as { messages: StoredMessage[]; has_more: boolean };
+      preserveScrollRef.current = true;
+      setHasOlder((current) => ({ ...current, [sessionId]: data.has_more }));
+      updateSession(sessionId, (current) => {
+        const known = new Set(current.messages.map((message) => message.id));
+        return { ...current, messages: [current.messages[0],
+          ...data.messages.filter((row) => !known.has(row.id)).map(fromStoredMessage),
+          ...current.messages.slice(1)] };
+      });
+      requestAnimationFrame(() => { if (listRef.current === list) list.scrollTop += list.scrollHeight - previousHeight; });
+    } catch {
+      setComposerErrors((current) => ({ ...current, [sessionId]: "โหลดข้อความเก่าไม่ได้ ลองเลื่อนขึ้นอีกครั้ง" }));
+    } finally { loadingOlderRef.current = false; }
   }
 
   const activeSession = sessions.find((session) => session.id === activeSessionId);
@@ -201,6 +234,7 @@ export default function HomePage() {
   const attachedFiles = mediaFiles[activeSessionId] ?? [];
 
   useEffect(() => {
+    if (preserveScrollRef.current) { preserveScrollRef.current = false; return; }
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
   }, [activeSessionId, messages, sending]);
 
@@ -253,20 +287,7 @@ export default function HomePage() {
     if (!session || sendingSessions.has(session.id)) return;
     let payload: ReturnType<typeof buildSessionChatRequest>;
     try {
-      const history = session.messages
-        .filter((message) => message.kind !== "welcome" && message.kind !== "error")
-        .map((message) => ({
-          role: message.role,
-          content: message.text,
-          ...(message.productName ? { product_name: message.productName } : {}),
-          ...(message.productNames?.length ? { product_names: message.productNames } : {}),
-          ...(message.cardTitle ? { card_title: message.cardTitle } : {}),
-          ...(message.productCards?.length ? {
-            card_product_names: message.productCards.flatMap((card) => card.productName ? [card.productName] : []),
-          } : {}),
-        } as const))
-        .slice(-12);
-      payload = buildSessionChatRequest(session.id, draft || (itemIds[session.id] ? "ช่วยดูสินค้าจากการ์ดนี้" : mediaFiles[session.id]?.length ? "ช่วยดูภาพหรือวิดีโอนี้" : ""), history);
+      payload = buildSessionChatRequest(session.id, draft || (itemIds[session.id] ? "ช่วยดูสินค้าจากการ์ดนี้" : mediaFiles[session.id]?.length ? "ช่วยดูภาพหรือวิดีโอนี้" : ""), []);
     } catch (error) {
       setComposerErrors((current) => ({ ...current, [session.id]: error instanceof Error ? error.message : "กรุณาตรวจสอบคำถามอีกครั้ง" }));
       return;
@@ -426,7 +447,8 @@ export default function HomePage() {
               </button>
             </div>
 
-            <div className="message-list" ref={listRef} role="log" aria-live="polite" aria-relevant="additions text">
+            <div className="message-list" ref={listRef} role="log" aria-live="polite" aria-relevant="additions text"
+              onScroll={(event) => { if (event.currentTarget.scrollTop < 80) void loadOlderMessages(activeSession.id); }}>
               {messages.map((message) => (
                 <article key={message.id} className={`message-row ${message.role === "user" ? "from-user" : "from-assistant"}`}>
                   {message.role === "assistant" && (

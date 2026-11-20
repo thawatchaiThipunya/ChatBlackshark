@@ -23,15 +23,13 @@ test("unified chat sends one model selection for specs and troubleshooting", () 
   });
 });
 
-test("keeps the bot's recommended product attached to its own chat history", () => {
+test("sends the session id and lets the server load its history", () => {
   assert.deepEqual(chatUtils.buildSessionChatRequest?.("session-1", "แล้ว Strava ล่ะ", [
     { role: "assistant", content: "ขอแนะนำรุ่นนี้ครับ", product_name: "Black Shark GS3",
       product_names: ["Black Shark GS3", "Black Shark GS3 Ultra"] },
   ]), {
     session_id: "session-1",
     question: "แล้ว Strava ล่ะ",
-    history: [{ role: "assistant", content: "ขอแนะนำรุ่นนี้ครับ", product_name: "Black Shark GS3",
-      product_names: ["Black Shark GS3", "Black Shark GS3 Ultra"] }],
   });
 });
 
@@ -62,12 +60,12 @@ test("shows provider exhaustion as a temporary error, not a staff handoff", () =
   assert.equal(presented?.handoffSent, false);
 });
 
-test("truncates overlong history turns so the session stays valid", () => {
+test("does not send long or overfull history back to the API", () => {
   const longText = "ยาว".repeat(2000);
   const request = chatUtils.buildSessionChatRequest?.("session-1", "คำถาม", [
     { role: "assistant", content: longText },
   ]);
-  assert.ok(request.history[0].content.length <= 900);
+  assert.deepEqual(request, { session_id: "session-1", question: "คำถาม" });
 });
 
 test("presents a real escalation as a sent handoff with case id", () => {

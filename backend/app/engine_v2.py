@@ -128,10 +128,10 @@ def _json_object(raw: str) -> dict[str, Any] | None:
 
 def _safe_history(history: list[dict[str, Any]] | None) -> list[dict[str, Any]]:
     result: list[dict[str, Any]] = []
-    for turn in (history or [])[-12:]:
+    for turn in (history or [])[-10:]:
         if turn.get("role") not in {"user", "assistant"}:
             continue
-        content = " ".join(str(turn.get("content") or "").split())[:700]
+        content = " ".join(str(turn.get("content") or "").split())[:4000]
         if not content or PRIVATE_PATTERN.search(content):
             continue
         safe_turn = {"role": turn["role"], "content": content,
@@ -145,7 +145,13 @@ def _safe_history(history: list[dict[str, Any]] | None) -> list[dict[str, Any]]:
         card_names = turn.get("card_product_names")
         if isinstance(card_names, list):
             safe_turn["card_product_names"] = [str(name)[:200] for name in card_names[:10] if isinstance(name, str)]
+        if turn.get("product_scope"):
+            safe_turn["product_scope"] = turn["product_scope"]
+        if turn.get("vision_descriptions"):
+            safe_turn["vision_descriptions"] = [str(value)[:4000] for value in turn["vision_descriptions"][:10]]
         result.append(safe_turn)
+    while len(json.dumps(result, ensure_ascii=False)) > 24000 and len(result) > 2:
+        result = result[2:]
     return result
 
 
@@ -291,6 +297,9 @@ class GeminiAnswerer:
             "Use product names on an attached card as the current product context. Only choose exact names from CATALOG; "
             "if a card is an unlisted edition, do not map it to a similar base model. "
             "The CATALOG is only an identity list, not factual proof of specs.\n"
+            "In HISTORY, product_scope records what the customer asked about in the last two questions. "
+            "A category scope means the customer asked about a category, not that every listed model is their chosen product. "
+            "Resolve follow-up references from the current question first, then those two scopes.\n"
             f"CATALOG: {json.dumps(product_names, ensure_ascii=False)}\n"
             f"PRODUCT_CATEGORIES: {json.dumps(categories, ensure_ascii=False)}\n"
             f"CURRENT_PRODUCT_CARDS: {json.dumps(cards, ensure_ascii=False)}\n"
