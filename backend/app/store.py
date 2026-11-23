@@ -117,7 +117,6 @@ class SupabaseStore:
         cached = self._shop_knowledge_cache.get(key)
         if cached and time.monotonic() - cached[0] < 60:
             return scope, cached[1]
-        global_data = self.knowledge()
         allowed_files = set(scope["files"])
 
         def belongs(row: dict[str, Any]) -> bool:
@@ -126,10 +125,26 @@ class SupabaseStore:
             return isinstance(file_name, str) and file_name in allowed_files
 
         products = []
+        faqs = []
+        for file_name in scope["files"]:
+            file_filter = "source->>file=eq." + urllib.parse.quote(file_name, safe="")
+            for table, columns, target in (
+                ("bot_products", "name,description,source,category", products),
+                ("bot_faqs", "model_name,question,answer,source", faqs),
+            ):
+                offset = 0
+                while True:
+                    rows = self._request(
+                        f"{table}?select={columns}&{file_filter}&order=source_index.asc"
+                        f"&limit=1000&offset={offset}"
+                    )
+                    target.extend(row for row in rows if isinstance(row, dict) and belongs(row))
+                    if not rows:
+                        break
+                    offset += len(rows)
         seen_records: set[tuple[str, str, str, str]] = set()
-        for row in global_data.get("products", []):
-            if not belongs(row):
-                continue
+        unique_products = []
+        for row in products:
             source = row.get("source") or {}
             cell = str(source.get("cell") or "") if isinstance(source, dict) else ""
             if cell:
@@ -138,8 +153,8 @@ class SupabaseStore:
                 if identity in seen_records:
                     continue
                 seen_records.add(identity)
-            products.append(row)
-        faqs = [row for row in global_data.get("faqs", []) if belongs(row)]
+            unique_products.append(row)
+        products = unique_products
         if not products or not faqs:
             data = {"products": products, "faqs": faqs, "support_models": []}
         else:
