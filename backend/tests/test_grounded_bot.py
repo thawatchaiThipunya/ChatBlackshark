@@ -62,6 +62,78 @@ class IntentFlowTests(unittest.TestCase):
         store = FakeStore(products, faqs)
         return ProductChatEngine(store=store, answerer=GeminiAnswerer(store, generate))
 
+    def test_comparison_followup_uses_previous_product_scope_when_intent_omits_names(self):
+        prompts = []
+        def generate(key, prompt):
+            prompts.append(prompt)
+            if "Return ONLY JSON with keys: intent" in prompt:
+                return json.dumps({"intent": "comparison", "topic": "battery", "needs": ["battery life"],
+                                   "product_names": [], "unresolved": False})
+            return "GS3 อยู่ได้ 21 วัน ส่วน GS3 Ultra อยู่ได้ 18 วันครับ"
+        products = [
+            {"name": "Black Shark GS3", "description": "แบตเตอรี่ 21 วัน", "source": {}},
+            {"name": "Black Shark GS3 Ultra", "description": "แบตเตอรี่ 18 วัน", "source": {}},
+        ]
+        history = [{"role": "user", "content": "เทียบ GS3 กับ GS3 Ultra", "product_scope": {
+            "question": "เทียบ GS3 กับ GS3 Ultra", "product_names": ["Black Shark GS3", "Black Shark GS3 Ultra"]}},
+            {"role": "assistant", "content": "เทียบให้แล้วครับ"}]
+
+        result = self.engine(products, generate).answer("ตัวไหนแบตอึดกว่า", history=history)
+
+        self.assertEqual(result["status"], "answered")
+        self.assertEqual(result["intent_analysis"]["product_names"],
+                         ["Black Shark GS3", "Black Shark GS3 Ultra"])
+        self.assertIn("แบตเตอรี่ 21 วัน", prompts[-1])
+        self.assertIn("แบตเตอรี่ 18 วัน", prompts[-1])
+
+    def test_new_explicit_edition_does_not_reuse_previous_model_as_fact_source(self):
+        prompts = []
+        def generate(key, prompt):
+            prompts.append(prompt)
+            if "Return ONLY JSON with keys: intent" in prompt:
+                return json.dumps({"intent": "product_info", "topic": "GPS battery", "needs": ["GPS battery"],
+                                   "product_names": [], "product_mentions": ["Ultra"], "unresolved": False})
+            return "รุ่นนี้ยังไม่มีข้อมูล GPS ครับ"
+        products = [
+            {"name": "Black Shark RUN", "description": "GPS 10 ชั่วโมง", "source": {}},
+            {"name": "Black Shark GS3 Ultra", "description": "GPS 25 ชั่วโมง", "source": {}},
+        ]
+
+        result = self.engine(products, generate).answer(
+            "ถ้าเอา Ultra เปิด GPS แบตได้กี่ชม", product_name="Black Shark RUN")
+
+        self.assertNotIn("Black Shark RUN", result["intent_analysis"]["product_names"])
+        self.assertFalse(any("GPS 10 ชั่วโมง" in prompt for prompt in prompts[1:]))
+
+    def test_explicit_same_model_keeps_current_kb_context_if_intent_omits_name(self):
+        def generate(key, prompt):
+            if "Return ONLY JSON with keys: intent" in prompt:
+                return json.dumps({"intent": "product_info", "topic": "battery", "needs": ["battery life"],
+                                   "product_names": [], "product_mentions": ["GS3"], "unresolved": False})
+            return "GS3 ใช้ได้ 21 วันครับ"
+        engine = self.engine([{"name": "Black Shark GS3", "description": "แบตเตอรี่ 21 วัน", "source": {}}], generate)
+
+        result = engine.answer("GS3 แบตได้กี่วัน", product_name="Black Shark GS3")
+
+        self.assertEqual(result["intent_analysis"]["product_names"], ["Black Shark GS3"])
+        self.assertEqual(result["status"], "answered")
+
+    def test_singular_followup_does_not_assume_one_of_two_prior_models(self):
+        def generate(key, prompt):
+            if "Return ONLY JSON with keys: intent" in prompt:
+                return json.dumps({"intent": "compatibility", "topic": "swimming", "needs": ["swimming"],
+                                   "product_names": [], "unresolved": False})
+            return "ยังระบุรุ่นไม่ได้ครับ"
+        products = [{"name": "Black Shark GS3", "description": "5ATM", "source": {}},
+                    {"name": "Black Shark GS3 Ultra", "description": "5ATM", "source": {}}]
+        history = [{"role": "user", "content": "เทียบสองรุ่น", "product_scope": {
+            "product_names": ["Black Shark GS3", "Black Shark GS3 Ultra"]}},
+            {"role": "assistant", "content": "เทียบแล้วครับ"}]
+
+        result = self.engine(products, generate).answer("ใส่ว่ายน้ำได้ไหม", history=history)
+
+        self.assertEqual(result["intent_analysis"]["product_names"], [])
+
     def test_usage_answer_can_use_product_guide_alongside_faq(self):
         prompts = []
         def generate(key, prompt):

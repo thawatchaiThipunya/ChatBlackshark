@@ -11,6 +11,7 @@ from .store import SupabaseStore
 from .openrouter import complete as openrouter_complete
 from .ai_usage import AiUsageHubUnavailable, call_gemini
 from .product_categories import category_from_description
+from .product_identity import match_catalog_product
 
 logger = logging.getLogger(__name__)
 INTENTS = {"smalltalk", "product_search", "product_info", "compatibility", "comparison", "troubleshooting", "image_understanding", "store_support", "order_status", "stock_availability", "out_of_scope"}
@@ -594,8 +595,24 @@ class ProductChatEngine:
             return {**handoff(reason, "intent"), "session_id": session_id}
         intent, needs = plan["intent"], plan["needs"]
         names = [name for name in plan["product_names"] if name in catalog]
+        if not names and not plan.get("product_mentions") and intent in {
+                "product_info", "compatibility", "comparison", "troubleshooting", "stock_availability"}:
+            recent_scopes = [turn.get("product_scope") for turn in history[-10:]
+                             if turn.get("role") == "user" and isinstance(turn.get("product_scope"), dict)]
+            for previous_scope in reversed(recent_scopes[-2:]):
+                if previous_scope.get("category"):
+                    break
+                previous_names = [name for name in previous_scope.get("product_names", []) if name in catalog]
+                scope_matches = len(previous_names) >= 2 if intent == "comparison" else len(previous_names) == 1
+                if scope_matches:
+                    names = list(dict.fromkeys(previous_names))[:10]
+                    break
         active_product = product_name or model_name
         if active_product not in catalog:
+            active_product = None
+        if plan.get("product_mentions") and not names and not any(
+                match_catalog_product(mention, products) == active_product
+                for mention in plan["product_mentions"]):
             active_product = None
         card_models = list(dict.fromkeys(card.get("product_name") for card in card_context
                                          if card.get("product_name") in catalog))

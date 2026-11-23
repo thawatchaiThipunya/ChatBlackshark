@@ -5,6 +5,73 @@ from backend.app import main
 
 
 class CardChatFlowTests(unittest.TestCase):
+    def test_followup_uses_kb_product_not_previous_recommendation_cards(self):
+        session_id = "11111111-1111-4111-8111-111111111111"
+        previous = [
+            {"role": "user", "content": "GS3 Ultra กันน้ำระดับไหน", "payload": {}},
+            {"role": "assistant", "content": "GS3 Ultra กันน้ำ 5ATM", "payload": {
+                "product_name": "Black Shark GS3 Ultra",
+                "intent_analysis": {"product_names": ["Black Shark GS3 Ultra"]},
+                "product_cards": [{"item_id": "1", "name": "GS3 Ultra listing"},
+                                  {"item_id": "2", "name": "GS3 listing"}],
+            }},
+        ]
+
+        class FakeStore:
+            def chat_action(self, guest, action, session_id=None, payload=None):
+                if action == "load_session":
+                    return previous
+                if action == "product_anchor":
+                    return None
+                return {"id": "saved"}
+
+        class EngineSpy:
+            def answer(self, question, **kwargs):
+                self.kwargs = kwargs
+                return {"status": "answered", "intent": "compatibility", "answer": "ไม่แนะนำซาวน่าครับ",
+                        "product_name": "Black Shark GS3 Ultra", "sources": []}
+
+        engine_spy = EngineSpy()
+        scope = {"platform": "shopee", "shop_id": "1191420560", "shop_name": "Black Shark Thailand"}
+        knowledge = {"products": [{"name": "Black Shark GS3 Ultra", "description": "ไม่แนะนำซาวน่า"}], "faqs": []}
+        request = main.ChatRequest(session_id=session_id, question="อาบน้ำอุ่นได้ไหม")
+        with patch.object(main, "store", FakeStore()), \
+             patch.object(main, "_shop_context", return_value=(scope, knowledge)), \
+             patch.object(main, "ProductChatEngine", return_value=engine_spy):
+            main.chat(request, chat_guest="g" * 40)
+
+        self.assertEqual(engine_spy.kwargs["product_name"], "Black Shark GS3 Ultra")
+        self.assertEqual(engine_spy.kwargs["card_context"], [])
+
+    def test_old_recommendation_is_not_reused_after_unrelated_exchange(self):
+        previous = [
+            {"role": "user", "content": "แนะนำนาฬิกา", "payload": {}},
+            {"role": "assistant", "content": "ลอง GS3", "payload": {"product_name": "Black Shark GS3"}},
+            {"role": "user", "content": "ขอบคุณ", "payload": {}},
+            {"role": "assistant", "content": "ยินดีครับ", "payload": {}},
+        ]
+        class FakeStore:
+            def chat_action(self, guest, action, session_id=None, payload=None):
+                if action == "load_session":
+                    return previous
+                if action == "product_anchor":
+                    return None
+                return {"id": "saved"}
+        class EngineSpy:
+            def answer(self, question, **kwargs):
+                self.kwargs = kwargs
+                return {"status": "need_model", "answer": "หมายถึงรุ่นไหนครับ", "sources": []}
+        spy = EngineSpy()
+        scope = {"platform": "shopee", "shop_id": "1191420560", "shop_name": "Black Shark Thailand"}
+        knowledge = {"products": [{"name": "Black Shark GS3", "description": "นาฬิกา"}], "faqs": []}
+        request = main.ChatRequest(session_id="11111111-1111-4111-8111-111111111111", question="แบตกี่วัน")
+        with patch.object(main, "store", FakeStore()), \
+             patch.object(main, "_shop_context", return_value=(scope, knowledge)), \
+             patch.object(main, "ProductChatEngine", return_value=spy):
+            main.chat(request, chat_guest="g" * 40)
+
+        self.assertIsNone(spy.kwargs["product_name"])
+
     def test_public_chat_uses_only_configured_shop_kb_and_scopes_card_lookup(self):
         session_id = "11111111-1111-4111-8111-111111111111"
         scope = {"platform": "shopee", "shop_id": "1191420560", "shop_name": "Black Shark Thailand",

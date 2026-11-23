@@ -1093,6 +1093,8 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
     stored_cards: list[dict] = []
     stored_card_index = -1
     for index, row in enumerate(prior):
+        if row.get("role") != "user":
+            continue
         payload = row.get("payload") or {}
         cards = payload.get("product_cards") if isinstance(payload.get("product_cards"), list) else []
         if cards:
@@ -1125,6 +1127,11 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
         anchored_name = card_models[0]
     elif not current_card_context and product_anchor:
         anchored_name = product_anchor.get("product_name")
+    if not current_card_context and not anchored_name:
+        last_reply = prior[-1] if prior and prior[-1].get("role") == "assistant" else {}
+        last_name = (last_reply.get("payload") or {}).get("product_name")
+        if last_name in {item["name"] for item in catalog_products}:
+            anchored_name = last_name
     descriptions = [""] * len(request.attachment_ids)
     pending = []
     for index, attachment_id in enumerate(request.attachment_ids):
