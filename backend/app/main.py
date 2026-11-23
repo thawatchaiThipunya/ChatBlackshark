@@ -19,7 +19,7 @@ from urllib.parse import urlparse
 from fastapi import FastAPI, HTTPException, Cookie, Depends, Header, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from .engine_v2 import ProductChatEngine, get_catalog
 from .store import SupabaseStore
@@ -30,6 +30,12 @@ from .admin_auth import ADMIN_SESSION_COOKIE, require_admin as require_admin_ses
 from .vision import describe_batch_with_key_rotation, describe_media_batch, describe_openrouter_batch
 from .ai_usage import set_usage_reference, reset_usage_reference
 from .history_context import recent_context
+from .engine_tokens import (
+    ACCESS_TOKEN_TTL_SECONDS,
+    MIN_SECRET_LENGTH,
+    issue_engine_access_token,
+    verify_engine_access_token,
+)
 from . import legacy_data
 
 
@@ -117,11 +123,23 @@ class ChatRequest(BaseModel):
     history: list[ChatTurn] = Field(default_factory=list, max_length=24)
 
 
+class EnginePersonaPayload(BaseModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+    bot_name: str = Field(default="ผู้ช่วยร้าน", min_length=1, max_length=80)
+    persona_text: str = Field(default="", max_length=2000)
+    friendliness: int = Field(default=50, ge=0, le=100)
+    length: Literal["short", "medium", "long"] = "medium"
+    detail_level: int = Field(default=50, ge=0, le=100)
+    voice: Literal["male", "female"] = "male"
+
+
 class TicketAnswerRequest(BaseModel):
     conversation_id: str = Field(min_length=1, max_length=200)
     message_id: str = Field(min_length=1, max_length=200)
     shop_id: str = Field(min_length=1, max_length=100)
     platform: str = Field(min_length=1, max_length=50)
+    persona: EnginePersonaPayload | None = None
 
 
 class LegacyEngineAnswerRequest(TicketAnswerRequest):
@@ -137,6 +155,7 @@ class LegacyEngineTestAnswerRequest(BaseModel):
     images: list[str] = Field(default_factory=list, max_length=10)
     item_ids: list[str] = Field(default_factory=list, max_length=10)
     order_sn: str | None = Field(default=None, max_length=100)
+    persona: EnginePersonaPayload | None = None
 
 
 engine = ProductChatEngine()
@@ -482,13 +501,17 @@ def catalog(admin: dict = Depends(current_admin)) -> dict:
 
 class _ShopKnowledgeStore:
     """Per-request knowledge view; provider settings and keys remain shared."""
-    def __init__(self, base: SupabaseStore, knowledge: dict[str, Any], scope: dict[str, Any]):
+    def __init__(self, base: SupabaseStore, knowledge: dict[str, Any], scope: dict[str, Any],
+                 persona_override: dict[str, Any] | None = None):
         self.base, self.data, self.scope = base, knowledge, scope
+        self.persona_override = persona_override
 
     def knowledge(self) -> dict[str, Any]:
         return self.data
 
     def persona(self) -> dict[str, Any]:
+        if self.persona_override is not None:
+            return self.persona_override
         global_persona_shop = os.getenv("GLOBAL_PERSONA_SHOP_ID", "1191420560")
         global_persona_platform = os.getenv("GLOBAL_PERSONA_PLATFORM", "shopee")
         if self.scope["shop_id"] == global_persona_shop and self.scope["platform"] == global_persona_platform:
@@ -691,7 +714,10 @@ def _answer_legacy_message(request: TicketAnswerRequest) -> dict[str, Any]:
                     value for value in vision_descriptions if value), "image_descriptions": vision_descriptions,
                 "unresolved_item_ids": list(event.item_ids), "product_cards": [], "sources": []}
 
-    scoped_store = _ShopKnowledgeStore(store, knowledge, scope)
+    scoped_store = _ShopKnowledgeStore(
+        store, knowledge, scope,
+        request.persona.model_dump() if request.persona is not None else None,
+    )
     shop_engine = ProductChatEngine(store=scoped_store)
     order_sn = event.order_sn or _extract_order_number(question)
     def commerce_lookup(intent: str, product_names: list[str], card_context: list[dict[str, Any]],
@@ -827,14 +853,41 @@ def ticket_answer(request: TicketAnswerRequest, admin: dict = Depends(current_ad
     return _answer_legacy_message(request)
 
 
+def _engine_bearer(authorization: str | None) -> str:
+    supplied = authorization or ""
+    return supplied[7:].strip() if supplied[:7].lower() == "bearer " else ""
+
+
+def _authorize_engine_request(authorization: str | None) -> None:
+    bearer = _engine_bearer(authorization)
+    expected = os.getenv("LEGACY_ENGINE_TOKEN", "")
+    if expected and len(expected) >= MIN_SECRET_LENGTH and hmac.compare_digest(expected, bearer):
+        return
+    signing_secret = os.getenv("CHATBLACKSHARK_TOKEN_SIGNING_SECRET", "")
+    if signing_secret and verify_engine_access_token(bearer, signing_secret):
+        return
+    raise HTTPException(status_code=401, detail="legacy_engine_unauthorized")
+
+
+@app.post("/api/engine/token")
+def issue_engine_token(authorization: str | None = Header(default=None)) -> dict[str, Any]:
+    issuer_secret = os.getenv("CHATBLACKSHARK_TOKEN_ISSUER_SECRET", "")
+    signing_secret = os.getenv("CHATBLACKSHARK_TOKEN_SIGNING_SECRET", "")
+    if len(issuer_secret) < MIN_SECRET_LENGTH:
+        raise HTTPException(status_code=503, detail="engine_token_issuer_not_configured")
+    if len(signing_secret) < MIN_SECRET_LENGTH:
+        raise HTTPException(status_code=503, detail="engine_token_signing_not_configured")
+    bearer = _engine_bearer(authorization)
+    if not bearer or not hmac.compare_digest(issuer_secret, bearer):
+        raise HTTPException(status_code=401, detail="engine_token_issuer_unauthorized")
+    return {"access_token": issue_engine_access_token(signing_secret),
+            "token_type": "Bearer", "expires_in": ACCESS_TOKEN_TTL_SECONDS}
+
+
 @app.post("/api/engine/answer")
 def legacy_engine_answer(request: LegacyEngineAnswerRequest,
                          authorization: str | None = Header(default=None)) -> dict[str, Any]:
-    expected = os.getenv("LEGACY_ENGINE_TOKEN", "")
-    supplied = authorization or ""
-    bearer = supplied[7:] if supplied.lower().startswith("bearer ") else ""
-    if not expected or len(expected) < 32 or not hmac.compare_digest(expected, bearer):
-        raise HTTPException(status_code=401, detail="legacy_engine_unauthorized")
+    _authorize_engine_request(authorization)
     reply = _answer_legacy_message(request)
     return {**reply, "source": "chatblackshark", "products": reply.get("product_cards") or [],
             "image_desc": reply.get("image_description") or "", "request_id": request.request_id}
@@ -844,11 +897,7 @@ def legacy_engine_answer(request: LegacyEngineAnswerRequest,
 def legacy_engine_test_answer(request: LegacyEngineTestAnswerRequest,
                               authorization: str | None = Header(default=None)) -> dict[str, Any]:
     """Run the same scoped v4 answer engine for test pages without a legacy message row."""
-    expected = os.getenv("LEGACY_ENGINE_TOKEN", "")
-    supplied = authorization or ""
-    bearer = supplied[7:] if supplied.lower().startswith("bearer ") else ""
-    if not expected or len(expected) < 32 or not hmac.compare_digest(expected, bearer):
-        raise HTTPException(status_code=401, detail="legacy_engine_unauthorized")
+    _authorize_engine_request(authorization)
 
     scope, knowledge = _shop_context(request.platform, request.shop_id)
     question = request.question.strip() or ("ช่วยดูสินค้าจากการ์ดนี้" if request.item_ids else
@@ -921,7 +970,10 @@ def legacy_engine_test_answer(request: LegacyEngineTestAnswerRequest,
         return {"products": list(unique.values())[:10]}
 
     try:
-        scoped_store = _ShopKnowledgeStore(store, knowledge, scope)
+        scoped_store = _ShopKnowledgeStore(
+            store, knowledge, scope,
+            request.persona.model_dump() if request.persona is not None else None,
+        )
         scoped_engine = ProductChatEngine(store=scoped_store)
         reply = scoped_engine.answer(
             question, history=history, card_context=card_rows, vision_evidence=vision_descriptions,
