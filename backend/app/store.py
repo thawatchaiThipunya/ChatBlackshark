@@ -125,7 +125,20 @@ class SupabaseStore:
             file_name = source.get("file") if isinstance(source, dict) else None
             return isinstance(file_name, str) and file_name in allowed_files
 
-        products = [row for row in global_data.get("products", []) if belongs(row)]
+        products = []
+        seen_records: set[tuple[str, str, str, str]] = set()
+        for row in global_data.get("products", []):
+            if not belongs(row):
+                continue
+            source = row.get("source") or {}
+            cell = str(source.get("cell") or "") if isinstance(source, dict) else ""
+            if cell:
+                identity = (str(source.get("file") or ""), str(source.get("sheet") or ""), cell,
+                            str(row.get("name") or ""))
+                if identity in seen_records:
+                    continue
+                seen_records.add(identity)
+            products.append(row)
         faqs = [row for row in global_data.get("faqs", []) if belongs(row)]
         if not products or not faqs:
             data = {"products": products, "faqs": faqs, "support_models": []}

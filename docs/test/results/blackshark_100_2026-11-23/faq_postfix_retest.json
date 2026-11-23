@@ -1,0 +1,872 @@
+[
+  {
+    "question": "GS3 ชาร์จไม่เข้า ต้องลองแก้ยังไง",
+    "reply": {
+      "status": "answered",
+      "intent": "troubleshooting",
+      "reason": "source_match",
+      "answer": "อาการชาร์จไม่เข้านี้ ลองตรวจสอบเซ็นเซอร์ดูก่อนครับว่าไฟเซ็นเซอร์สีเขียวที่ด้านหลังตัวเรือนยังติดอยู่ไหม จากนั้นลองเปลี่ยนหัวชาร์จเป็นขนาด 5V 1A หรือ 5V 2A ทำความสะอาดขั้วชาร์จทั้งที่ตัวนาฬิกาและแท่นชาร์จให้เรียบร้อย แล้วเสียบชาร์จทิ้งไว้ประมาณ 30 ถึง 60 นาที ก่อนลองเปิดเครื่องใหม่อีกครั้งครับ หากทำตามนี้แล้วยังมีอาการเดิม รบกวนแจ้งหมายเลขคำสั่งซื้อพร้อมแนบวิดีโอขณะกำลังแก้ไขปัญหาเพื่อให้เจ้าหน้าที่ตรวจสอบและช่วยเหลือต่อไปได้เลยนะครับ",
+      "sources": [
+        {
+          "row": 3,
+          "cell": "B3",
+          "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+          "sheet": "ข้อมูลสินค้า"
+        },
+        {
+          "row": 22,
+          "cell": "C22",
+          "file": "วิธีแก้ปัญหารายรุ่น-Black Shark-เฉพาะติ๊กส่งลูกค้าได้-20261118-0114.xlsx",
+          "sheet": "วิธีแก้ปัญหารายรุ่น"
+        }
+      ],
+      "product_name": "Black Shark GS3",
+      "matched_question": "ปัญหา นาฬิกา Black Shark ชาร์จไฟไม่เข้า (อาการที่ลูกค้ามักพิมพ์: ชาร์จแบตไฟไม่เข้า, ชาร์จไฟปริมาณแบตไม่เต็ม, ชาร์จไฟปริมาณแบตไม่เพิ่ม, ชาร์จไฟปริมาณแบตเพิ่มช้า)",
+      "session_id": null,
+      "handoff_mock": false,
+      "handoff_sent": false,
+      "intent_analysis": {
+        "intent": "troubleshooting",
+        "topic": "GS3 charging issue",
+        "needs": [
+          "troubleshoot charging problem"
+        ],
+        "product_names": [
+          "Black Shark GS3"
+        ],
+        "category": null,
+        "list_all": false,
+        "unresolved": false
+      }
+    },
+    "usage": [
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.intent",
+        "user": "customer_chat",
+        "duration_ms": 2137,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795407190-ZbvPtZGDBtnQWPUQNQv8",
+        "prompt_tokens": 987,
+        "completion_tokens": 88,
+        "cost_usd": 0.0005161,
+        "raw_usage": {
+          "prompt_tokens": 987,
+          "completion_tokens": 88,
+          "total_tokens": 1075,
+          "cost": 0.0005161,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0005161,
+            "upstream_inference_prompt_cost": 0.0002961,
+            "upstream_inference_completions_cost": 0.00022
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.intent"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.faq_selection",
+        "user": "customer_chat",
+        "duration_ms": 1489,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795407192-rY8z2zKOLkMGuPbpeN4O",
+        "prompt_tokens": 9691,
+        "completion_tokens": 12,
+        "cost_usd": 0.0029373,
+        "raw_usage": {
+          "prompt_tokens": 9691,
+          "completion_tokens": 12,
+          "total_tokens": 9703,
+          "cost": 0.0029373,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0029373,
+            "upstream_inference_prompt_cost": 0.0029073,
+            "upstream_inference_completions_cost": 3e-05
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.faq_selection"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.answer",
+        "user": "customer_chat",
+        "duration_ms": 1891,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795407194-swiJVOeKYqmKr3kjalvA",
+        "prompt_tokens": 5829,
+        "completion_tokens": 158,
+        "cost_usd": 0.0021437,
+        "raw_usage": {
+          "prompt_tokens": 5829,
+          "completion_tokens": 158,
+          "total_tokens": 5987,
+          "cost": 0.0021437,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0021437,
+            "upstream_inference_prompt_cost": 0.0017487,
+            "upstream_inference_completions_cost": 0.000395
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.answer"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.answer_review",
+        "user": "customer_chat",
+        "duration_ms": 1778,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795407196-UINYQBdZUxPsRgt5CYXM",
+        "prompt_tokens": 4668,
+        "completion_tokens": 160,
+        "cost_usd": 0.0018004,
+        "raw_usage": {
+          "prompt_tokens": 4668,
+          "completion_tokens": 160,
+          "total_tokens": 4828,
+          "cost": 0.0018004,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0018004,
+            "upstream_inference_prompt_cost": 0.0014004,
+            "upstream_inference_completions_cost": 0.0004
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.answer_review"
+        },
+        "hub_accepted": true
+      }
+    ],
+    "elapsed_seconds": 7.82
+  },
+  {
+    "question": "GS3 หน้าจอเป็นลายสีขาว ทำยังไงดี",
+    "reply": {
+      "status": "answered",
+      "intent": "troubleshooting",
+      "reason": "source_match",
+      "answer": "สำหรับปัญหาหน้าจอเป็นลายสีขาวหรือแสดงผลเป็นสีขาวเต็มจอ สามารถแก้ไขเบื้องต้นด้วยการรีสตาร์ทตัวเรือนดูก่อนได้นะครับ โดยให้กดปุ่ม HOME ที่มุมบนด้านขวาค้างไว้ประมาณ 10–25 วินาที จนกว่าหน้าจอจะดับลงและเริ่มการทำงานใหม่อีกครั้งครับ\n\nระหว่างการแก้ไขปัญหานี้ รบกวนคุณลูกค้าถ่ายวิดีโอขณะดำเนินการไว้เป็นหลักฐานด้วยนะครับ หากทำตามขั้นตอนดังกล่าวแล้วหน้าจอยังคงแสดงผลผิดปกติเหมือนเดิม สามารถแจ้งหมายเลขคำสั่งซื้อพร้อมส่งคลิปวิดีโอดังกล่าวกลับมาทางช่องทางนี้เพื่อให้เจ้าหน้าที่ตรวจสอบและดูแลต่อได้เลยครับผม",
+      "sources": [
+        {
+          "row": 3,
+          "cell": "B3",
+          "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+          "sheet": "ข้อมูลสินค้า"
+        },
+        {
+          "row": 18,
+          "cell": "C18",
+          "file": "วิธีแก้ปัญหารายรุ่น-Black Shark-เฉพาะติ๊กส่งลูกค้าได้-20261118-0114.xlsx",
+          "sheet": "วิธีแก้ปัญหารายรุ่น"
+        }
+      ],
+      "product_name": "Black Shark GS3",
+      "matched_question": "ปัญหา นาฬิกา Black Shark GS3 หน้าจอเป็นสีเหลืองหรือสีขาวเต็มจอ (อาการที่ลูกค้ามักพิมพ์: หน้าจอเป็นสีเหลืองเต็มจอ, หน้าจอเป็นสีขาวเต็มจอ)",
+      "session_id": null,
+      "handoff_mock": false,
+      "handoff_sent": false,
+      "intent_analysis": {
+        "intent": "troubleshooting",
+        "topic": "หน้าจอเป็นลายสีขาว",
+        "needs": [
+          "วิธีแก้ไขปัญหาหน้าจอเป็นลายสีขาว"
+        ],
+        "product_names": [
+          "Black Shark GS3"
+        ],
+        "category": null,
+        "list_all": false,
+        "unresolved": false
+      }
+    },
+    "usage": [
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.intent",
+        "user": "customer_chat",
+        "duration_ms": 1589,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795407197-0j0QkYoXTJbIuVicolvr",
+        "prompt_tokens": 987,
+        "completion_tokens": 94,
+        "cost_usd": 0.0005311,
+        "raw_usage": {
+          "prompt_tokens": 987,
+          "completion_tokens": 94,
+          "total_tokens": 1081,
+          "cost": 0.0005311,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0005311,
+            "upstream_inference_prompt_cost": 0.0002961,
+            "upstream_inference_completions_cost": 0.000235
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.intent"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.faq_selection",
+        "user": "customer_chat",
+        "duration_ms": 1423,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795407199-9rxs4D0kozAUwZbMuS3V",
+        "prompt_tokens": 9695,
+        "completion_tokens": 6,
+        "cost_usd": 0.0029235,
+        "raw_usage": {
+          "prompt_tokens": 9695,
+          "completion_tokens": 6,
+          "total_tokens": 9701,
+          "cost": 0.0029235,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0029235,
+            "upstream_inference_prompt_cost": 0.0029085,
+            "upstream_inference_completions_cost": 1.5e-05
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.faq_selection"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.answer",
+        "user": "customer_chat",
+        "duration_ms": 2242,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795407201-nEG7VGeR06VUZNNFmeJE",
+        "prompt_tokens": 5184,
+        "completion_tokens": 159,
+        "cost_usd": 0.0019527,
+        "raw_usage": {
+          "prompt_tokens": 5184,
+          "completion_tokens": 159,
+          "total_tokens": 5343,
+          "cost": 0.0019527,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0019527,
+            "upstream_inference_prompt_cost": 0.0015552,
+            "upstream_inference_completions_cost": 0.0003975
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.answer"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.answer_review",
+        "user": "customer_chat",
+        "duration_ms": 1983,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795407203-n4ODanSjI72SZGZxls6s",
+        "prompt_tokens": 4022,
+        "completion_tokens": 169,
+        "cost_usd": 0.0016291,
+        "raw_usage": {
+          "prompt_tokens": 4022,
+          "completion_tokens": 169,
+          "total_tokens": 4191,
+          "cost": 0.0016291,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0016291,
+            "upstream_inference_prompt_cost": 0.0012066,
+            "upstream_inference_completions_cost": 0.0004225
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.answer_review"
+        },
+        "hub_accepted": true
+      }
+    ],
+    "elapsed_seconds": 7.47
+  },
+  {
+    "question": "GS3 Ultra ปุ่มกดค้าง รีสตาร์ตอย่างไร",
+    "reply": {
+      "status": "answered",
+      "intent": "troubleshooting",
+      "reason": "source_match",
+      "answer": "น้อง Black Shark ขอแนะนำวิธีการรีสตาร์ตนาฬิกา GS3 Ultra โดยกดปุ่มด้านขวาบนค้างไว้ประมาณ 20–25 วินาที จนกว่านาฬิกาจะปิดเครื่อง จากนั้นลองเปิดใช้งานใหม่อีกครั้งครับ ส่วนในกรณีที่พบปัญหาปุ่มกดไม่ได้หรือปุ่มกดติดขัด สามารถทำความสะอาดเบื้องต้นได้ดังนี้ครับ\n\n1. ใช้น้ำยาสเตคลีนหยดหรือทาบริเวณรอบปุ่มที่กดไม่ติดหรือกดได้ไม่ปกติ\n2. ทิ้งไว้ประมาณ 3–5 นาทีเพื่อให้น้ำยาช่วยละลายคราบสกปรกที่สะสมอยู่บริเวณปุ่ม\n3. ใช้แปรงขนนุ่มทำความสะอาดรอบปุ่มอย่างเบามือ เพื่อขจัดคราบสกปรก\n4. เช็ดทำความสะอาดคราบน้ำยาและสิ่งสกปรกออกให้เรียบร้อย จากนั้นรอให้แห้งสนิท\n5. ทดลองกดปุ่มใช้งานอีกครั้ง\n\nหากดำเนินการตามคำแนะนำแล้วยังไม่สามารถใช้งานได้ รบกวนแจ้งหมายเลขคำสั่งซื้อพร้อมแนบวิดีโอแก้ไขส่งให้แอดมิน เพื่อใช้ประกอบการตรวจสอบและดำเนินการต่อไปครับ",
+      "sources": [
+        {
+          "row": 5,
+          "cell": "B5",
+          "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+          "sheet": "ข้อมูลสินค้า"
+        },
+        {
+          "row": 32,
+          "cell": "C32",
+          "file": "วิธีแก้ปัญหารายรุ่น-Black Shark-เฉพาะติ๊กส่งลูกค้าได้-20261118-0114.xlsx",
+          "sheet": "วิธีแก้ปัญหารายรุ่น"
+        },
+        {
+          "row": 35,
+          "cell": "C35",
+          "file": "วิธีแก้ปัญหารายรุ่น-Black Shark-เฉพาะติ๊กส่งลูกค้าได้-20261118-0114.xlsx",
+          "sheet": "วิธีแก้ปัญหารายรุ่น"
+        }
+      ],
+      "product_name": "Black Shark GS3 Ultra",
+      "matched_question": "ปัญหา นาฬิกา Black Shark GS3 Ultra หน้าจอสว่างวาบขึ้นแล้วกลับมาเป็นปกติ (อาการที่ลูกค้ามักพิมพ์: หน้าจอสว่างวาบขึ้น แล้วกลับเป็นปกติ)",
+      "session_id": null,
+      "handoff_mock": false,
+      "handoff_sent": false,
+      "intent_analysis": {
+        "intent": "troubleshooting",
+        "topic": "how to restart or reset GS3 Ultra when the button is stuck",
+        "needs": [
+          "วิธีรีสตาร์ตหรือแก้ไขปัญหาปุ่มกดค้างของนาฬิกา"
+        ],
+        "product_names": [
+          "Black Shark GS3 Ultra"
+        ],
+        "category": null,
+        "list_all": false,
+        "unresolved": false
+      }
+    },
+    "usage": [
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.intent",
+        "user": "customer_chat",
+        "duration_ms": 1902,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795407205-tiRlfK2VqxriVvJrNFhR",
+        "prompt_tokens": 987,
+        "completion_tokens": 111,
+        "cost_usd": 0.0005736,
+        "raw_usage": {
+          "prompt_tokens": 987,
+          "completion_tokens": 111,
+          "total_tokens": 1098,
+          "cost": 0.0005736,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0005736,
+            "upstream_inference_prompt_cost": 0.0002961,
+            "upstream_inference_completions_cost": 0.0002775
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.intent"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.faq_selection",
+        "user": "customer_chat",
+        "duration_ms": 1959,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795407207-gE7lxnog0cIt2G9NOcCF",
+        "prompt_tokens": 10525,
+        "completion_tokens": 30,
+        "cost_usd": 0.0032325,
+        "raw_usage": {
+          "prompt_tokens": 10525,
+          "completion_tokens": 30,
+          "total_tokens": 10555,
+          "cost": 0.0032325,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0032325,
+            "upstream_inference_prompt_cost": 0.0031575,
+            "upstream_inference_completions_cost": 7.5e-05
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.faq_selection"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.answer",
+        "user": "customer_chat",
+        "duration_ms": 2229,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795407209-NO5cJPM6KhXJrJvjYhQ5",
+        "prompt_tokens": 7095,
+        "completion_tokens": 220,
+        "cost_usd": 0.0026785,
+        "raw_usage": {
+          "prompt_tokens": 7095,
+          "completion_tokens": 220,
+          "total_tokens": 7315,
+          "cost": 0.0026785,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0026785,
+            "upstream_inference_prompt_cost": 0.0021285,
+            "upstream_inference_completions_cost": 0.00055
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.answer"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.answer_review",
+        "user": "customer_chat",
+        "duration_ms": 1997,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795407211-oK2xHJsky0IPS1CB6N82",
+        "prompt_tokens": 6010,
+        "completion_tokens": 285,
+        "cost_usd": 0.0025155,
+        "raw_usage": {
+          "prompt_tokens": 6010,
+          "completion_tokens": 285,
+          "total_tokens": 6295,
+          "cost": 0.0025155,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0025155,
+            "upstream_inference_prompt_cost": 0.001803,
+            "upstream_inference_completions_cost": 0.0007125
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.answer_review"
+        },
+        "hub_accepted": true
+      }
+    ],
+    "elapsed_seconds": 8.57
+  },
+  {
+    "question": "S3 ชาร์จไม่เข้า ลองอะไรได้บ้าง",
+    "reply": {
+      "status": "answered",
+      "intent": "troubleshooting",
+      "reason": "source_match",
+      "answer": "เบื้องต้นให้ลองตรวจสอบเซ็นเซอร์ว่าไฟเซ็นเซอร์สีเขียวที่ด้านหลังนาฬิกายังติดอยู่หรือไม่ จากนั้นลองเปลี่ยนหัวชาร์จเป็น 5V 1A หรือ 5V 2A ทำความสะอาดขั้วชาร์จด้านหลังนาฬิกาและสายชาร์จ เสียบชาร์จทิ้งไว้ประมาณ 30 ถึง 60 นาที ก่อนลองเปิดเครื่องใหม่อีกครั้งครับ หากยังไม่สามารถใช้งานได้ รบกวนแจ้งหมายเลขคำสั่งซื้อพร้อมแนบวิดีโอแสดงอาการเข้ามาเพื่อให้เจ้าหน้าที่ตรวจสอบและช่วยเหลือต่อไปได้เลยครับ",
+      "sources": [
+        {
+          "row": 8,
+          "cell": "B8",
+          "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+          "sheet": "ข้อมูลสินค้า"
+        },
+        {
+          "row": 57,
+          "cell": "C57",
+          "file": "วิธีแก้ปัญหารายรุ่น-Black Shark-เฉพาะติ๊กส่งลูกค้าได้-20261118-0114.xlsx",
+          "sheet": "วิธีแก้ปัญหารายรุ่น"
+        }
+      ],
+      "product_name": "Black Shark S3",
+      "matched_question": "ปัญหา นาฬิกา Black Shark ชาร์จไฟไม่เข้า (อาการที่ลูกค้ามักพิมพ์: ชาร์จแบตไฟไม่เข้า, ชาร์จไฟปริมาณแบตไม่เต็ม, ชาร์จไฟปริมาณแบตไม่เพิ่ม, ชาร์จไฟปริมาณแบตเพิ่มช้า)",
+      "session_id": null,
+      "handoff_mock": false,
+      "handoff_sent": false,
+      "intent_analysis": {
+        "intent": "troubleshooting",
+        "topic": "charging issue with Black Shark S3",
+        "needs": [
+          "troubleshooting steps for a charging issue"
+        ],
+        "product_names": [
+          "Black Shark S3"
+        ],
+        "category": null,
+        "list_all": false,
+        "unresolved": false
+      }
+    },
+    "usage": [
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.intent",
+        "user": "customer_chat",
+        "duration_ms": 1591,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795407213-mz6kH4cGCdEUnj55VVJi",
+        "prompt_tokens": 986,
+        "completion_tokens": 93,
+        "cost_usd": 0.0005283,
+        "raw_usage": {
+          "prompt_tokens": 986,
+          "completion_tokens": 93,
+          "total_tokens": 1079,
+          "cost": 0.0005283,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0005283,
+            "upstream_inference_prompt_cost": 0.0002958,
+            "upstream_inference_completions_cost": 0.0002325
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.intent"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.faq_selection",
+        "user": "customer_chat",
+        "duration_ms": 2912,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795407215-9rxVn8OteBujPJwWZ7ra",
+        "prompt_tokens": 8718,
+        "completion_tokens": 11,
+        "cost_usd": 0.0026429,
+        "raw_usage": {
+          "prompt_tokens": 8718,
+          "completion_tokens": 11,
+          "total_tokens": 8729,
+          "cost": 0.0026429,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0026429,
+            "upstream_inference_prompt_cost": 0.0026154,
+            "upstream_inference_completions_cost": 2.75e-05
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.faq_selection"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.answer",
+        "user": "customer_chat",
+        "duration_ms": 1888,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795407218-DlY6asqMdYpipAsv9P8P",
+        "prompt_tokens": 5701,
+        "completion_tokens": 156,
+        "cost_usd": 0.0021003,
+        "raw_usage": {
+          "prompt_tokens": 5701,
+          "completion_tokens": 156,
+          "total_tokens": 5857,
+          "cost": 0.0021003,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0021003,
+            "upstream_inference_prompt_cost": 0.0017103,
+            "upstream_inference_completions_cost": 0.00039
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.answer"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.answer_review",
+        "user": "customer_chat",
+        "duration_ms": 2215,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795407220-nN8EwZIpAJV3c3z131A8",
+        "prompt_tokens": 4542,
+        "completion_tokens": 148,
+        "cost_usd": 0.0017326,
+        "raw_usage": {
+          "prompt_tokens": 4542,
+          "completion_tokens": 148,
+          "total_tokens": 4690,
+          "cost": 0.0017326,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0017326,
+            "upstream_inference_prompt_cost": 0.0013626,
+            "upstream_inference_completions_cost": 0.00037
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.answer_review"
+        },
+        "hub_accepted": true
+      }
+    ],
+    "elapsed_seconds": 9.04
+  }
+]

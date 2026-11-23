@@ -1,0 +1,159 @@
+[
+  {
+    "case": "Mongo-only T20 spec from description via card",
+    "question": "Black Shark T20 กันน้ำได้ระดับไหนครับ",
+    "item_ids": [
+      "43117457828"
+    ],
+    "reply": {
+      "status": "answered",
+      "intent": "product_info",
+      "reason": "source_match",
+      "answer": "สวัสดีครับ หูฟัง Black Shark T20 มาพร้อมมาตรฐานการกันน้ำและกันฝุ่นในระดับ IP67 ครับผม",
+      "sources": [
+        {
+          "file": "Shopee MongoDB",
+          "sheet": "Product card",
+          "cell": "43117457828"
+        }
+      ],
+      "product_name": null,
+      "matched_question": null,
+      "session_id": null,
+      "handoff_mock": false,
+      "handoff_sent": false,
+      "product_cards": [],
+      "intent_analysis": {
+        "intent": "product_info",
+        "topic": "Water resistance level of Black Shark T20",
+        "needs": [
+          "Know the water resistance level of Black Shark T20"
+        ],
+        "product_names": [],
+        "category": null,
+        "list_all": false,
+        "unresolved": false
+      },
+      "source": "chatblackshark",
+      "products": [],
+      "bot_status": "answered",
+      "handoff_required": false,
+      "handoff_reason": null,
+      "image_description": "",
+      "image_descriptions": [],
+      "image_desc": ""
+    },
+    "usage": [
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "source": "chat.intent",
+        "status": "success",
+        "cost_usd": 0.0006155,
+        "http_status": 200,
+        "request_id": "gen-1795410485-1QJYICMQJNd1zhAMyocE",
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "source": "chat.answer",
+        "status": "success",
+        "cost_usd": 0.0016276,
+        "http_status": 200,
+        "request_id": "gen-1795410487-tUfVzo9TdklkxnfCeVwW",
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "source": "chat.answer_review",
+        "status": "success",
+        "cost_usd": 0.0013057,
+        "http_status": 200,
+        "request_id": "gen-1795410488-zW7xMup0mTRkeRlGkvt8",
+        "hub_accepted": true
+      }
+    ],
+    "cost_usd": 0.0035488,
+    "hub_accepted": true,
+    "created_at": "2026-11-23T05:08:09.888667+00:00"
+  },
+  {
+    "case": "Mongo-only T20 spec from description typed",
+    "question": "Black Shark T20 กันน้ำได้ระดับไหนครับ",
+    "item_ids": [],
+    "reply": {
+      "status": "answered",
+      "intent": "product_info",
+      "reason": "source_match",
+      "answer": "Black Shark T20 รองรับมาตรฐานการกันน้ำและกันฝุ่นที่ระดับ IP67 ครับ",
+      "sources": [
+        {
+          "file": "ShpProducts",
+          "sheet": "Product listing and unit stock"
+        }
+      ],
+      "product_name": null,
+      "matched_question": null,
+      "session_id": null,
+      "handoff_mock": false,
+      "handoff_sent": false,
+      "product_cards": [],
+      "intent_analysis": {
+        "intent": "product_info",
+        "topic": "Water resistance of Black Shark T20",
+        "needs": [
+          "water resistance rating"
+        ],
+        "product_names": [],
+        "category": null,
+        "list_all": false,
+        "unresolved": false
+      },
+      "source": "chatblackshark",
+      "products": [],
+      "bot_status": "answered",
+      "handoff_required": false,
+      "handoff_reason": null,
+      "image_description": "",
+      "image_descriptions": [],
+      "image_desc": ""
+    },
+    "usage": [
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "source": "chat.intent",
+        "status": "success",
+        "cost_usd": 0.0005747,
+        "http_status": 200,
+        "request_id": "gen-1795410490-9ir2wL2qj4LUl1y5Q6Ly",
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "source": "chat.answer",
+        "status": "success",
+        "cost_usd": 0.0011963,
+        "http_status": 200,
+        "request_id": "gen-1795410491-8kys62dCO54V2MiobJtg",
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "source": "chat.answer_review",
+        "status": "success",
+        "cost_usd": 0.0008941,
+        "http_status": 200,
+        "request_id": "gen-1795410493-zhTe91sBAeYAxr8qaDfb",
+        "hub_accepted": true
+      }
+    ],
+    "cost_usd": 0.0026651,
+    "hub_accepted": true,
+    "created_at": "2026-11-23T05:08:14.214270+00:00"
+  }
+]

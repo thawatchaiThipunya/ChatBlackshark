@@ -1,0 +1,1504 @@
+[
+  {
+    "case": "K01 Mongo-only colors",
+    "question": "Black Shark GS3 Ultra มีสีอะไรบ้างครับ",
+    "card_item_ids": [],
+    "reply": {
+      "status": "answered",
+      "intent": "product_info",
+      "reason": "source_match",
+      "answer": "สำหรับ Black Shark GS3 Ultra มีให้เลือก 2 สีครับ คือสีดำ (Black) และสีเงิน (Glacier Silver) ครับผม",
+      "sources": [
+        {
+          "row": 5,
+          "cell": "B5",
+          "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+          "sheet": "ข้อมูลสินค้า"
+        }
+      ],
+      "product_name": "Black Shark GS3 Ultra",
+      "matched_question": null,
+      "session_id": null,
+      "handoff_mock": false,
+      "handoff_sent": false,
+      "product_cards": [
+        {
+          "item_id": "25064823709",
+          "name": "Black Shark GS3 / GS3 Ultra สมาร์ทวอทช์ Smartwatch คุยโทรศัพท์ได้ หน้าจอ AMOLED -1Y",
+          "image_url": "https://cf.shopee.co.th/file/sg-11134201-8257v-mvv9su75u8li5a",
+          "availability": "available",
+          "tier_variation": [
+            {
+              "name": "ตัวเลือกสินค้า",
+              "options": [
+                "GS3 Ultra (Black)🆕",
+                "GS3 Ultra (Silver)🆕"
+              ]
+            }
+          ],
+          "models": [
+            {
+              "model_id": "355267206583",
+              "model_name": "GS3 Ultra (Silver)🆕",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 181
+            },
+            {
+              "model_id": "355267206582",
+              "model_name": "GS3 Ultra (Black)🆕",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 500
+            }
+          ]
+        },
+        {
+          "item_id": "26893612033",
+          "name": "Black Shark GS3 Ultra Smartwatch สมาร์ทวอทช์ GPS โทรออกได้ กันน้ำ 5ATM & IP69K มาตรฐาน MIL-STD 810H -1Y",
+          "image_url": "https://cf.shopee.co.th/file/sg-11134201-825au-mvv897cfcwsj28",
+          "availability": "available",
+          "tier_variation": [
+            {
+              "name": "ตัวเลือกสินค้า",
+              "options": [
+                "Black",
+                "Glacier Silver"
+              ]
+            }
+          ],
+          "models": [
+            {
+              "model_id": "325146926728",
+              "model_name": "Black",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 499
+            },
+            {
+              "model_id": "325146926729",
+              "model_name": "Glacier Silver",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 181
+            }
+          ]
+        },
+        {
+          "item_id": "57967995527",
+          "name": "Black Shark GS3 Ultra Smartwatch สมาร์ทวอทช์ GPS โทรออกได้ หน้าจอ AMOLED กันน้ำ 5ATM & IP69K -1Y",
+          "image_url": "https://cf.shopee.co.th/file/sg-11134201-8258b-mvv88fxcpt6r68",
+          "availability": "available",
+          "tier_variation": [
+            {
+              "name": "ตัวเลือกสินค้า",
+              "options": [
+                "Glacier Silver",
+                "Black"
+              ]
+            }
+          ],
+          "models": [
+            {
+              "model_id": "401522316415",
+              "model_name": "Glacier Silver",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 181
+            },
+            {
+              "model_id": "401522316416",
+              "model_name": "Black",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 493
+            }
+          ]
+        }
+      ],
+      "intent_analysis": {
+        "intent": "product_info",
+        "topic": "Color options for Black Shark GS3 Ultra",
+        "needs": [
+          "What colors are available for Black Shark GS3 Ultra"
+        ],
+        "product_names": [
+          "Black Shark GS3 Ultra"
+        ],
+        "category": null,
+        "list_all": false,
+        "unresolved": false
+      }
+    },
+    "usage": [
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.intent",
+        "user": "customer_chat",
+        "duration_ms": 2028,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795408504-W3vehXOlhr4c2IcJztKo",
+        "prompt_tokens": 1014,
+        "completion_tokens": 99,
+        "cost_usd": 0.0005517,
+        "raw_usage": {
+          "prompt_tokens": 1014,
+          "completion_tokens": 99,
+          "total_tokens": 1113,
+          "cost": 0.0005517,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0005517,
+            "upstream_inference_prompt_cost": 0.0003042,
+            "upstream_inference_completions_cost": 0.0002475
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.intent"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.answer",
+        "user": "customer_chat",
+        "duration_ms": 1373,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795408507-EFoOcYwEhzLBo9tNZjlC",
+        "prompt_tokens": 8994,
+        "completion_tokens": 33,
+        "cost_usd": 0.0027807,
+        "raw_usage": {
+          "prompt_tokens": 8994,
+          "completion_tokens": 33,
+          "total_tokens": 9027,
+          "cost": 0.0027807,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0027807,
+            "upstream_inference_prompt_cost": 0.0026982,
+            "upstream_inference_completions_cost": 8.25e-05
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.answer"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.answer_review",
+        "user": "customer_chat",
+        "duration_ms": 2122,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795408508-DvW0uMs0aNzusf6EUNpY",
+        "prompt_tokens": 7707,
+        "completion_tokens": 44,
+        "cost_usd": 0.0024221,
+        "raw_usage": {
+          "prompt_tokens": 7707,
+          "completion_tokens": 44,
+          "total_tokens": 7751,
+          "cost": 0.0024221,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0024221,
+            "upstream_inference_prompt_cost": 0.0023121,
+            "upstream_inference_completions_cost": 0.00011
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.answer_review"
+        },
+        "hub_accepted": true
+      }
+    ],
+    "elapsed_seconds": 6.46
+  },
+  {
+    "case": "K10 Mongo-only color stock",
+    "question": "Black Shark GS3 Ultra สีเงินมีของไหมครับ",
+    "card_item_ids": [],
+    "reply": {
+      "status": "answered",
+      "intent": "stock_availability",
+      "reason": "source_match",
+      "answer": "สำหรับ Black Shark GS3 Ultra สีเงิน ตอนนี้มีสินค้าพร้อมส่งครับผม",
+      "sources": [
+        {
+          "file": "ShpProducts",
+          "sheet": "Unit stock"
+        }
+      ],
+      "product_name": null,
+      "matched_question": null,
+      "session_id": null,
+      "handoff_mock": false,
+      "handoff_sent": false,
+      "product_cards": [
+        {
+          "item_id": "25064823709",
+          "name": "Black Shark GS3 / GS3 Ultra สมาร์ทวอทช์ Smartwatch คุยโทรศัพท์ได้ หน้าจอ AMOLED -1Y",
+          "image_url": "https://cf.shopee.co.th/file/sg-11134201-8257v-mvv9su75u8li5a",
+          "availability": "available",
+          "tier_variation": [
+            {
+              "name": "ตัวเลือกสินค้า",
+              "options": [
+                "GS3 Ultra (Black)🆕",
+                "GS3 Ultra (Silver)🆕"
+              ]
+            }
+          ],
+          "models": [
+            {
+              "model_id": "355267206583",
+              "model_name": "GS3 Ultra (Silver)🆕",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 181
+            },
+            {
+              "model_id": "355267206582",
+              "model_name": "GS3 Ultra (Black)🆕",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 500
+            }
+          ]
+        },
+        {
+          "item_id": "26893612033",
+          "name": "Black Shark GS3 Ultra Smartwatch สมาร์ทวอทช์ GPS โทรออกได้ กันน้ำ 5ATM & IP69K มาตรฐาน MIL-STD 810H -1Y",
+          "image_url": "https://cf.shopee.co.th/file/sg-11134201-825au-mvv897cfcwsj28",
+          "availability": "available",
+          "tier_variation": [
+            {
+              "name": "ตัวเลือกสินค้า",
+              "options": [
+                "Black",
+                "Glacier Silver"
+              ]
+            }
+          ],
+          "models": [
+            {
+              "model_id": "325146926728",
+              "model_name": "Black",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 499
+            },
+            {
+              "model_id": "325146926729",
+              "model_name": "Glacier Silver",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 181
+            }
+          ]
+        },
+        {
+          "item_id": "57967995527",
+          "name": "Black Shark GS3 Ultra Smartwatch สมาร์ทวอทช์ GPS โทรออกได้ หน้าจอ AMOLED กันน้ำ 5ATM & IP69K -1Y",
+          "image_url": "https://cf.shopee.co.th/file/sg-11134201-8258b-mvv88fxcpt6r68",
+          "availability": "available",
+          "tier_variation": [
+            {
+              "name": "ตัวเลือกสินค้า",
+              "options": [
+                "Glacier Silver",
+                "Black"
+              ]
+            }
+          ],
+          "models": [
+            {
+              "model_id": "401522316415",
+              "model_name": "Glacier Silver",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 181
+            },
+            {
+              "model_id": "401522316416",
+              "model_name": "Black",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 493
+            }
+          ]
+        }
+      ],
+      "intent_analysis": {
+        "intent": "stock_availability",
+        "topic": "Check stock availability for Black Shark GS3 Ultra in silver color",
+        "needs": [
+          "Check if Black Shark GS3 Ultra in silver is in stock"
+        ],
+        "product_names": [
+          "Black Shark GS3 Ultra"
+        ],
+        "category": "smart watch",
+        "list_all": false,
+        "unresolved": false
+      }
+    },
+    "usage": [
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.intent",
+        "user": "customer_chat",
+        "duration_ms": 2049,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795408510-UFqunLjN39N2q5bSoWsR",
+        "prompt_tokens": 1015,
+        "completion_tokens": 107,
+        "cost_usd": 0.000572,
+        "raw_usage": {
+          "prompt_tokens": 1015,
+          "completion_tokens": 107,
+          "total_tokens": 1122,
+          "cost": 0.000572,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.000572,
+            "upstream_inference_prompt_cost": 0.0003045,
+            "upstream_inference_completions_cost": 0.0002675
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.intent"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.answer",
+        "user": "customer_chat",
+        "duration_ms": 1773,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795408513-WUPGiM7iOIPMVw2MAyhM",
+        "prompt_tokens": 5151,
+        "completion_tokens": 31,
+        "cost_usd": 0.0016228,
+        "raw_usage": {
+          "prompt_tokens": 5151,
+          "completion_tokens": 31,
+          "total_tokens": 5182,
+          "cost": 0.0016228,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0016228,
+            "upstream_inference_prompt_cost": 0.0015453,
+            "upstream_inference_completions_cost": 7.75e-05
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.answer"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.answer_review",
+        "user": "customer_chat",
+        "duration_ms": 1840,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795408515-H1o8YZ1DGzkOHoooIj2L",
+        "prompt_tokens": 4212,
+        "completion_tokens": 26,
+        "cost_usd": 0.0013286,
+        "raw_usage": {
+          "prompt_tokens": 4212,
+          "completion_tokens": 26,
+          "total_tokens": 4238,
+          "cost": 0.0013286,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0013286,
+            "upstream_inference_prompt_cost": 0.0012636,
+            "upstream_inference_completions_cost": 6.5e-05
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.answer_review"
+        },
+        "hub_accepted": true
+      }
+    ],
+    "elapsed_seconds": 6.15
+  },
+  {
+    "case": "K11 sold-out color",
+    "question": "Black Shark S1 Pro สีดำมีไหมครับ",
+    "card_item_ids": [],
+    "reply": {
+      "status": "answered",
+      "intent": "stock_availability",
+      "reason": "source_match",
+      "answer": "สำหรับ Black Shark S1 Pro สีดำในตอนนี้ไม่มีสินค้าครับ",
+      "sources": [
+        {
+          "file": "ShpProducts",
+          "sheet": "Unit stock"
+        }
+      ],
+      "product_name": null,
+      "matched_question": null,
+      "session_id": null,
+      "handoff_mock": false,
+      "handoff_sent": false,
+      "product_cards": [],
+      "intent_analysis": {
+        "intent": "stock_availability",
+        "topic": "Check stock availability for Black Shark S1 Pro in black",
+        "needs": [
+          "Check if Black Shark S1 Pro is available in black"
+        ],
+        "product_names": [
+          "Black Shark S1 Pro"
+        ],
+        "category": null,
+        "list_all": false,
+        "unresolved": false
+      }
+    },
+    "usage": [
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.intent",
+        "user": "customer_chat",
+        "duration_ms": 1573,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795408516-4WAujgjBUpDSpj668mvq",
+        "prompt_tokens": 1014,
+        "completion_tokens": 103,
+        "cost_usd": 0.0005617,
+        "raw_usage": {
+          "prompt_tokens": 1014,
+          "completion_tokens": 103,
+          "total_tokens": 1117,
+          "cost": 0.0005617,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0005617,
+            "upstream_inference_prompt_cost": 0.0003042,
+            "upstream_inference_completions_cost": 0.0002575
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.intent"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.answer",
+        "user": "customer_chat",
+        "duration_ms": 1716,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795408518-B7nUDkhbW1ljaQKhjJl7",
+        "prompt_tokens": 3789,
+        "completion_tokens": 25,
+        "cost_usd": 0.0011992,
+        "raw_usage": {
+          "prompt_tokens": 3789,
+          "completion_tokens": 25,
+          "total_tokens": 3814,
+          "cost": 0.0011992,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0011992,
+            "upstream_inference_prompt_cost": 0.0011367,
+            "upstream_inference_completions_cost": 6.25e-05
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.answer"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.answer_review",
+        "user": "customer_chat",
+        "duration_ms": 1290,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795408520-POjf2xaGDYN6Z3kY7Dgo",
+        "prompt_tokens": 2845,
+        "completion_tokens": 28,
+        "cost_usd": 0.0009235,
+        "raw_usage": {
+          "prompt_tokens": 2845,
+          "completion_tokens": 28,
+          "total_tokens": 2873,
+          "cost": 0.0009235,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0009235,
+            "upstream_inference_prompt_cost": 0.0008535,
+            "upstream_inference_completions_cost": 7e-05
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.answer_review"
+        },
+        "hub_accepted": true
+      }
+    ],
+    "elapsed_seconds": 5.1
+  },
+  {
+    "case": "K08 Mongo-only missing color",
+    "question": "Black Shark GS3 Sport มีสีอะไรบ้างครับ",
+    "card_item_ids": [],
+    "reply": {
+      "status": "answered",
+      "intent": "product_info",
+      "reason": "source_match",
+      "answer": "สำหรับ Black Shark GS3 Sport ในปัจจุบันมีตัวเลือกสีให้เลือกทั้งหมด 3 สีครับ ประกอบด้วยสี Mist Black, Lava Black และ Luna Purple ครับผม ลูกค้าสนใจสีไหนเป็นพิเศษสอบถามเพิ่มเติมได้เลยนะครับ",
+      "sources": [
+        {
+          "row": 4,
+          "cell": "B4",
+          "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+          "sheet": "ข้อมูลสินค้า"
+        }
+      ],
+      "product_name": "Black Shark GS3 Sport",
+      "matched_question": null,
+      "session_id": null,
+      "handoff_mock": false,
+      "handoff_sent": false,
+      "product_cards": [
+        {
+          "item_id": "27775238115",
+          "name": "Black Shark GS3 Sport สมาร์ทวอทช์ Smartwatch GPS คุยโทรศัพท์ได้ กันน้ำ 5 ATM -1Y",
+          "image_url": "https://cf.shopee.co.th/file/sg-11134201-825ap-mvv9svvc7y0z9d",
+          "availability": "available",
+          "tier_variation": [
+            {
+              "name": "ตัวเลือกสินค้า",
+              "options": [
+                "Mist Black",
+                "Lava Black",
+                "Luna Purple"
+              ]
+            }
+          ],
+          "models": [
+            {
+              "model_id": "257608659191",
+              "model_name": "Mist Black",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 233
+            },
+            {
+              "model_id": "257608659190",
+              "model_name": "Lava Black",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 500
+            },
+            {
+              "model_id": "257608659192",
+              "model_name": "Luna Purple",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 26
+            }
+          ]
+        },
+        {
+          "item_id": "28576160492",
+          "name": "Black Shark GS3 Sport สมาร์ทวอทช์ GPS คุยโทรศัพท์ได้ มาตรฐาน MIL-STD 810H กันน้ำ -1Y",
+          "image_url": "https://cf.shopee.co.th/file/sg-11134201-8259y-mvv9t6o8wb2f80",
+          "availability": "available",
+          "tier_variation": [
+            {
+              "name": "ตัวเลือกสินค้า",
+              "options": [
+                "Lava Black",
+                "Mist Black",
+                "Luna Purple"
+              ]
+            }
+          ],
+          "models": [
+            {
+              "model_id": "237370476802",
+              "model_name": "Mist Black",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 233
+            },
+            {
+              "model_id": "237370476803",
+              "model_name": "Luna Purple",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 26
+            },
+            {
+              "model_id": "237370476801",
+              "model_name": "Lava Black",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 500
+            }
+          ]
+        },
+        {
+          "item_id": "27276155598",
+          "name": "Black Shark GS3 Sport สมาร์ทวอทช์ GPS คุยโทรศัพท์ได้ มาตรฐาน MIL-STD 810H -1Y",
+          "image_url": "https://cf.shopee.co.th/file/sg-11134201-8259y-mvv9t0iw2zgof0",
+          "availability": "available",
+          "tier_variation": [
+            {
+              "name": "ตัวเลือกสินค้า",
+              "options": [
+                "Luna Purple",
+                "Mist Black",
+                "Lava Black"
+              ]
+            }
+          ],
+          "models": [
+            {
+              "model_id": "205785785058",
+              "model_name": "Luna Purple",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 26
+            },
+            {
+              "model_id": "205785785059",
+              "model_name": "Mist Black",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 233
+            },
+            {
+              "model_id": "205785785060",
+              "model_name": "Lava Black",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 500
+            }
+          ]
+        }
+      ],
+      "intent_analysis": {
+        "intent": "product_info",
+        "topic": "Available colors for Black Shark GS3 Sport",
+        "needs": [
+          "What colors are available for the Black Shark GS3 Sport"
+        ],
+        "product_names": [
+          "Black Shark GS3 Sport"
+        ],
+        "category": null,
+        "list_all": false,
+        "unresolved": false
+      }
+    },
+    "usage": [
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.intent",
+        "user": "customer_chat",
+        "duration_ms": 1562,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795408522-fOBqOq6oogNdneVAC6ah",
+        "prompt_tokens": 1014,
+        "completion_tokens": 100,
+        "cost_usd": 0.0005542,
+        "raw_usage": {
+          "prompt_tokens": 1014,
+          "completion_tokens": 100,
+          "total_tokens": 1114,
+          "cost": 0.0005542,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0005542,
+            "upstream_inference_prompt_cost": 0.0003042,
+            "upstream_inference_completions_cost": 0.00025
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.intent"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.answer",
+        "user": "customer_chat",
+        "duration_ms": 1744,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795408524-aCpfusIqaXpJ0FZUZRVd",
+        "prompt_tokens": 9307,
+        "completion_tokens": 45,
+        "cost_usd": 0.0029046,
+        "raw_usage": {
+          "prompt_tokens": 9307,
+          "completion_tokens": 45,
+          "total_tokens": 9352,
+          "cost": 0.0029046,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0029046,
+            "upstream_inference_prompt_cost": 0.0027921,
+            "upstream_inference_completions_cost": 0.0001125
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.answer"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.answer_review",
+        "user": "customer_chat",
+        "duration_ms": 1528,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795408525-h91EWrYQsGZFpyImK1Nc",
+        "prompt_tokens": 8050,
+        "completion_tokens": 55,
+        "cost_usd": 0.0025525,
+        "raw_usage": {
+          "prompt_tokens": 8050,
+          "completion_tokens": 55,
+          "total_tokens": 8105,
+          "cost": 0.0025525,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0025525,
+            "upstream_inference_prompt_cost": 0.002415,
+            "upstream_inference_completions_cost": 0.0001375
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.answer_review"
+        },
+        "hub_accepted": true
+      }
+    ],
+    "elapsed_seconds": 5.42
+  },
+  {
+    "case": "K12 Mongo-only color stock",
+    "question": "Black Shark GS3 Sport สี Lava Black ยังมีของไหมครับ",
+    "card_item_ids": [],
+    "reply": {
+      "status": "answered",
+      "intent": "stock_availability",
+      "reason": "source_match",
+      "answer": "ตอนนี้ Black Shark GS3 Sport สี Lava Black มีสินค้าพร้อมส่งครับ สามารถสั่งซื้อเข้ามาได้เลยครับ",
+      "sources": [
+        {
+          "file": "ShpProducts",
+          "sheet": "Unit stock"
+        }
+      ],
+      "product_name": null,
+      "matched_question": null,
+      "session_id": null,
+      "handoff_mock": false,
+      "handoff_sent": false,
+      "product_cards": [
+        {
+          "item_id": "27775238115",
+          "name": "Black Shark GS3 Sport สมาร์ทวอทช์ Smartwatch GPS คุยโทรศัพท์ได้ กันน้ำ 5 ATM -1Y",
+          "image_url": "https://cf.shopee.co.th/file/sg-11134201-825ap-mvv9svvc7y0z9d",
+          "availability": "available",
+          "tier_variation": [
+            {
+              "name": "ตัวเลือกสินค้า",
+              "options": [
+                "Mist Black",
+                "Lava Black",
+                "Luna Purple"
+              ]
+            }
+          ],
+          "models": [
+            {
+              "model_id": "257608659191",
+              "model_name": "Mist Black",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 233
+            },
+            {
+              "model_id": "257608659190",
+              "model_name": "Lava Black",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 500
+            },
+            {
+              "model_id": "257608659192",
+              "model_name": "Luna Purple",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 26
+            }
+          ]
+        },
+        {
+          "item_id": "28576160492",
+          "name": "Black Shark GS3 Sport สมาร์ทวอทช์ GPS คุยโทรศัพท์ได้ มาตรฐาน MIL-STD 810H กันน้ำ -1Y",
+          "image_url": "https://cf.shopee.co.th/file/sg-11134201-8259y-mvv9t6o8wb2f80",
+          "availability": "available",
+          "tier_variation": [
+            {
+              "name": "ตัวเลือกสินค้า",
+              "options": [
+                "Lava Black",
+                "Mist Black",
+                "Luna Purple"
+              ]
+            }
+          ],
+          "models": [
+            {
+              "model_id": "237370476802",
+              "model_name": "Mist Black",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 233
+            },
+            {
+              "model_id": "237370476803",
+              "model_name": "Luna Purple",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 26
+            },
+            {
+              "model_id": "237370476801",
+              "model_name": "Lava Black",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 500
+            }
+          ]
+        },
+        {
+          "item_id": "27276155598",
+          "name": "Black Shark GS3 Sport สมาร์ทวอทช์ GPS คุยโทรศัพท์ได้ มาตรฐาน MIL-STD 810H -1Y",
+          "image_url": "https://cf.shopee.co.th/file/sg-11134201-8259y-mvv9t0iw2zgof0",
+          "availability": "available",
+          "tier_variation": [
+            {
+              "name": "ตัวเลือกสินค้า",
+              "options": [
+                "Luna Purple",
+                "Mist Black",
+                "Lava Black"
+              ]
+            }
+          ],
+          "models": [
+            {
+              "model_id": "205785785058",
+              "model_name": "Luna Purple",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 26
+            },
+            {
+              "model_id": "205785785059",
+              "model_name": "Mist Black",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 233
+            },
+            {
+              "model_id": "205785785060",
+              "model_name": "Lava Black",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 500
+            }
+          ]
+        }
+      ],
+      "intent_analysis": {
+        "intent": "stock_availability",
+        "topic": "check stock availability for Black Shark GS3 Sport in Lava Black",
+        "needs": [
+          "Check if Black Shark GS3 Sport in Lava Black is currently in stock"
+        ],
+        "product_names": [
+          "Black Shark GS3 Sport"
+        ],
+        "category": null,
+        "list_all": false,
+        "unresolved": false
+      }
+    },
+    "usage": [
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.intent",
+        "user": "customer_chat",
+        "duration_ms": 1556,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795408527-6hMOcDoHfSBgEnWWYbcy",
+        "prompt_tokens": 1017,
+        "completion_tokens": 107,
+        "cost_usd": 0.0005726,
+        "raw_usage": {
+          "prompt_tokens": 1017,
+          "completion_tokens": 107,
+          "total_tokens": 1124,
+          "cost": 0.0005726,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0005726,
+            "upstream_inference_prompt_cost": 0.0003051,
+            "upstream_inference_completions_cost": 0.0002675
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.intent"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.answer",
+        "user": "customer_chat",
+        "duration_ms": 1322,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795408529-vBmczbm5a3bRZ5LHdLeK",
+        "prompt_tokens": 5638,
+        "completion_tokens": 32,
+        "cost_usd": 0.0017714,
+        "raw_usage": {
+          "prompt_tokens": 5638,
+          "completion_tokens": 32,
+          "total_tokens": 5670,
+          "cost": 0.0017714,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0017714,
+            "upstream_inference_prompt_cost": 0.0016914,
+            "upstream_inference_completions_cost": 8e-05
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.answer"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.answer_review",
+        "user": "customer_chat",
+        "duration_ms": 2166,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795408530-21SfdR3XcKOpg8rOojDQ",
+        "prompt_tokens": 4698,
+        "completion_tokens": 36,
+        "cost_usd": 0.0014994,
+        "raw_usage": {
+          "prompt_tokens": 4698,
+          "completion_tokens": 36,
+          "total_tokens": 4734,
+          "cost": 0.0014994,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0014994,
+            "upstream_inference_prompt_cost": 0.0014094,
+            "upstream_inference_completions_cost": 9e-05
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.answer_review"
+        },
+        "hub_accepted": true
+      }
+    ],
+    "elapsed_seconds": 5.57
+  },
+  {
+    "case": "K13 card item color stock",
+    "question": "สีส้มยังมีของไหมครับ",
+    "card_item_ids": [
+      "56067346193"
+    ],
+    "reply": {
+      "status": "answered",
+      "intent": "stock_availability",
+      "reason": "source_match",
+      "answer": "สำหรับสีส้ม ตอนนี้มีสินค้าพร้อมส่งครับ ลูกค้าสามารถกดสั่งซื้อได้เลยครับ",
+      "sources": [
+        {
+          "file": "ShpProducts",
+          "sheet": "Unit stock"
+        }
+      ],
+      "product_name": null,
+      "matched_question": null,
+      "session_id": null,
+      "handoff_mock": false,
+      "handoff_sent": false,
+      "product_cards": [
+        {
+          "item_id": "56067346193",
+          "name": "(NewArrival) BLACK SHARK RUN สมาร์ทวอทช์ออกกำลังกาย Built-in GPS กันน้ำ 5ATM โหมดกีฬา 150+ แบตเตอรี่อึดนาน 15 วัน -1Y",
+          "image_url": "https://cf.shopee.co.th/file/sg-11134201-825b6-mvv9ty47j8cg04",
+          "availability": "available",
+          "tier_variation": [
+            {
+              "name": "ตัวเลือกสินค้า",
+              "options": [
+                "Black",
+                "Orange",
+                "Yellow",
+                "Black + T20 (Orange)",
+                "Orange +T20 (Orange)",
+                "Yellow +T20 (Orange)"
+              ]
+            }
+          ],
+          "models": [
+            {
+              "model_id": "441469654477",
+              "model_name": "Yellow",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 116
+            },
+            {
+              "model_id": "371475557332",
+              "model_name": "Black + T20 (Orange)",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 15
+            },
+            {
+              "model_id": "371475557333",
+              "model_name": "Orange +T20 (Orange)",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 15
+            },
+            {
+              "model_id": "371475557334",
+              "model_name": "Yellow +T20 (Orange)",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 15
+            },
+            {
+              "model_id": "441469654475",
+              "model_name": "Black",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 500
+            },
+            {
+              "model_id": "441469654476",
+              "model_name": "Orange",
+              "model_status": "MODEL_NORMAL",
+              "stock_known": true,
+              "available": 135
+            }
+          ]
+        }
+      ],
+      "intent_analysis": {
+        "intent": "stock_availability",
+        "topic": "Check stock availability of orange color",
+        "needs": [
+          "Check if the orange color is currently in stock"
+        ],
+        "product_names": [
+          "BLACK SHARK RUN"
+        ],
+        "category": null,
+        "list_all": false,
+        "unresolved": false
+      }
+    },
+    "usage": [
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.intent",
+        "user": "customer_chat",
+        "duration_ms": 2214,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795408533-AMG8rJuPkYXzIMQhB5Gx",
+        "prompt_tokens": 1096,
+        "completion_tokens": 95,
+        "cost_usd": 0.0005663,
+        "raw_usage": {
+          "prompt_tokens": 1096,
+          "completion_tokens": 95,
+          "total_tokens": 1191,
+          "cost": 0.0005663,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0005663,
+            "upstream_inference_prompt_cost": 0.0003288,
+            "upstream_inference_completions_cost": 0.0002375
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.intent"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.answer",
+        "user": "customer_chat",
+        "duration_ms": 1529,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795408535-FQFQK9ZpXMKysFkav3bN",
+        "prompt_tokens": 2574,
+        "completion_tokens": 20,
+        "cost_usd": 0.0008222,
+        "raw_usage": {
+          "prompt_tokens": 2574,
+          "completion_tokens": 20,
+          "total_tokens": 2594,
+          "cost": 0.0008222,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0008222,
+            "upstream_inference_prompt_cost": 0.0007722,
+            "upstream_inference_completions_cost": 5e-05
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.answer"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.answer_review",
+        "user": "customer_chat",
+        "duration_ms": 1204,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795408537-qF3KD3nKWVM18OnuzlfU",
+        "prompt_tokens": 1627,
+        "completion_tokens": 30,
+        "cost_usd": 0.0005631,
+        "raw_usage": {
+          "prompt_tokens": 1627,
+          "completion_tokens": 30,
+          "total_tokens": 1657,
+          "cost": 0.0005631,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0005631,
+            "upstream_inference_prompt_cost": 0.0004881,
+            "upstream_inference_completions_cost": 7.5e-05
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.answer_review"
+        },
+        "hub_accepted": true
+      }
+    ],
+    "elapsed_seconds": 5.25
+  }
+]

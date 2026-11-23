@@ -106,6 +106,58 @@ class IntentFlowTests(unittest.TestCase):
         self.assertEqual(result["status"], "answered")
         self.assertIn("youtu.be/Oen126kBRzI", result["answer"])
 
+    def test_mongo_color_evidence_is_cited_when_product_info_uses_faq_model_context(self):
+        prompts = []
+        def generate(key, prompt):
+            prompts.append(prompt)
+            if "Return ONLY JSON with keys: intent" in prompt:
+                return json.dumps({"intent": "product_info", "topic": "available colors",
+                                   "needs": ["available colors"],
+                                   "product_names": ["Black Shark GS3 Ultra"], "unresolved": False})
+            return "Black Shark GS3 Ultra มีสีดำและ Glacier Silver ครับ"
+        product = {"name": "Black Shark GS3 Ultra", "description": "นาฬิกา GPS", "source": {"file": "kb.xlsx"}}
+        faq = {"model_name": "Black Shark GS3 Ultra Smart Watch", "question": "มี GPS ไหม",
+               "answer": "มี GPS", "source": {"file": "faq.xlsx", "cell": "C3"}}
+        listing = {"item_id": "123", "name": "Black Shark GS3 Ultra", "description": "",
+                   "availability": "available", "tier_variation": [],
+                   "models": [{"model_name": "Black", "available": 3},
+                              {"model_name": "Glacier Silver", "available": 4}]}
+        result = self.engine([product], generate, [faq]).answer(
+            "Black Shark GS3 Ultra มีสีอะไรบ้าง", commerce_lookup=lambda *_: {"products": [listing]})
+        self.assertIn("Glacier Silver", prompts[-1])
+        self.assertIn({"file": "ShpProducts", "sheet": "Product listing and unit stock"}, result["sources"])
+
+    def test_faq_selection_excludes_other_catalog_models_with_shared_name_prefix(self):
+        prompts = []
+        def generate(key, prompt):
+            prompts.append(prompt)
+            if "Return ONLY JSON with keys: intent" in prompt:
+                return json.dumps({"intent": "troubleshooting", "topic": "charging",
+                                   "needs": ["charging steps"],
+                                   "product_names": ["Black Shark GS3"], "unresolved": False})
+            if "Select every FAQ" in prompt:
+                return '{"indices":[0]}'
+            return "ลองตรวจขั้วชาร์จของ GS3 ครับ"
+        products = [
+            {"name": "Black Shark GS3", "description": "GS3 facts", "source": {}},
+            {"name": "Black Shark GS3 Sport", "description": "Sport facts", "source": {}},
+            {"name": "Black Shark GS3 Ultra", "description": "Ultra facts", "source": {}},
+        ]
+        faqs = [
+            {"model_name": "Black Shark GS3 Sport Smart Watch", "question": "ชาร์จไม่เข้า",
+             "answer": "Sport-only steps", "source": {"cell": "C14"}},
+            {"model_name": "Black Shark GS3 Smart Watch", "question": "ชาร์จไม่เข้า",
+             "answer": "GS3-only steps", "source": {"cell": "C22"}},
+            {"model_name": "Black Shark GS3 Ultra Smart Watch", "question": "ชาร์จไม่เข้า",
+             "answer": "Ultra-only steps", "source": {"cell": "C38"}},
+        ]
+        result = self.engine(products, generate, faqs).answer("GS3 ชาร์จไม่เข้า")
+        selection_prompt = next(prompt for prompt in prompts if "Select every FAQ" in prompt)
+        self.assertIn("GS3-only steps", selection_prompt)
+        self.assertNotIn("Sport-only steps", selection_prompt)
+        self.assertNotIn("Ultra-only steps", selection_prompt)
+        self.assertEqual(result["matched_question"], "ชาร์จไม่เข้า")
+
     def test_intent_extracts_needs_and_product_from_this_chat(self):
         prompts = []
         def generate(key, prompt):
@@ -120,6 +172,45 @@ class IntentFlowTests(unittest.TestCase):
         self.assertEqual(plan["needs"], ["can swim"])
         self.assertEqual(plan["product_names"], ["Black Shark GS3 Ultra"])
         self.assertIn("Black Shark GS3 Ultra", prompts[0])
+
+    def test_intent_keeps_only_product_mentions_present_in_customer_text(self):
+        def generate(key, prompt):
+            return json.dumps({"intent": "stock_availability", "topic": "S3 Special Edition stock",
+                "needs": ["silver stock"], "product_names": [],
+                "product_mentions": ["S3 Special Edition", "Black Shark GS3 Ultra"],
+                "unresolved": False})
+        store = FakeStore([])
+        plan, _ = GeminiAnswerer(store, generate).extract_intent(
+            "Black Shark S3 Special Edition สีเงินมีของไหม", [], [])
+
+        self.assertEqual(plan["product_mentions"], ["S3 Special Edition"])
+
+    def test_text_question_for_product_missing_from_kb_uses_scoped_mongo_evidence(self):
+        prompts = []
+        def generate(key, prompt):
+            prompts.append(prompt)
+            if "Return ONLY JSON with keys: intent" in prompt:
+                return json.dumps({"intent": "stock_availability", "topic": "S3 Special Edition silver stock",
+                    "needs": ["silver variant availability"], "product_names": [],
+                    "product_mentions": ["S3 Special Edition"], "unresolved": False})
+            return "S3 Special Edition สีเงินมีสินค้าพร้อมส่งครับ"
+        product = {"item_id": "55355455002", "name": "Black Shark S3 Special Edition",
+            "description": "Listing facts", "item_status": "NORMAL", "availability": "available",
+            "tier_variation": [], "models": [{"model_name": "Silver+สแตนเลสเงิน", "available": 71,
+                "stock_known": True, "model_status": "MODEL_NORMAL"}]}
+        calls = []
+        def commerce_lookup(intent, names, cards, mentions):
+            calls.append((intent, names, cards, mentions))
+            return {"products": [product]}
+        engine = self.engine([], generate)
+
+        result = engine.answer("Black Shark S3 Special Edition สีเงินมีของไหมครับ",
+                               commerce_lookup=commerce_lookup)
+
+        self.assertEqual(result["status"], "answered")
+        self.assertIn("สีเงิน", result["answer"])
+        self.assertEqual(calls[0][3], ["S3 Special Edition"])
+        self.assertIn({"file": "ShpProducts", "sheet": "Unit stock"}, result["sources"])
 
     def test_intent_extracts_category_and_complete_inventory_request(self):
         def generate(key, prompt):
@@ -330,7 +421,7 @@ class IntentFlowTests(unittest.TestCase):
         engine = self.engine([{"name": "Black Shark GS3", "description": "นาฬิกา", "source": {}}], generate)
 
         result = engine.answer("ช่วยดูการ์ดนี้", card_context=[listing],
-                               commerce_lookup=lambda intent, names, cards: {"products": [listing]})
+                               commerce_lookup=lambda intent, names, cards, mentions: {"products": [listing]})
 
         self.assertEqual(result["status"], "answered")
         self.assertEqual(result["product_cards"][0]["item_id"], "43524489240")
@@ -384,13 +475,17 @@ class IntentFlowTests(unittest.TestCase):
         self.assertIn("Global Version", prompts[-1])
         self.assertIn("do not infer stock/version", prompts[-1])
 
-    def test_compatibility_answer_uses_model_facts_without_troubleshooting_faq(self):
+    def test_compatibility_answer_ignores_symptom_faq_that_conflicts_with_product_spec(self):
         prompts = []
         def generate(key, prompt):
             prompts.append(prompt)
             if "Return ONLY JSON with keys: intent" in prompt:
                 return json.dumps({"intent": "compatibility", "topic": "LINE calling", "needs": ["LINE calls on iOS"],
                                    "product_names": ["Black Shark RUN"], "unresolved": False})
+            if "Select every FAQ" in prompt:
+                return '{"indices":[0]}'
+            if "ANSWER REVIEW" in prompt:
+                return '{"answer":"Black Shark RUN รับสาย LINE บน iOS ได้ครับ ส่วน Android ยังอยู่ระหว่างการพัฒนา"}'
             return "Black Shark RUN รับสาย LINE ผ่านนาฬิกาบน iOS ได้ครับ ส่วน Android ยังอยู่ระหว่างการพัฒนา"
         product_facts = (
             "ฟีเจอร์ ENC Bluetooth Calling รองรับการรับสาย LINE ผ่านนาฬิกาได้โดยตรงสำหรับ iOS "
@@ -403,14 +498,79 @@ class IntentFlowTests(unittest.TestCase):
         ]
         engine = self.engine([{"name": "Black Shark RUN", "description": product_facts, "source": {}}],
                              generate, faqs)
+        engine.store.runtime_config = lambda: {}
 
         result = engine.answer("รับสาย LINE บน iPhone ได้ไหม")
 
         self.assertEqual(result["status"], "answered")
-        self.assertEqual(result["answer"], "Black Shark RUN รับสาย LINE ผ่านนาฬิกาบน iOS ได้ครับ ส่วน Android ยังอยู่ระหว่างการพัฒนา")
+        self.assertIn("รับสาย LINE บน iOS ได้", result["answer"])
         self.assertIn(product_facts, prompts[-1])
-        self.assertNotIn("FAQ_EVIDENCE", prompts[-1])
-        self.assertNotIn("Select every FAQ", "\n".join(prompts))
+        self.assertFalse(any("FAQ_EVIDENCE" in prompt for prompt in prompts))
+        self.assertFalse(any("Select every FAQ" in prompt for prompt in prompts))
+        self.assertEqual(result["sources"], [{}])
+
+    def test_store_support_answers_from_relevant_product_faq_before_escalating(self):
+        prompts = []
+        def generate(key, prompt):
+            prompts.append(prompt)
+            if "Return ONLY JSON with keys: intent" in prompt:
+                return json.dumps({"intent": "store_support", "topic": "warranty", "needs": ["warranty period"],
+                                   "product_names": ["Black Shark GS3"], "unresolved": False})
+            if "Select every FAQ" in prompt:
+                return '{"indices":[0]}'
+            if "ANSWER REVIEW" in prompt:
+                return '{"answer":"Black Shark GS3 รับประกัน 1 ปีครับ"}'
+            return "Black Shark GS3 รับประกัน 1 ปีครับ"
+        faq = {"model_name": "Black Shark GS3 Smart Watch", "question": "รับประกันกี่ปี",
+               "answer": "รับประกัน 1 ปี", "source": {"cell": "F4"}}
+        engine = self.engine([{"name": "Black Shark GS3", "description": "สมาร์ทวอทช์", "source": {"cell": "B3"}}],
+                             generate, [faq])
+        engine.store.runtime_config = lambda: {}
+
+        result = engine.answer("GS3 รับประกันกี่ปี")
+
+        self.assertEqual(result["status"], "answered")
+        self.assertIn("รับประกัน 1 ปี", result["answer"])
+        self.assertEqual(result["sources"], [{"cell": "B3"}, {"cell": "F4"}])
+        self.assertTrue(any("FAQ_EVIDENCE" in prompt for prompt in prompts))
+
+    def test_store_support_handoff_keeps_canonical_intent_and_records_case(self):
+        def generate(key, prompt):
+            if "Return ONLY JSON with keys: intent" in prompt:
+                return json.dumps({"intent": "store_support", "topic": "refund", "needs": ["refund request"],
+                                   "product_names": ["Black Shark GS3"], "unresolved": False})
+            if "Select every FAQ" in prompt:
+                return '{"indices":[]}'
+            if "ANSWER REVIEW" in prompt:
+                return '{"answer":"ข้อมูลการคืนเงินส่วนนี้ต้องให้เจ้าหน้าที่ตรวจสอบครับ"}'
+            return "ข้อมูลการคืนเงินส่วนนี้ต้องให้เจ้าหน้าที่ตรวจสอบครับ"
+        store = FakeStore([{"name": "Black Shark GS3", "description": "สมาร์ทวอทช์", "source": {}}], [])
+        store.escalate = lambda **kwargs: {"id": 23}
+        engine = ProductChatEngine(store=store, answerer=GeminiAnswerer(store, generate))
+
+        result = engine.answer("GS3 ขอคืนเงินได้ไหม", session_id="session-1")
+
+        self.assertEqual(result["status"], "escalated")
+        self.assertEqual(result["intent"], "escalation")
+        self.assertEqual(result["case_id"], 23)
+        self.assertTrue(result["handoff_sent"])
+
+    def test_answer_review_corrects_thai_and_removes_unsupported_claim(self):
+        prompts = []
+        def generate(key, prompt):
+            prompts.append(prompt)
+            if "ANSWER REVIEW" in prompt:
+                return '{"answer":"Black Shark GS3 มีโหมดว่ายน้ำครับ แต่เอกสารไม่ได้ระบุว่าเหมาะกับการดำน้ำลึก"}'
+            return "Black Shark GS3 มีโหมดว่ายน้ำและเหมาะกับการดำน้ำลึกครับ"
+        store = FakeStore([])
+        store.runtime_config = lambda: {}
+        answerer = GeminiAnswerer(store, generate)
+
+        answer, reason = answerer.answer("GS3 ดำน้ำได้ไหม", "Black Shark GS3\nโหมดกีฬา: ว่ายน้ำ", product_name="Black Shark GS3")
+
+        self.assertEqual(reason, "llm_grounded")
+        self.assertIn("ไม่ได้ระบุ", answer)
+        self.assertIn("unsupported", prompts[-1])
 
     def test_troubleshooting_answer_still_uses_relevant_faq(self):
         prompts = []

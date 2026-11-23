@@ -1,0 +1,29 @@
+{
+  "questions": 100,
+  "verdicts": {
+    "correct": 64,
+    "needs_review": 25,
+    "incorrect": 10,
+    "partial": 1
+  },
+  "automated_verdicts": {
+    "correct": 64,
+    "needs_review": 25,
+    "incorrect": 10,
+    "partial": 1
+  },
+  "manual_review_count": 0,
+  "customer_cost_usd": 0.4022121,
+  "judge_cost_usd": 0.1218726,
+  "regression_cost_usd": 0,
+  "mongo_color_stock_retests": 0,
+  "mongo_color_stock_retest_cost_usd": 0,
+  "total_cost_usd": 0.5240847,
+  "customer_provider_calls": 304,
+  "judge_provider_calls": 25,
+  "regression_provider_calls": 0,
+  "total_provider_calls": 329,
+  "judge_usage_resends": 0,
+  "shop_scope_failures": 0,
+  "hub_failures": 0
+}

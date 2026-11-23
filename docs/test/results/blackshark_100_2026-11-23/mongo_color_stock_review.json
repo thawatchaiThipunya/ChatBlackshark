@@ -1,0 +1,8 @@
+{
+  "K01 Mongo-only colors": {"verdict": "correct", "reason": "สี Black และ Glacier Silver ไม่ปรากฏใน KB record ของ GS3 Ultra แต่มีใน Mongo listing และ unit models"},
+  "K10 Mongo-only color stock": {"verdict": "correct", "reason": "Mongo unit Glacier Silver ของ GS3 Ultra มี stock มากกว่า 0"},
+  "K11 sold-out color": {"verdict": "correct", "reason": "Mongo ไม่มี unit สีดำของ S1 Pro; ตัวเลือก Blue มี stock 0"},
+  "K08 Mongo-only missing color": {"verdict": "correct", "reason": "Lava Black, Mist Black และ Luna Purple ไม่อยู่ใน KB record ของ GS3 Sport แต่มีใน Mongo unit models"},
+  "K12 Mongo-only color stock": {"verdict": "correct", "reason": "Mongo unit Lava Black ของ GS3 Sport มี stock มากกว่า 0"},
+  "K13 card item color stock": {"verdict": "correct", "reason": "การ์ด item_id 56067346193 อยู่ในร้าน BlackShark ที่ map กับ shop_id นี้; Mongo unit Orange มี stock มากกว่า 0"}
+}

@@ -18,6 +18,7 @@ from .chat_inputs import normalize_chat_input
 
 _clients: dict[str, MongoClient] = {}
 _shop_alias_cache: dict[tuple[str, str, str], tuple[float, bool]] = {}
+_legacy_shop_name_cache: dict[tuple[str, str], tuple[float, str | None]] = {}
 logger = logging.getLogger("blackshark.legacy_data")
 
 
@@ -64,12 +65,35 @@ def shop_alias_is_unique(platform: str, shop_id: str, legacy_shop_name: str) -> 
     cached = _shop_alias_cache.get(key)
     if cached and time.monotonic() - cached[0] < 60:
         return cached[1]
-    ids = _conversation_collection().distinct("shop_id", {
-        "platform": platform.casefold(), "shop_name": re.compile("^" + re.escape(legacy_shop_name.strip()) + "$", re.I),
-    })
-    result = {str(value) for value in ids} == {shop_id}
+    result = (resolve_legacy_shop_name(platform, shop_id) or "").casefold() == legacy_shop_name.strip().casefold()
     _shop_alias_cache[key] = (time.monotonic(), result)
     return result
+
+
+def resolve_legacy_shop_name(platform: str, shop_id: str) -> str | None:
+    """Resolve Mongo's shopname alias from the scoped legacy conversation ID."""
+    platform_key, shop_key = platform.strip().casefold(), shop_id.strip()
+    if not platform_key or not shop_key:
+        return None
+    cache_key = (platform_key, shop_key)
+    cached = _legacy_shop_name_cache.get(cache_key)
+    if cached and time.monotonic() - cached[0] < 60:
+        return cached[1]
+    conversations = _conversation_collection()
+    aliases = [str(value).strip() for value in conversations.distinct(
+        "shop_name", {"platform": platform_key, "shop_id": {"$in": _shop_id_values(shop_key)}})
+        if isinstance(value, str) and value.strip()]
+    unique_aliases = {value.casefold(): value for value in aliases}
+    resolved = next(iter(unique_aliases.values())) if len(unique_aliases) == 1 else None
+    if resolved:
+        owners = conversations.distinct("shop_id", {
+            "platform": platform_key,
+            "shop_name": re.compile("^" + re.escape(resolved) + "$", re.I),
+        })
+        if {str(value) for value in owners} != {shop_key}:
+            resolved = None
+    _legacy_shop_name_cache[cache_key] = (time.monotonic(), resolved)
+    return resolved
 
 
 def _dt(value: Any) -> datetime | None:
@@ -159,6 +183,26 @@ def _model_summary(model: dict[str, Any]) -> dict[str, Any]:
             "model_status": str(model.get("model_status") or ""),
             "stock_known": stock_known,
             "available": available if stock_known else None}
+
+
+def _tier_variation_summary(value: Any) -> list[dict[str, Any]]:
+    """Keep Shopee's selectable options as structured evidence, without raw listing data."""
+    entries = value if isinstance(value, list) else [value] if isinstance(value, dict) else []
+    result = []
+    for entry in entries[:10]:
+        if not isinstance(entry, dict):
+            continue
+        options = entry.get("options")
+        if not isinstance(options, list):
+            options = entry.get("option_list")
+        if not isinstance(options, list):
+            continue
+        normalized_options = [option.get("option") if isinstance(option, dict) else option for option in options]
+        clean_options = list(dict.fromkeys(str(option).strip()[:120] for option in normalized_options
+                                           if isinstance(option, (str, int, float)) and str(option).strip()))[:50]
+        if clean_options:
+            result.append({"name": str(entry.get("name") or "ตัวเลือก")[:120], "options": clean_options})
+    return result
 
 
 def _item_availability(item_status: str, models: list[dict[str, Any]]) -> str:
@@ -271,7 +315,7 @@ def _products_by_ids(item_ids: list[str], shop_name: str) -> dict[str, dict[str,
     query["shopname"] = shop_name.strip()
     projection = {"_id": 0, "item_id": 1, "item_name": 1, "name": 1, "description": 1,
                  "shopname": 1, "brand": 1, "image": 1, "images": 1, "image_url": 1,
-                 "item_status": 1, "model": 1}
+                 "item_status": 1, "model": 1, "tier_variation": 1}
     rows = collection.find(query, projection).limit(20)
     result: dict[str, dict[str, Any]] = {}
     for doc in rows:
@@ -300,7 +344,7 @@ def _products_by_ids(item_ids: list[str], shop_name: str) -> dict[str, dict[str,
             "image_url": str(image or "")[:2048],
             "shopname": str(doc.get("shopname") or ""),
             "item_status": item_status, "availability": _item_availability(item_status, models),
-            "models": models,
+            "models": models, "tier_variation": _tier_variation_summary(doc.get("tier_variation")),
         }
     return result
 
@@ -743,11 +787,95 @@ def products_for_catalog_names(names: list[str], catalog: list[dict[str, Any]],
             unit_ids = {str(unit.get("model_id") or "").removesuffix(".0") for unit in units}
             item["models"] = [unit for unit in item["models"] if unit["model_id"] in unit_ids]
             item["availability"] = _item_availability(item["item_status"], item["models"])
+            def normalized_option(value: str) -> str:
+                return re.sub(r"[^a-z0-9ก-๙]", "", value.casefold())
+            selected_unit_names = [normalized_option(unit["model_name"]) for unit in item["models"]
+                                   if unit.get("model_name")]
+            scoped_variations = []
+            for variation in item["tier_variation"]:
+                options = [option for option in variation["options"]
+                           if any(normalized_option(option) in unit_name or unit_name in normalized_option(option)
+                                  for unit_name in selected_unit_names)]
+                if options:
+                    scoped_variations.append({**variation, "options": options})
+            item["tier_variation"] = scoped_variations
             item["product_name"] = label
             result.append(item)
             if len(result) >= 10:
                 return result
     return result
+
+
+def products_for_product_mentions(mentions: list[str], shop_name: str) -> list[dict[str, Any]]:
+    """Find explicitly mentioned, non-KB editions in this one shop's Shopee listings."""
+    if not mentions or not shop_name.strip():
+        return []
+
+    patterns: list[str] = []
+    for mention in mentions[:5]:
+        tokens = re.findall(r"[a-z0-9]+|[\u0e00-\u0e7f]+", str(mention).casefold(), re.I)
+        if not tokens:
+            continue
+        pattern = r"(?<!\w)" + r"[\W_]*".join(re.escape(token) for token in tokens) + r"(?!\w)"
+        if pattern not in patterns:
+            patterns.append(pattern)
+    if not patterns:
+        return []
+
+    alternatives = [{field: {"$regex": pattern, "$options": "i"}}
+                    for pattern in patterns for field in ("item_name", "name")]
+    query = {"shopname": shop_name.strip(), "$or": alternatives}
+    projection = {"_id": 0, "item_id": 1, "item_name": 1, "name": 1}
+    docs = list(_products_collection().find(query, projection).limit(50).max_time_ms(5000))
+    item_ids: list[str] = []
+    for doc in docs:
+        title = str(doc.get("item_name") or doc.get("name") or "")
+        if not any(re.search(pattern, title, re.I) for pattern in patterns):
+            continue
+        item_id = doc.get("item_id")
+        if item_id is None:
+            continue
+        canonical = str(int(item_id)) if isinstance(item_id, float) and item_id.is_integer() else str(item_id)
+        if canonical not in item_ids:
+            item_ids.append(canonical)
+        if len(item_ids) >= 10:
+            break
+    return list(_products_by_ids(item_ids, shop_name).values()) if item_ids else []
+
+
+def chat_commerce_lookup(intent: str, product_names: list[str], card_context: list[dict[str, Any]], *,
+                         platform: str, shop_id: str, shop_name: str,
+                         allowed_shops: list[dict[str, Any]], catalog: list[dict[str, Any]],
+                         product_mentions: list[str] | None = None) -> dict[str, Any]:
+    """Resolve public chat stock questions using only the configured Shopee shop."""
+    if intent not in {"stock_availability", "product_info", "product_search", "comparison", "compatibility"}:
+        return {}
+    scope = _scope_by_key(allowed_shops, platform, shop_id)
+    same_name_scopes = [candidate for candidate in allowed_shops
+                        if str(candidate.get("platform") or "").casefold() == platform.casefold()
+                        and str(candidate.get("shop_name") or "").casefold() == shop_name.casefold()]
+    if (not scope or platform.casefold() != "shopee" or not shop_name.strip()
+            or len(same_name_scopes) != 1):
+        return {"unavailable": True}
+    try:
+        mongo_shop_name = resolve_legacy_shop_name(platform, shop_id)
+        if not mongo_shop_name:
+            return {"unavailable": True}
+        item_ids = list(dict.fromkeys(str(card.get("item_id") or "").strip()
+                                      for card in card_context if card.get("item_id")))[:20]
+        if item_ids:
+            products = list(_products_by_ids(item_ids, mongo_shop_name).values())
+        else:
+            products = products_for_catalog_names(product_names[:10], catalog, mongo_shop_name)
+            from .product_identity import match_catalog_product
+            unknown_mentions = [mention for mention in (product_mentions or [])
+                                if not match_catalog_product(mention, catalog)]
+            products.extend(products_for_product_mentions(unknown_mentions, mongo_shop_name))
+        unique = {str(item.get("item_id") or ""): item for item in products if item.get("item_id")}
+        return {"products": list(unique.values())[:10]}
+    except Exception as exc:
+        logger.warning("public_chat_commerce_lookup_failed type=%s", type(exc).__name__)
+        return {"unavailable": True}
 
 
 def get_customer_summary(customer_id: str, platform: str = "shopee") -> dict[str, Any] | None:

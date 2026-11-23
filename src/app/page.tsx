@@ -20,7 +20,8 @@ import {
   X,
 } from "lucide-react";
 import { buildSessionChatRequest, getCatalogStatus, mergeLoadedSessions, presentChatReply,
-  shouldApplyInitialSession, type ChatReply, type ChatSource } from "@/lib/chat-utils";
+  shouldApplyInitialSession, acquireSessionSend, releaseSessionSend,
+  type ChatReply, type ChatSource } from "@/lib/chat-utils";
 import { parseChatAnswer } from "@/lib/chat-answer-format";
 
 type Catalog = {
@@ -144,6 +145,8 @@ export default function HomePage() {
   const listRef = useRef<HTMLDivElement>(null);
   const loadingOlderRef = useRef(false);
   const preserveScrollRef = useRef(false);
+  const sendingSessionIdsRef = useRef(new Set<string>());
+  const messageLoadVersionRef = useRef(new Map<string, number>());
   const [hasOlder, setHasOlder] = useState<Record<string, boolean>>({});
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const navigationVersionRef = useRef(0);
@@ -192,9 +195,12 @@ export default function HomePage() {
   }
 
   async function loadMessages(sessionId: string) {
+    const version = (messageLoadVersionRef.current.get(sessionId) ?? 0) + 1;
+    messageLoadVersionRef.current.set(sessionId, version);
     const response = await fetch(`/api/chat/sessions/${sessionId}/messages`, { cache: "no-store" });
     if (!response.ok) throw new Error("chat_history_unavailable");
     const data = await response.json() as { messages: StoredMessage[]; has_more: boolean };
+    if (messageLoadVersionRef.current.get(sessionId) !== version) return;
     setHasOlder((current) => ({ ...current, [sessionId]: data.has_more }));
     updateSession(sessionId, (current) => ({ ...current, messages: [GREETING, ...data.messages.map(fromStoredMessage)] }));
   }
@@ -284,11 +290,13 @@ export default function HomePage() {
   async function sendQuestion(event?: FormEvent) {
     event?.preventDefault();
     const session = sessions.find((item) => item.id === activeSessionId);
-    if (!session || sendingSessions.has(session.id)) return;
+    if (!session || sendingSessions.has(session.id)
+      || !acquireSessionSend(sendingSessionIdsRef.current, session.id)) return;
     let payload: ReturnType<typeof buildSessionChatRequest>;
     try {
       payload = buildSessionChatRequest(session.id, draft || (itemIds[session.id] ? "ช่วยดูสินค้าจากการ์ดนี้" : mediaFiles[session.id]?.length ? "ช่วยดูภาพหรือวิดีโอนี้" : ""), []);
     } catch (error) {
+      releaseSessionSend(sendingSessionIdsRef.current, session.id);
       setComposerErrors((current) => ({ ...current, [session.id]: error instanceof Error ? error.message : "กรุณาตรวจสอบคำถามอีกครั้ง" }));
       return;
     }
@@ -350,7 +358,11 @@ export default function HomePage() {
           ...(presented.caseId !== undefined ? { caseId: presented.caseId } : {}),
         }],
       }));
-      await loadMessages(session.id);
+      try {
+        await loadMessages(session.id);
+      } catch {
+        setComposerErrors((current) => ({ ...current, [session.id]: "ส่งคำถามแล้ว แต่โหลดประวัติล่าสุดไม่ได้" }));
+      }
     } catch {
       updateSession(session.id, (current) => ({
         ...current,
@@ -363,6 +375,7 @@ export default function HomePage() {
         }],
       }));
     } finally {
+      releaseSessionSend(sendingSessionIdsRef.current, session.id);
       setSessionSending(session.id, false);
       if (activeSessionId === session.id) textareaRef.current?.focus();
     }

@@ -11,7 +11,7 @@ from typing import Any
 from urllib.error import HTTPError
 import urllib.request
 
-from .ai_usage import report_ai_usage
+from .ai_usage import AiUsageHubUnavailable, report_ai_usage, require_ai_usage_hub
 
 
 URL = "https://openrouter.ai/api/v1/chat/completions"
@@ -20,6 +20,7 @@ logger = logging.getLogger("blackshark.ai_usage")
 
 def complete(key: str, model: str, content: str | list[dict], max_tokens: int = 1200, *,
              source: str = "chat.openrouter", units: dict[str, int | float] | None = None) -> str:
+    require_ai_usage_hub()
     payload = json.dumps({
         "model": model,
         "messages": [{"role": "user", "content": content}],
@@ -46,31 +47,36 @@ def complete(key: str, model: str, content: str | list[dict], max_tokens: int = 
             message = "".join(part.get("text", "") for part in message if isinstance(part, dict))
         if not isinstance(message, str) or not message.strip():
             raise RuntimeError("OpenRouter returned no content")
-        _best_effort_report_usage(data, model, source, round((time.perf_counter() - started) * 1000),
-                                  "success", http_status, units)
+        usage_reported = _best_effort_report_usage(data, model, source,
+            round((time.perf_counter() - started) * 1000), "success", http_status, units)
         reported = True
+        if not usage_reported:
+            raise AiUsageHubUnavailable("AI Usage Hub did not accept provider usage")
         return message.strip()
     except Exception as exc:
         if not reported:
             if http_status is None and isinstance(exc, HTTPError):
                 http_status = exc.code
             status = "timeout" if isinstance(exc, (TimeoutError, socket.timeout)) or http_status in (408, 504) else "error"
-            _best_effort_report_usage(data, model, source, round((time.perf_counter() - started) * 1000),
-                                      status, http_status, units, exc)
+            usage_reported = _best_effort_report_usage(data, model, source,
+                round((time.perf_counter() - started) * 1000), status, http_status, units, exc)
+            reported = True
+            if not usage_reported:
+                raise AiUsageHubUnavailable("AI Usage Hub did not accept provider usage") from exc
         raise
 
 
-def _best_effort_report_usage(*args: Any, **kwargs: Any) -> None:
+def _best_effort_report_usage(*args: Any, **kwargs: Any) -> bool:
     try:
-        _report_usage(*args, **kwargs)
+        return _report_usage(*args, **kwargs)
     except Exception as exc:
-        # Reporting must never change the provider result or error seen by chat.
         logger.warning("ai_usage_event_build_failed provider=openrouter error_type=%s", type(exc).__name__)
+        return False
 
 
 def _report_usage(data: dict[str, Any], model: str, source: str, duration_ms: int,
                   status: str, http_status: int | None, units: dict[str, int | float] | None,
-                  error: Exception | None = None) -> None:
+                  error: Exception | None = None) -> bool:
     data = data if isinstance(data, dict) else {}
     usage = data.get("usage") if isinstance(data.get("usage"), dict) else {}
     actual_model = data.get("model") if isinstance(data.get("model"), str) else model
@@ -124,7 +130,7 @@ def _report_usage(data: dict[str, Any], model: str, source: str, duration_ms: in
         event["http_status"] = http_status
     if error is not None:
         event["error_message"] = type(error).__name__
-    report_ai_usage(event)
+    return report_ai_usage(event)
 
 
 def media_part(data: bytes, mime_type: str) -> dict:

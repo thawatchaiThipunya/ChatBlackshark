@@ -1,0 +1,406 @@
+[
+  {
+    "question": "ถ้าไม่มีรุ่นที่ถาม ขอรุ่นที่ร้านนี้มีจริงแทน",
+    "reply": {
+      "status": "answered",
+      "intent": "product_search",
+      "reason": "source_match",
+      "answer": "ทางร้านมีแท็บเล็ตในตระกูล Black Shark Pad 7 วางจำหน่ายครับ ได้แก่รุ่น Black Shark Pad 7Pro UE, Black Shark Pad 7 wifi และ Black Shark Pad 7 LTE ครับผม",
+      "sources": [
+        {
+          "row": 2,
+          "cell": "B2",
+          "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+          "sheet": "ข้อมูลสินค้า"
+        },
+        {
+          "row": 22,
+          "cell": "B22",
+          "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+          "sheet": "ข้อมูลสินค้า"
+        },
+        {
+          "row": 23,
+          "cell": "B23",
+          "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+          "sheet": "ข้อมูลสินค้า"
+        }
+      ],
+      "product_name": "Black Shark Pad 7Pro UE",
+      "matched_question": null,
+      "session_id": null,
+      "handoff_mock": false,
+      "handoff_sent": false,
+      "product_cards": [],
+      "intent_analysis": {
+        "intent": "product_search",
+        "topic": "request available alternative product from store",
+        "needs": [
+          "request an available alternative product since the previously asked model is not available"
+        ],
+        "product_names": [
+          "Black Shark Pad 7Pro UE",
+          "Black Shark Pad 7 wifi",
+          "Black Shark Pad 7 LTE"
+        ],
+        "category": null,
+        "list_all": false,
+        "unresolved": false
+      }
+    },
+    "usage": [
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.intent",
+        "user": "customer_chat",
+        "duration_ms": 1740,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795407287-pRFzfk1vb0h2NMAoY194",
+        "prompt_tokens": 1017,
+        "completion_tokens": 88,
+        "cost_usd": 0.0005251,
+        "raw_usage": {
+          "prompt_tokens": 1017,
+          "completion_tokens": 88,
+          "total_tokens": 1105,
+          "cost": 0.0005251,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0005251,
+            "upstream_inference_prompt_cost": 0.0003051,
+            "upstream_inference_completions_cost": 0.00022
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.intent"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.product_selection",
+        "user": "customer_chat",
+        "duration_ms": 1614,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795407288-edF0Z7lIw4P5c7TkyuPk",
+        "prompt_tokens": 17895,
+        "completion_tokens": 35,
+        "cost_usd": 0.005456,
+        "raw_usage": {
+          "prompt_tokens": 17895,
+          "completion_tokens": 35,
+          "total_tokens": 17930,
+          "cost": 0.005456,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.005456,
+            "upstream_inference_prompt_cost": 0.0053685,
+            "upstream_inference_completions_cost": 8.75e-05
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.product_selection"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.answer",
+        "user": "customer_chat",
+        "duration_ms": 1590,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795407290-54ylQQz6bsg6vDjdGrxf",
+        "prompt_tokens": 5234,
+        "completion_tokens": 53,
+        "cost_usd": 0.0017027,
+        "raw_usage": {
+          "prompt_tokens": 5234,
+          "completion_tokens": 53,
+          "total_tokens": 5287,
+          "cost": 0.0017027,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0017027,
+            "upstream_inference_prompt_cost": 0.0015702,
+            "upstream_inference_completions_cost": 0.0001325
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.answer"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.answer_review",
+        "user": "customer_chat",
+        "duration_ms": 1600,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795407292-vV6Dbf1FiRiQtKU3KpUz",
+        "prompt_tokens": 3860,
+        "completion_tokens": 63,
+        "cost_usd": 0.0013155,
+        "raw_usage": {
+          "prompt_tokens": 3860,
+          "completion_tokens": 63,
+          "total_tokens": 3923,
+          "cost": 0.0013155,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0013155,
+            "upstream_inference_prompt_cost": 0.001158,
+            "upstream_inference_completions_cost": 0.0001575
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.answer_review"
+        },
+        "hub_accepted": true
+      }
+    ]
+  },
+  {
+    "question": "สินค้าที่คุณแนะนำเป็นของร้าน Black Shark Thailand ใช่ไหม",
+    "reply": {
+      "status": "answered",
+      "intent": "product_info",
+      "reason": "source_match",
+      "answer": "ใช่ครับ สินค้าแท็บเล็ตในตระกูล Black Shark Pad 7 ทุกรุ่น ไม่ว่าจะเป็น Black Shark Pad 7Pro UE, Black Shark Pad 7 wifi หรือ Black Shark Pad 7 LTE ล้วนเป็นสินค้าของแบรนด์ Black Shark ครับผม",
+      "sources": [
+        {
+          "row": 2,
+          "cell": "B2",
+          "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+          "sheet": "ข้อมูลสินค้า"
+        },
+        {
+          "row": 22,
+          "cell": "B22",
+          "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+          "sheet": "ข้อมูลสินค้า"
+        },
+        {
+          "row": 23,
+          "cell": "B23",
+          "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+          "sheet": "ข้อมูลสินค้า"
+        }
+      ],
+      "product_name": null,
+      "matched_question": null,
+      "session_id": null,
+      "handoff_mock": false,
+      "handoff_sent": false,
+      "intent_analysis": {
+        "intent": "product_info",
+        "topic": "Verify if the recommended products belong to the store",
+        "needs": [
+          "Verify if the recommended products are from Black Shark Thailand"
+        ],
+        "product_names": [
+          "Black Shark Pad 7Pro UE",
+          "Black Shark Pad 7 wifi",
+          "Black Shark Pad 7 LTE"
+        ],
+        "category": null,
+        "list_all": false,
+        "unresolved": false
+      }
+    },
+    "usage": [
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.intent",
+        "user": "customer_chat",
+        "duration_ms": 4703,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795407294-XpbAryq0u9YiyvxfcCvU",
+        "prompt_tokens": 1149,
+        "completion_tokens": 122,
+        "cost_usd": 0.0006497,
+        "raw_usage": {
+          "prompt_tokens": 1149,
+          "completion_tokens": 122,
+          "total_tokens": 1271,
+          "cost": 0.0006497,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0006497,
+            "upstream_inference_prompt_cost": 0.0003447,
+            "upstream_inference_completions_cost": 0.000305
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.intent"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.answer",
+        "user": "customer_chat",
+        "duration_ms": 1372,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795407298-Ca6STKoD5nWjMgkS0u7G",
+        "prompt_tokens": 5326,
+        "completion_tokens": 66,
+        "cost_usd": 0.0017628,
+        "raw_usage": {
+          "prompt_tokens": 5326,
+          "completion_tokens": 66,
+          "total_tokens": 5392,
+          "cost": 0.0017628,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0017628,
+            "upstream_inference_prompt_cost": 0.0015978,
+            "upstream_inference_completions_cost": 0.000165
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.answer"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.answer_review",
+        "user": "customer_chat",
+        "duration_ms": 1241,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795407300-qbzugzhKgzJ7Vqq4ruj3",
+        "prompt_tokens": 3834,
+        "completion_tokens": 67,
+        "cost_usd": 0.0013177,
+        "raw_usage": {
+          "prompt_tokens": 3834,
+          "completion_tokens": 67,
+          "total_tokens": 3901,
+          "cost": 0.0013177,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0013177,
+            "upstream_inference_prompt_cost": 0.0011502,
+            "upstream_inference_completions_cost": 0.0001675
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.answer_review"
+        },
+        "hub_accepted": true
+      }
+    ]
+  }
+]

@@ -23,20 +23,24 @@ class ShopScopeTests(unittest.TestCase):
         store._request = lambda path, payload=None: responses[path]
         store.knowledge = lambda: {
             "products": [
-                {"name": "BS Watch", "description": "watch facts", "source": {"file": "blackshark.xlsx"}},
-                {"name": "Other Phone", "description": "phone facts", "source": {"file": "other.xlsx"}},
+                {"name": "BS Watch", "description": "watch facts", "source": {"file": "blackshark.xlsx", "sheet": "Products", "cell": "B3"}},
+                {"name": "BS Watch", "description": "stale facts", "source": {"file": "blackshark.xlsx", "sheet": "Products", "cell": "B3"}},
+                {"name": "BS Watch", "description": "another listing", "source": {"file": "blackshark.xlsx", "sheet": "Products", "cell": "B4"}},
+                {"name": "BS Watch", "description": "same name, other shop", "source": {"file": "other.xlsx"}},
                 {"name": "Unattributed", "description": "unknown facts", "source": {}},
             ],
             "faqs": [
                 {"model_name": "BS Watch", "question": "Q", "answer": "A", "source": {"file": "blackshark.xlsx"}},
-                {"model_name": "Other Phone", "question": "Q2", "answer": "A2", "source": {"file": "other.xlsx"}},
+                {"model_name": "BS Watch", "question": "Q2", "answer": "other shop FAQ", "source": {"file": "other.xlsx"}},
             ],
         }
 
         scope, knowledge = store.knowledge_for_shop("SHOPEE", "111")
 
         self.assertEqual(scope["shop_name"], "Black Shark Thailand")
-        self.assertEqual([row["name"] for row in knowledge["products"]], ["BS Watch"])
+        self.assertEqual([row["name"] for row in knowledge["products"]], ["BS Watch", "BS Watch"])
+        self.assertEqual(knowledge["products"][0]["description"], "watch facts")
+        self.assertEqual(knowledge["products"][1]["description"], "another listing")
         self.assertEqual([row["model_name"] for row in knowledge["faqs"]], ["BS Watch"])
         self.assertIsNone(store.resolve_shop_scope("shopee", "222"))
         self.assertIsNone(store.resolve_shop_scope("lazada", "111"))
