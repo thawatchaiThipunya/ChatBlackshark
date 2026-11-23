@@ -23,7 +23,9 @@ class PersonaPromptTests(unittest.TestCase):
         answerer = GeminiAnswerer(PersonaStore({
             "bot_name": "น้อง Koop", "persona_text": "เห็นใจและให้กำลังใจลูกค้าเสมอ",
             "friendliness": 100, "length": "short", "detail_level": 20, "voice": "female",
-        }), lambda key, prompt: prompts.append(prompt) or "GS3 ใช้ได้ 21 วันค่ะ")
+        }), lambda key, prompt: prompts.append(prompt) or (
+            '{"answer":"GS3 ใช้ได้ 21 วันค่ะ"}' if "ANSWER REVIEW" in prompt else "GS3 ใช้ได้ 21 วันค่ะ"
+        ))
 
         answer, reason = answerer.answer("แบตกี่วัน", "GS3 แบตสูงสุด 21 วัน", "GS3")
 

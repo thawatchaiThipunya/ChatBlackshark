@@ -27,24 +27,33 @@ test("sends the session id and lets the server load its history", () => {
   assert.deepEqual(chatUtils.buildSessionChatRequest?.("session-1", "แล้ว Strava ล่ะ", [
     { role: "assistant", content: "ขอแนะนำรุ่นนี้ครับ", product_name: "Black Shark GS3",
       product_names: ["Black Shark GS3", "Black Shark GS3 Ultra"] },
-  ]), {
+  ], "turn-1"), {
     session_id: "session-1",
     question: "แล้ว Strava ล่ะ",
+    request_id: "turn-1",
   });
+});
+
+test("prevents a second concurrent send for the same chat session", () => {
+  const locks = new Set();
+  assert.equal(chatUtils.acquireSessionSend?.(locks, "session-1"), true);
+  assert.equal(chatUtils.acquireSessionSend?.(locks, "session-1"), false);
+  chatUtils.releaseSessionSend?.(locks, "session-1");
+  assert.equal(chatUtils.acquireSessionSend?.(locks, "session-1"), true);
 });
 
 test("presents a mock handoff without implying a staff message was sent", () => {
   assert.deepEqual(
     chatUtils.presentChatReply?.({
       status: "handoff_mock",
-      answer: "ขอเช็กกับเจ้าหน้าที่ก่อน แล้วเดี๋ยวส่งกลับนะครับ",
+      answer: "เรื่องนี้ต้องให้เจ้าหน้าที่ช่วยตรวจสอบครับ",
       handoff_mock: true,
       handoff_sent: false,
       sources: [],
     }),
     {
       kind: "handoff",
-      answer: "ขอเช็กกับเจ้าหน้าที่ก่อน แล้วเดี๋ยวส่งกลับนะครับ",
+      answer: "เรื่องนี้ต้องให้เจ้าหน้าที่ช่วยตรวจสอบครับ",
       sources: [],
       handoffSent: false,
     },
@@ -64,8 +73,8 @@ test("does not send long or overfull history back to the API", () => {
   const longText = "ยาว".repeat(2000);
   const request = chatUtils.buildSessionChatRequest?.("session-1", "คำถาม", [
     { role: "assistant", content: longText },
-  ]);
-  assert.deepEqual(request, { session_id: "session-1", question: "คำถาม" });
+  ], "turn-2");
+  assert.deepEqual(request, { session_id: "session-1", question: "คำถาม", request_id: "turn-2" });
 });
 
 test("presents a real escalation as a sent handoff with case id", () => {

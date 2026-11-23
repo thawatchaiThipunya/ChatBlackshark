@@ -6,7 +6,14 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 from urllib.error import HTTPError
 
-from backend.app.ai_usage import call_gemini, reset_usage_attempt, set_usage_attempt, set_usage_reference, reset_usage_reference
+from backend.app.ai_usage import (
+    call_gemini,
+    report_ai_usage,
+    reset_usage_attempt,
+    set_usage_attempt,
+    set_usage_reference,
+    reset_usage_reference,
+)
 from backend.app.openrouter import complete
 
 
@@ -28,6 +35,15 @@ class AiUsageReportingTests(unittest.TestCase):
         self.addCleanup(self.env.stop)
         self.posts = []
         self.provider_requests = []
+
+    def test_usage_report_is_sent_before_provider_result_returns(self):
+        event = {"provider": "openrouter", "model": "vendor/model", "status": "success"}
+        with patch("backend.app.ai_usage._send_report") as send:
+            report_ai_usage(event)
+
+        send.assert_called_once_with(
+            "https://digital.in.th", "svc_test_token", {**event, "environment": "production"}
+        )
 
     def _inline_reporter(self, provider_payload):
         def urlopen(request, timeout):
@@ -97,7 +113,7 @@ class AiUsageReportingTests(unittest.TestCase):
         self.assertNotIn("private prompt", self.posts[0][0].data.decode())
         self.assertNotIn("provider-secret", self.posts[0][0].data.decode())
 
-    def test_usage_hub_timeout_does_not_change_openrouter_answer(self):
+    def test_usage_hub_timeout_does_not_return_an_untracked_openrouter_answer(self):
         provider_payload = {
             "id": "gen-timeout",
             "model": "vendor/model",
@@ -118,15 +134,38 @@ class AiUsageReportingTests(unittest.TestCase):
         with patch("urllib.request.urlopen", side_effect=urlopen), patch(
             "concurrent.futures.ThreadPoolExecutor.submit", autospec=True, side_effect=submit_inline
         ):
-            answer = complete("provider-secret", "vendor/model", "คำถาม")
+            with self.assertRaises(RuntimeError):
+                complete("provider-secret", "vendor/model", "คำถาม")
 
-        self.assertEqual(answer, "ยังตอบได้")
         self.assertEqual(calls, [
             "https://openrouter.ai/api/v1/chat/completions",
             "https://digital.in.th/internal/ai-usage/logs",
         ])
 
-    def test_missing_hub_env_skips_report_and_keeps_openrouter_call(self):
+    def test_usage_hub_rejection_does_not_return_an_untracked_provider_answer(self):
+        provider_payload = {
+            "id": "gen-untracked", "model": "vendor/model",
+            "choices": [{"message": {"content": "ไม่ควรส่งกลับ"}}],
+            "usage": {"prompt_tokens": 1, "completion_tokens": 1, "cost": 0.00001},
+        }
+        calls = []
+
+        def urlopen(request, timeout):
+            calls.append(request.full_url)
+            if request.full_url == "https://openrouter.ai/api/v1/chat/completions":
+                return FakeResponse(provider_payload)
+            raise HTTPError(request.full_url, 422, "invalid event", {}, io.BytesIO(b"private body"))
+
+        with patch("urllib.request.urlopen", side_effect=urlopen):
+            with self.assertRaises(RuntimeError):
+                complete("provider-secret", "vendor/model", "private prompt")
+
+        self.assertEqual(calls, [
+            "https://openrouter.ai/api/v1/chat/completions",
+            "https://digital.in.th/internal/ai-usage/logs",
+        ])
+
+    def test_missing_hub_env_refuses_openrouter_call(self):
         provider_payload = {
             "id": "gen-no-hub",
             "model": "vendor/model",
@@ -142,10 +181,10 @@ class AiUsageReportingTests(unittest.TestCase):
         with patch.dict(os.environ, {"AI_USAGE_HUB_URL": "", "AI_USAGE_HUB_TOKEN": ""}), patch(
             "urllib.request.urlopen", side_effect=urlopen
         ):
-            answer = complete("provider-secret", "vendor/model", "คำถาม")
+            with self.assertRaises(RuntimeError):
+                complete("provider-secret", "vendor/model", "คำถาม")
 
-        self.assertEqual(answer, "ตอบได้")
-        self.assertEqual(calls, ["https://openrouter.ai/api/v1/chat/completions"])
+        self.assertEqual(calls, [])
 
     def test_gemini_success_reports_token_usage_without_guessing_cost(self):
         response = SimpleNamespace(
@@ -198,6 +237,17 @@ class AiUsageReportingTests(unittest.TestCase):
         event = self.posts[0][1]
         self.assertEqual((event["status"], event["error_message"]), ("timeout", "TimeoutError"))
         self.assertNotIn("private prompt", self.posts[0][0].data.decode())
+
+    def test_gemini_usage_hub_rejection_surfaces_after_paid_call(self):
+        response = SimpleNamespace(text="paid response", usage_metadata=SimpleNamespace(
+            prompt_token_count=2, candidates_token_count=2))
+        generate = MagicMock(return_value=response)
+        client = SimpleNamespace(models=SimpleNamespace(generate_content=generate))
+        with patch("urllib.request.urlopen", side_effect=TimeoutError("hub timeout")):
+            with self.assertRaises(RuntimeError):
+                call_gemini(client, model="gemini-test", contents="private prompt", config={}, source="chat.intent")
+
+        generate.assert_called_once()
 
 
 if __name__ == "__main__":

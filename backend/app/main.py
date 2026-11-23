@@ -113,6 +113,7 @@ class ChatRequest(BaseModel):
     product_name: str | None = None
     model_name: str | None = None
     session_id: str | None = Field(default=None, min_length=1, max_length=100)
+    request_id: str | None = Field(default=None, min_length=1, max_length=200)
     history: list[ChatTurn] = Field(default_factory=list, max_length=24)
 
 
@@ -125,6 +126,17 @@ class TicketAnswerRequest(BaseModel):
 
 class LegacyEngineAnswerRequest(TicketAnswerRequest):
     request_id: str | None = Field(default=None, max_length=200)
+
+
+class LegacyEngineTestAnswerRequest(BaseModel):
+    question: str = Field(default="", max_length=2000)
+    platform: str = Field(min_length=1, max_length=50)
+    shop_id: str = Field(min_length=1, max_length=100)
+    shop_name: str | None = Field(default=None, max_length=200)
+    history: list[dict[str, Any]] = Field(default_factory=list, max_length=24)
+    images: list[str] = Field(default_factory=list, max_length=10)
+    item_ids: list[str] = Field(default_factory=list, max_length=10)
+    order_sn: str | None = Field(default=None, max_length=100)
 
 
 engine = ProductChatEngine()
@@ -682,7 +694,8 @@ def _answer_legacy_message(request: TicketAnswerRequest) -> dict[str, Any]:
     scoped_store = _ShopKnowledgeStore(store, knowledge, scope)
     shop_engine = ProductChatEngine(store=scoped_store)
     order_sn = event.order_sn or _extract_order_number(question)
-    def commerce_lookup(intent: str, product_names: list[str], card_context: list[dict[str, Any]]) -> dict[str, Any]:
+    def commerce_lookup(intent: str, product_names: list[str], card_context: list[dict[str, Any]],
+                        product_mentions: list[str] | None = None) -> dict[str, Any]:
         if not legacy_commerce_is_scoped:
             return {"unavailable": True} if intent in {"order_status", "stock_availability"} else {}
         if intent == "order_status":
@@ -696,6 +709,11 @@ def _answer_legacy_message(request: TicketAnswerRequest) -> dict[str, Any]:
         if product_names:
             product_rows.extend(legacy_data.products_for_catalog_names(
                 product_names[:10], knowledge["products"], legacy_shop_name))
+        if product_mentions:
+            from .product_identity import match_catalog_product
+            unknown_mentions = [mention for mention in product_mentions
+                                if not match_catalog_product(mention, knowledge["products"])]
+            product_rows.extend(legacy_data.products_for_product_mentions(unknown_mentions, legacy_shop_name))
         unique: dict[str, dict[str, Any]] = {}
         for item in product_rows:
             if item.get("item_id"):
@@ -822,6 +840,111 @@ def legacy_engine_answer(request: LegacyEngineAnswerRequest,
             "image_desc": reply.get("image_description") or "", "request_id": request.request_id}
 
 
+@app.post("/api/engine/test-answer")
+def legacy_engine_test_answer(request: LegacyEngineTestAnswerRequest,
+                              authorization: str | None = Header(default=None)) -> dict[str, Any]:
+    """Run the same scoped v4 answer engine for test pages without a legacy message row."""
+    expected = os.getenv("LEGACY_ENGINE_TOKEN", "")
+    supplied = authorization or ""
+    bearer = supplied[7:] if supplied.lower().startswith("bearer ") else ""
+    if not expected or len(expected) < 32 or not hmac.compare_digest(expected, bearer):
+        raise HTTPException(status_code=401, detail="legacy_engine_unauthorized")
+
+    scope, knowledge = _shop_context(request.platform, request.shop_id)
+    question = request.question.strip() or ("ช่วยดูสินค้าจากการ์ดนี้" if request.item_ids else
+        "ช่วยดูภาพหรือวิดีโอที่ส่งมา" if request.images else "")
+    if not question:
+        raise HTTPException(status_code=422, detail="question_required")
+
+    history: list[dict[str, Any]] = []
+    for turn in request.history[-24:]:
+        content = str(turn.get("content") or turn.get("text") or "").strip()
+        if not content:
+            continue
+        role = "assistant" if str(turn.get("role") or "").casefold() in {"assistant", "model", "bot"} else "user"
+        safe_turn: dict[str, Any] = {"role": role, "content": content[:4000]}
+        for key in ("product_name", "product_names", "card_title", "card_product_names", "image_desc", "vision_descriptions"):
+            if key in turn:
+                safe_turn[key] = turn[key]
+        history.append(safe_turn)
+
+    vision_descriptions = _describe_legacy_media(
+        [{"url": url, "type": "image"} for url in request.images if url], question
+    ) if request.images else []
+    catalog = knowledge.get("products", [])
+    alias = ""
+    commerce_is_scoped = False
+    try:
+        alias = legacy_data.resolve_legacy_shop_name(scope["platform"], request.shop_id) or ""
+        commerce_is_scoped = scope["platform"] == "shopee" and bool(alias)
+    except Exception as exc:
+        logger.warning("engine_test_shop_alias_check_failed type=%s", type(exc).__name__)
+
+    card_rows: list[dict[str, Any]] = []
+    if request.item_ids and commerce_is_scoped:
+        try:
+            card_rows = list(legacy_data._products_by_ids(request.item_ids, alias).values())
+        except Exception as exc:
+            logger.warning("engine_test_card_lookup_failed type=%s", type(exc).__name__)
+    if request.item_ids and not commerce_is_scoped:
+        return {"status": "handoff_required", "bot_status": "temporarily_unavailable",
+            "intent": "product_info", "reason": "card_lookup_unavailable",
+            "answer": "ตอนนี้ค้นข้อมูลการ์ดสินค้าจากระบบร้านไม่ได้ครับ ขอให้เจ้าหน้าที่ช่วยตรวจสอบก่อน",
+            "handoff_required": True, "handoff_reason": "card_lookup_unavailable",
+            "product_cards": [], "products": [], "sources": []}
+    if request.item_ids and not card_rows:
+        return {"status": "need_model", "bot_status": "need_model", "intent": "product_info",
+            "reason": "item_id_not_found",
+            "answer": "ผมหาสินค้าจาก item_id ที่ส่งมาในรายการร้านไม่พบครับ ลองตรวจเลขอีกครั้งได้ไหมครับ",
+            "handoff_required": False, "product_cards": [], "products": [], "sources": [],
+            "unresolved_item_ids": request.item_ids}
+    for card in card_rows:
+        card["product_name"] = match_catalog_product(str(card.get("name") or ""), catalog)
+
+    def commerce_lookup(intent: str, product_names: list[str], card_context: list[dict[str, Any]],
+                        product_mentions: list[str] | None = None) -> dict[str, Any]:
+        if intent == "order_status":
+            return {"unavailable": True}
+        if intent not in {"stock_availability", "product_info", "compatibility", "comparison"}:
+            return {}
+        if not commerce_is_scoped:
+            return {"unavailable": True} if intent == "stock_availability" else {}
+        rows: list[dict[str, Any]] = list(card_rows)
+        if product_names:
+            rows.extend(legacy_data.products_for_catalog_names(product_names[:10], catalog, alias))
+        if product_mentions:
+            from .product_identity import match_catalog_product
+            unknown_mentions = [mention for mention in product_mentions
+                                if not match_catalog_product(mention, catalog)]
+            rows.extend(legacy_data.products_for_product_mentions(unknown_mentions, alias))
+        unique = {str(row.get("item_id") or index): row for index, row in enumerate(rows)}
+        return {"products": list(unique.values())[:10]}
+
+    try:
+        scoped_store = _ShopKnowledgeStore(store, knowledge, scope)
+        scoped_engine = ProductChatEngine(store=scoped_store)
+        reply = scoped_engine.answer(
+            question, history=history, card_context=card_rows, vision_evidence=vision_descriptions,
+            commerce_lookup=commerce_lookup, store_label=str(scope.get("shop_name") or "ร้านนี้"),
+        )
+    except Exception as exc:
+        logger.warning("engine_test_answer_failed type=%s", type(exc).__name__)
+        raise HTTPException(status_code=503, detail="answer_engine_unavailable")
+
+    bot_status = str(reply.get("status") or "handoff_mock")
+    handoff_required = (bot_status in {"handoff_mock", "escalated", "temporarily_unavailable", "key_required"}
+        or (bot_status == "need_model" and reply.get("reason") == "vision_unavailable")
+        or reply.get("handoff_sent") is True)
+    cards = reply.get("products") if isinstance(reply.get("products"), list) else []
+    return {**reply, "source": "chatblackshark", "products": cards, "product_cards": cards,
+        "bot_status": bot_status, "status": "handoff_required" if handoff_required else bot_status,
+        "handoff_required": handoff_required,
+        "handoff_reason": reply.get("reason") if handoff_required else None,
+        "image_description": "\n".join(value for value in vision_descriptions if value),
+        "image_descriptions": vision_descriptions,
+        "image_desc": "\n".join(value for value in vision_descriptions if value)}
+
+
 class PreferencesRequest(BaseModel):
     bubble_color: str = Field(pattern=r"^#[0-9a-fA-F]{6}$")
     chat_text_size: Literal["small", "medium", "large"]
@@ -875,6 +998,7 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
     if request.product_name and request.model_name:
         raise HTTPException(status_code=422, detail="Select either product_name or model_name")
     session_id = valid_session(request.session_id or "")
+    turn_id = (request.request_id or "").strip() or secrets.token_hex(16)
     try:
         guest = guest_or_401(chat_guest)
         prior = store.chat_action(guest, "load_session", session_id)
@@ -886,6 +1010,19 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
         raise
     except Exception:
         raise HTTPException(status_code=503, detail="chat_store_unavailable")
+    if request.request_id:
+        completed = next((row.get("payload") for row in reversed(prior)
+                          if row.get("role") == "assistant"
+                          and isinstance(row.get("payload"), dict)
+                          and row["payload"].get("request_id") == turn_id
+                          and isinstance(row["payload"].get("answer"), str)), None)
+        if completed:
+            return completed
+    platform = os.getenv("GLOBAL_PERSONA_PLATFORM", "shopee").strip().casefold()
+    shop_id = os.getenv("GLOBAL_PERSONA_SHOP_ID", "1191420560").strip()
+    scope, scoped_knowledge = _shop_context(platform, shop_id)
+    scoped_store = _ShopKnowledgeStore(store, scoped_knowledge, scope)
+    shop_engine = ProductChatEngine(store=scoped_store)
     is_item_event = event.message_type in ("item", "variation_card", "bundle_message") and bool(event.item_ids)
     history, product_scopes = recent_context(prior)
     user_turns = [turn for turn in history if turn["role"] == "user"]
@@ -895,7 +1032,8 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
     if is_item_event:
         for item_id in event.item_ids:
             try:
-                listing = lookup_shopee_item(item_id)
+                listing = lookup_shopee_item(item_id, platform=scope["platform"],
+                                             shop_id=scope["shop_id"], shop_name=scope["shop_name"])
                 if listing:
                     listings.append(listing)
             except Exception:
@@ -908,13 +1046,7 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
         if cards:
             stored_card_index = index
             stored_cards = [card for card in cards if isinstance(card, dict)]
-    card_knowledge = None
-    if listings or stored_cards:
-        try:
-            card_knowledge = store.knowledge()
-        except Exception:
-            logger.warning("card_kb_unavailable")
-    catalog_products = (card_knowledge or {}).get("products", [])
+    catalog_products = scoped_knowledge.get("products", [])
     for listing in listings:
         listing["product_name"] = match_catalog_product(listing["name"], catalog_products)
     prior_card_context = [{
@@ -974,12 +1106,33 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
                     {"id": attachment_id, "status": "failed", "description": ""})
                 descriptions[index] = "[ไม่สามารถอ่านภาพหรือวิดีโอได้]"
     product_cards = [{"item_id": item["item_id"], "name": item["name"], "image_url": item["image_url"],
-                      "product_name": item.get("product_name"), "description": item["description"][:5000]}
+                      "product_name": item.get("product_name"), "description": item["description"][:5000],
+                      "availability": item.get("availability"), "tier_variation": item.get("tier_variation", []),
+                      "models": item.get("models", [])}
                      for item in listings]
+
+    def public_chat_commerce_lookup(intent: str, product_names: list[str],
+                                    card_context: list[dict[str, Any]],
+                                    product_mentions: list[str] | None = None) -> dict[str, Any]:
+        if intent not in {"stock_availability", "product_info", "product_search", "comparison", "compatibility"}:
+            return {}
+        try:
+            return legacy_data.chat_commerce_lookup(
+                intent, product_names, card_context, platform=scope["platform"],
+                shop_id=scope["shop_id"], shop_name=scope["shop_name"],
+                allowed_shops=store.shop_scopes(), catalog=scoped_knowledge["products"],
+                product_mentions=product_mentions)
+        except HTTPException:
+            return {"unavailable": True}
+        except Exception as exc:
+            logger.warning("public_chat_commerce_scope_failed type=%s", type(exc).__name__)
+            return {"unavailable": True}
+
     user_content = request.question if plain_item_ids and request.question.strip() else question
     try:
         store.chat_action(guest, "save_message", session_id, {"role": "user", "content": user_content,
             "payload": {"message_type": event.message_type, "item_ids": list(event.item_ids),
+                        "request_id": turn_id,
                         "order_sn": event.order_sn, "media": list(event.media),
                         "attachment_ids": request.attachment_ids, "vision_descriptions": descriptions,
                         "product_cards": product_cards,
@@ -999,9 +1152,10 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
                                       "image_url": listing["image_url"]}})
             if plain_item_ids:
                 question = "ช่วยสรุปชื่อสินค้าและจุดเด่นจากรายการสินค้าที่ส่งมา"
-            reply = engine.answer(question, product_name=unique_models[0] if len(unique_models) == 1 else None,
+            reply = shop_engine.answer(question, product_name=unique_models[0] if len(unique_models) == 1 else None,
                                   history=history, session_id=session_id,
-                                  vision_evidence=descriptions, card_context=listings)
+                                  vision_evidence=descriptions, card_context=listings,
+                                  commerce_lookup=public_chat_commerce_lookup)
             found_ids = {listing["item_id"] for listing in listings}
             missing_ids = [item_id for item_id in event.item_ids if item_id not in found_ids]
             if missing_ids:
@@ -1017,7 +1171,7 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
     elif event.message_type == "faq_liveagent":
         settings = store.chat_action(guest, "live_agent_settings", session_id)
         if settings.get("action") == "bot_reply" and question:
-            reply = engine.answer(question, history=history, session_id=session_id)
+            reply = shop_engine.answer(question, history=history, session_id=session_id)
         else:
             record = store.escalate(session_id, "", question or "ลูกค้าขอคุยกับเจ้าหน้าที่", history)
             reply = {"status": "escalated" if record else "handoff_mock",
@@ -1030,10 +1184,12 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
     else:
         if product_scopes and product_scopes[-1].get("category"):
             anchored_name = None
-        reply = engine.answer(question or "ช่วยดูภาพหรือวิดีโอที่ส่งมา", product_name=request.product_name or anchored_name,
+        reply = shop_engine.answer(question or "ช่วยดูภาพหรือวิดีโอที่ส่งมา", product_name=request.product_name or anchored_name,
                               model_name=request.model_name, history=history, session_id=session_id,
-                              vision_evidence=descriptions, card_context=current_card_context)
+                              vision_evidence=descriptions, card_context=current_card_context,
+                              commerce_lookup=public_chat_commerce_lookup)
     try:
+        reply["request_id"] = turn_id
         store.chat_action(guest, "save_message", session_id, {"role": "assistant",
             "content": reply.get("answer", ""), "payload": reply})
         if reply.get("product_name"):

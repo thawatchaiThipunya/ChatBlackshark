@@ -60,11 +60,11 @@ class RoutingTests(unittest.TestCase):
         self.assertEqual(complete.call_args.args[:2], ("or-secret", "vendor/intent"))
         self.assertEqual(store.key_calls, 0)
 
-    @patch("backend.app.engine_v2.openrouter_complete", return_value="สวัสดีครับ")
+    @patch("backend.app.engine_v2.openrouter_complete", side_effect=["สวัสดีครับ", '{"answer":"สวัสดีครับ"}'])
     def test_openrouter_answer_uses_answer_model(self, complete):
         answer, _ = GeminiAnswerer(FakeStore()).answer("สวัสดี", "คำทักทาย", intent="smalltalk")
         self.assertEqual(answer, "สวัสดีครับ")
-        self.assertEqual(complete.call_args.args[1], "vendor/answer")
+        self.assertEqual([call.args[1] for call in complete.call_args_list], ["vendor/answer", "vendor/answer"])
 
     def test_gemini_uses_configured_model(self):
         store = FakeStore("gemini")

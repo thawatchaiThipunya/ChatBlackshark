@@ -66,12 +66,24 @@ export function shouldApplyInitialSession(preferredId: string | null, startVersi
   return Boolean(preferredId) && startVersion === currentVersion;
 }
 
-export function buildSessionChatRequest(sessionId: string, question: string, history: ChatHistoryTurn[]) {
+export function acquireSessionSend(locks: Set<string>, sessionId: string): boolean {
+  if (!sessionId || locks.has(sessionId)) return false;
+  locks.add(sessionId);
+  return true;
+}
+
+export function releaseSessionSend(locks: Set<string>, sessionId: string): void {
+  locks.delete(sessionId);
+}
+
+export function buildSessionChatRequest(sessionId: string, question: string, history: ChatHistoryTurn[],
+                                        requestId = globalThis.crypto.randomUUID()) {
   const cleanQuestion = question.trim();
   if (!cleanQuestion) throw new Error("กรุณาพิมพ์คำถามก่อนส่ง");
   if (!sessionId.trim()) throw new Error("ไม่พบ session ของแชท กรุณาเริ่มแชทใหม่");
+  if (!requestId.trim()) throw new Error("ไม่พบรหัสคำถาม กรุณาลองส่งอีกครั้ง");
   void history;
-  return { session_id: sessionId, question: cleanQuestion };
+  return { session_id: sessionId, question: cleanQuestion, request_id: requestId };
 }
 
 export function presentChatReply(reply: ChatReply) {

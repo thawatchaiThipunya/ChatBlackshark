@@ -1,0 +1,176 @@
+[
+  {
+    "question": "ว่ายน้ำได้ทั้งคู่ไหมคะ",
+    "reply": {
+      "status": "answered",
+      "intent": "compatibility",
+      "reason": "source_match",
+      "answer": "สำหรับรุ่น Black Shark S3 มาพร้อมมาตรฐานการกันน้ำระดับ 5ATM ส่วนรุ่น Black Shark S3 Classic มีมาตรฐานการกันน้ำ 3ATM ซึ่งรองรับการกันน้ำ ทนฝน และละอองน้ำครับ สำหรับการใช้งานว่ายน้ำ ข้อมูลระบุว่ารุ่น S3 มีมาตรฐานการกันน้ำ 5ATM แต่สำหรับการรองรับกิจกรรมว่ายน้ำโดยตรงไม่สามารถระบุยืนยันได้จากข้อมูลครับ ส่วนรุ่น S3 Classic รองรับการกันน้ำ ทนฝน และละอองน้ำทั่วไปครับ",
+      "sources": [
+        {
+          "row": 9,
+          "cell": "B9",
+          "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+          "sheet": "ข้อมูลสินค้า"
+        },
+        {
+          "row": 8,
+          "cell": "B8",
+          "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+          "sheet": "ข้อมูลสินค้า"
+        }
+      ],
+      "product_name": null,
+      "matched_question": null,
+      "session_id": null,
+      "handoff_mock": false,
+      "handoff_sent": false,
+      "intent_analysis": {
+        "intent": "compatibility",
+        "topic": "water resistance for swimming comparison",
+        "needs": [
+          "Check if Black Shark S3 Classic can be used for swimming",
+          "Check if Black Shark S3 can be used for swimming"
+        ],
+        "product_names": [
+          "Black Shark S3 Classic",
+          "Black Shark S3"
+        ],
+        "category": "smart watch",
+        "list_all": false,
+        "unresolved": false
+      }
+    },
+    "usage": [
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.intent",
+        "user": "customer_chat",
+        "duration_ms": 1860,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795407540-IWce9F8BCdDLMOw2LXy7",
+        "prompt_tokens": 1092,
+        "completion_tokens": 121,
+        "cost_usd": 0.0006301,
+        "raw_usage": {
+          "prompt_tokens": 1092,
+          "completion_tokens": 121,
+          "total_tokens": 1213,
+          "cost": 0.0006301,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0006301,
+            "upstream_inference_prompt_cost": 0.0003276,
+            "upstream_inference_completions_cost": 0.0003025
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.intent"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.answer",
+        "user": "customer_chat",
+        "duration_ms": 1553,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795407542-eT4OY3v3XLe58yeIMnps",
+        "prompt_tokens": 7271,
+        "completion_tokens": 96,
+        "cost_usd": 0.0024213,
+        "raw_usage": {
+          "prompt_tokens": 7271,
+          "completion_tokens": 96,
+          "total_tokens": 7367,
+          "cost": 0.0024213,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0024213,
+            "upstream_inference_prompt_cost": 0.0021813,
+            "upstream_inference_completions_cost": 0.00024
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.answer"
+        },
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "operation": "chat.completions",
+        "source": "chat.answer_review",
+        "user": "customer_chat",
+        "duration_ms": 1733,
+        "attempt": 1,
+        "status": "success",
+        "request_id": "gen-1795407544-jWdmEmIxt5a8J3BkG7Ya",
+        "prompt_tokens": 5754,
+        "completion_tokens": 126,
+        "cost_usd": 0.0020412,
+        "raw_usage": {
+          "prompt_tokens": 5754,
+          "completion_tokens": 126,
+          "total_tokens": 5880,
+          "cost": 0.0020412,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0020412,
+            "upstream_inference_prompt_cost": 0.0017262,
+            "upstream_inference_completions_cost": 0.000315
+          }
+        },
+        "http_status": 200,
+        "environment": "development",
+        "metadata": {
+          "analysis_type": "chat.answer_review"
+        },
+        "hub_accepted": true
+      }
+    ]
+  }
+]

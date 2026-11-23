@@ -1,0 +1,158 @@
+[
+  {
+    "case": "after-fix: S3 Special Edition via card",
+    "question": "S3 Special Edition สีเงินยังมีของไหมครับ",
+    "item_ids": [
+      "55355455002"
+    ],
+    "reply": {
+      "status": "answered",
+      "intent": "stock_availability",
+      "reason": "source_match",
+      "answer": "สวัสดีครับ Black Shark S3 Special Edition สีเงินยังมีสินค้าพร้อมสั่งซื้อครับผม หากสนใจสามารถกดสั่งซื้อเข้ามาได้เลยนะครับ",
+      "sources": [
+        {
+          "file": "ShpProducts",
+          "sheet": "Unit stock"
+        }
+      ],
+      "product_name": null,
+      "matched_question": null,
+      "session_id": null,
+      "handoff_mock": false,
+      "handoff_sent": false,
+      "product_cards": [],
+      "intent_analysis": {
+        "intent": "stock_availability",
+        "topic": "Check stock availability for S3 Special Edition in silver",
+        "needs": [
+          "Check if Black Shark S3 Special Edition in silver is in stock"
+        ],
+        "product_names": [],
+        "category": null,
+        "list_all": false,
+        "unresolved": false
+      },
+      "source": "chatblackshark",
+      "products": [],
+      "bot_status": "answered",
+      "handoff_required": false,
+      "handoff_reason": null,
+      "image_description": "",
+      "image_descriptions": [],
+      "image_desc": ""
+    },
+    "usage": [
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "source": "chat.intent",
+        "status": "success",
+        "cost_usd": 0.0006181,
+        "http_status": 200,
+        "request_id": "gen-1795410269-iemagj5ImwDO7N1L928W",
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "source": "chat.answer",
+        "status": "success",
+        "cost_usd": 0.0007935,
+        "http_status": 200,
+        "request_id": "gen-1795410273-4C3J0k8BFVEcgIs40qA9",
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "source": "chat.answer_review",
+        "status": "success",
+        "cost_usd": 0.000528,
+        "http_status": 200,
+        "request_id": "gen-1795410274-vuMf6DCObrDnrD0L4SlU",
+        "hub_accepted": true
+      }
+    ],
+    "cost_usd": 0.0019396,
+    "hub_accepted": true,
+    "created_at": "2026-11-23T05:04:35.731202+00:00"
+  },
+  {
+    "case": "after-fix: S3 Special Edition typed without card",
+    "question": "Black Shark S3 Special Edition สีเงินยังมีของไหมครับ",
+    "item_ids": [],
+    "reply": {
+      "status": "answered",
+      "intent": "stock_availability",
+      "reason": "source_match",
+      "answer": "สวัสดีครับคุณลูกค้า สำหรับ Black Shark S3 Special Edition สีเงิน ตอนนี้ยังมีสินค้าพร้อมขายครับ สามารถกดสั่งซื้อได้เลยนะครับผม",
+      "sources": [
+        {
+          "file": "ShpProducts",
+          "sheet": "Unit stock"
+        }
+      ],
+      "product_name": null,
+      "matched_question": null,
+      "session_id": null,
+      "handoff_mock": false,
+      "handoff_sent": false,
+      "product_cards": [],
+      "intent_analysis": {
+        "intent": "stock_availability",
+        "topic": "check stock availability for Black Shark S3 Special Edition Silver",
+        "needs": [
+          "Check if Black Shark S3 Special Edition in silver is currently in stock"
+        ],
+        "product_names": [],
+        "category": null,
+        "list_all": false,
+        "unresolved": false
+      },
+      "source": "chatblackshark",
+      "products": [],
+      "bot_status": "answered",
+      "handoff_required": false,
+      "handoff_reason": null,
+      "image_description": "",
+      "image_descriptions": [],
+      "image_desc": ""
+    },
+    "usage": [
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "source": "chat.intent",
+        "status": "success",
+        "cost_usd": 0.0006125,
+        "http_status": 200,
+        "request_id": "gen-1795410276-YCmokqAtup5TrAXfOKDz",
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "source": "chat.answer",
+        "status": "success",
+        "cost_usd": 0.0007994,
+        "http_status": 200,
+        "request_id": "gen-1795410277-KIzPN9hn19RAsgKbgfTr",
+        "hub_accepted": true
+      },
+      {
+        "provider": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "source": "chat.answer_review",
+        "status": "success",
+        "cost_usd": 0.0005192,
+        "http_status": 200,
+        "request_id": "gen-1795410279-jtQRt1unN9IuFGAiFtw2",
+        "hub_accepted": true
+      }
+    ],
+    "cost_usd": 0.0019311,
+    "hub_accepted": true,
+    "created_at": "2026-11-23T05:04:41.270184+00:00"
+  }
+]
