@@ -79,6 +79,8 @@ python backend/scripts/prepare_knowledge_base.py
 ```
 
 จากนั้นนำข้อมูลที่เปลี่ยนเข้า Supabase ด้วย `backend/scripts/sql_import_batch.py` และเรียก SQL ที่ได้ตามชุดผ่าน Supabase SQL Editor หรือเครื่องมือต่อฐานข้อมูล ตารางใช้ `source_index` เพื่ออัปเดตข้อมูลเดิมได้ ระหว่างรัน Python จะ cache ข้อมูลฐานข้อมูล 60 วินาที
+
+ข้อมูล Zaapi เก็บใน `backend/data/zaapi.json` และนำเข้าเป็นแถวแยกตาม `source_index` แม้ชื่อสินค้าซ้ำ ก่อนนำเข้าต้อง apply `backend/migrations/010_allow_duplicate_product_names.sql` จากนั้นสร้าง SQL เป็นชุด เช่น `python backend/scripts/sql_import_batch.py products 0 75 --data backend/data/zaapi.json --offset 44` และ `python backend/scripts/sql_import_batch.py faqs 0 500 --data backend/data/zaapi.json --offset 462` แล้วเรียก SQL ของแต่ละชุดตามลำดับ ค่า URL อยู่ใน `source.product_url` พร้อมตำแหน่งต้นทางคอลัมน์ D
 # Persistent chat setup
 
 Apply `backend/migrations/003_persistent_multimodal_chat.sql` to the linked Supabase project before starting this version. It adds private guest, session, message, product-history, attachment, and settings tables plus the private `chat-media` bucket. The API uses the existing `LLM_KEY_STORE_TOKEN` to call its gated chat RPC. Configure `MONGO_URI`, `MONGO_DB`, `MONGO_COLLECTION`, and `SUPABASE_SECRET_KEY` on the Python backend. The secret key signs private media uploads and fetches media for Gemini; never expose it through `NEXT_PUBLIC_*`. The web chat creates an HTTP-only guest cookie and saves each turn in Supabase; a browser refresh reloads the saved session.

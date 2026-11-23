@@ -872,11 +872,11 @@ def legacy_engine_test_answer(request: LegacyEngineTestAnswerRequest,
         [{"url": url, "type": "image"} for url in request.images if url], question
     ) if request.images else []
     catalog = knowledge.get("products", [])
-    alias = ""
+    alias = request.shop_name or str(scope.get("shop_name") or "")
     commerce_is_scoped = False
     try:
-        alias = legacy_data.resolve_legacy_shop_name(scope["platform"], request.shop_id) or ""
-        commerce_is_scoped = scope["platform"] == "shopee" and bool(alias)
+        commerce_is_scoped = (scope["platform"] == "shopee" and bool(alias) and
+            legacy_data.shop_alias_is_unique(scope["platform"], request.shop_id, alias))
     except Exception as exc:
         logger.warning("engine_test_shop_alias_check_failed type=%s", type(exc).__name__)
 
