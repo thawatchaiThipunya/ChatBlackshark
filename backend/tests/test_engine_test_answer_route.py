@@ -44,6 +44,10 @@ class EngineTestAnswerRouteTests(unittest.TestCase):
             "platform": "shopee",
             "shop_id": "111",
             "shop_name": "Black Shark Thailand",
+            "persona": {
+                "bot_name": "น้องร้านเรา", "persona_text": "เป็นกันเองและสุภาพ",
+                "friendliness": 80, "length": "medium", "detail_level": 55, "voice": "female",
+            },
             "history": [{"role": "assistant", "content": "ก่อนหน้านี้คุยเรื่อง GS3"}],
             "images": ["https://cf.shopee.co.th/photo.jpg"],
             "item_ids": ["56067346193"],
@@ -68,6 +72,8 @@ class EngineTestAnswerRouteTests(unittest.TestCase):
         self.assertEqual(captured["kwargs"]["history"][0]["content"], "ก่อนหน้านี้คุยเรื่อง GS3")
         self.assertEqual(captured["kwargs"]["vision_evidence"], ["ภาพนาฬิกาสีดำ"])
         self.assertEqual(captured["kwargs"]["card_context"][0]["product_name"], "Black Shark GS3")
+        self.assertEqual(captured["store"].persona()["bot_name"], "น้องร้านเรา")
+        self.assertEqual(captured["store"].persona()["voice"], "female")
 
 
 if __name__ == "__main__":
