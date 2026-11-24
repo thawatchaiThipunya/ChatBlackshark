@@ -1,0 +1,54 @@
+{
+  "question_count": 100,
+  "result_status_counts": {
+    "answered": 96,
+    "need_model": 3,
+    "handoff_mock": 1
+  },
+  "group_counts": {
+    "conversation": 24,
+    "catalog": 25,
+    "spec": 20,
+    "faq": 15,
+    "shop_boundary": 10,
+    "inventory_compare": 6
+  },
+  "scope_ok_count": 100,
+  "shop_scope_failures": 0,
+  "provider": "openrouter",
+  "model": "google/gemini-3.5-flash-lite",
+  "provider_calls": 303,
+  "provider_cost_usd": 0.3982544,
+  "ai_usage_hub_accepted": 303,
+  "ai_usage_hub_rejected": 0,
+  "median_elapsed_seconds": 5.0600000000000005,
+  "p95_elapsed_seconds": 7.12,
+  "card_test": {
+    "item_id": "56067346193",
+    "status": "answered",
+    "product_name": "BLACK SHARK RUN",
+    "provider_calls": 3,
+    "provider_cost_usd": 0.003014,
+    "ai_usage_hub_accepted": 3
+  },
+  "combined_provider_cost_usd": 0.4012684,
+  "answer_quality_grade": "not_independently_scored",
+  "quality_grading_note": "Separate external judge was not run; auto-review rejected sending the private shop KB snapshot and 100 responses to a second provider. No workaround or chunked submission was used.",
+  "manual_findings": [
+    {
+      "id": "Q089",
+      "type": "KB category / duplicate record",
+      "note": "The store inventory answer lists PureLoop twice, including “z Black Shark PureLoop”. The shop-scoped KB snapshot has two records from row B16 with category “smart watch”; validate source/category data before trusting watch inventory counts."
+    },
+    {
+      "id": "Q092",
+      "type": "intent routing",
+      "note": "A request to list products from Youpin Online Store returned handoff_mock / sensitive_topic instead of a clear out-of-scope response."
+    },
+    {
+      "id": "Q093",
+      "type": "ambiguous recommendation",
+      "note": "With no category or model in the question, the bot picked tablet inventory and listed three tablet models rather than asking what product type the customer wants."
+    }
+  ]
+}

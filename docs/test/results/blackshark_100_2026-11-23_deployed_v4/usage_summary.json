@@ -1,0 +1,24 @@
+{
+  "production_window": {
+    "provider": "openrouter",
+    "model": "google/gemini-3.5-flash-lite",
+    "start": "2026-11-23T09:52:41.179670+00:00",
+    "end": "2026-11-23T10:09:29.259074+00:00",
+    "calls": 356,
+    "failed": 0,
+    "cost_usd": 0.4537465,
+    "prompt_tokens": 1150455,
+    "completion_tokens": 43444,
+    "test_endpoint_requests": 111,
+    "attribution": "aggregate_only",
+    "note": "มี /api/chat requests อื่นในช่วงเดียวกัน จึงไม่ใช่ต้นทุนเฉพาะชุด 111 คำถามและห้ามแจกแจงต้นทุนต่อข้อ"
+  },
+  "quality_judge": {
+    "provider": "openrouter",
+    "model": "google/gemini-3.5-flash-lite",
+    "calls": 25,
+    "cost_usd": 0.1196904,
+    "hub_accepted": 25,
+    "environment": "development"
+  }
+}

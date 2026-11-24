@@ -1,0 +1,20 @@
+[
+  {
+    "id": "Q002",
+    "severity": "improved",
+    "type": "direct_answer",
+    "note": "The answer now starts with a direct verdict: รองรับครับ, then grounds it in the KB's 5ATM/IP69K and swim-tracking facts."
+  },
+  {
+    "id": "Q092",
+    "severity": "not_evaluated",
+    "type": "other_shop_scope",
+    "note": "This is the key cross-shop case, but OpenRouter rejected it with HTTP 403 before intent was returned. The shop_id-anchored behavior is covered by regression tests, not confirmed by this live case."
+  },
+  {
+    "id": "Q055–Q100",
+    "severity": "blocked",
+    "type": "provider_limit",
+    "note": "46 questions received no model answer after OpenRouter returned HTTP 403. The provider reported its weekly key limit was $4.01 of $4.00 and resets 2026-11-30 00:00 UTC. These cases are not answer-quality results."
+  }
+]

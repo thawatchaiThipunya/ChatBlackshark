@@ -1,0 +1,791 @@
+[
+  {
+    "id": "Q001",
+    "group": "conversation",
+    "session": "C01",
+    "question": "gs3 ultra กันน้ำระดับไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q002",
+    "group": "conversation",
+    "session": "C01",
+    "question": "ใส่ว่ายน้ำได้มั้ย",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q003",
+    "group": "conversation",
+    "session": "C01",
+    "question": "อาบน้ำอุ่น เข้าซาวน่าได้ไหม",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q004",
+    "group": "conversation",
+    "session": "C01",
+    "question": "แบตอยู่ได้กี่วัน",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q005",
+    "group": "conversation",
+    "session": "C02",
+    "question": "GS3 กับ GS3 Ultra ต่างกันยังไงคะ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q006",
+    "group": "conversation",
+    "session": "C02",
+    "question": "ตัวไหนแบตอึดกว่าคะ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q007",
+    "group": "conversation",
+    "session": "C02",
+    "question": "ในกล่องแถมสายมาด้วยมั้ยคะ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q008",
+    "group": "conversation",
+    "session": "C02",
+    "question": "จอ Ultra กี่ Hz คะ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q009",
+    "group": "conversation",
+    "session": "C03",
+    "question": "S3 Classic กับ S3 เฉย ๆ ต่างกันยังไงคะ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q010",
+    "group": "conversation",
+    "session": "C03",
+    "question": "S3 Classic เปลี่ยนสายได้มั้ยคะ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q011",
+    "group": "conversation",
+    "session": "C03",
+    "question": "แล้ว S3 ตอบข้อความไลน์จากนาฬิกาได้มั้ย",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q012",
+    "group": "conversation",
+    "session": "C03",
+    "question": "ว่ายน้ำได้ทั้งคู่ไหมคะ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q013",
+    "group": "conversation",
+    "session": "C04",
+    "question": "อยากได้นาฬิกาไว้วิ่ง มี GPS ในตัว และใช้กับ Strava ได้ แนะนำรุ่นไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q014",
+    "group": "conversation",
+    "session": "C04",
+    "question": "ใช้กับ iPhone ได้ไหม",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q015",
+    "group": "conversation",
+    "session": "C04",
+    "question": "ถ้าเอา Ultra เปิด GPS วิ่ง แบตได้กี่ชั่วโมง",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q016",
+    "group": "conversation",
+    "session": "C04",
+    "question": "Ultra วัดความดันได้ไหม",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q017",
+    "group": "conversation",
+    "session": "C05",
+    "question": "A3 ใส่อาบน้ำได้ไหมครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q018",
+    "group": "conversation",
+    "session": "C05",
+    "question": "จอเป็นแบบไหน กี่นิ้วครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q019",
+    "group": "conversation",
+    "session": "C05",
+    "question": "รับสายไลน์ผ่านนาฬิกาได้มั้ย",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q020",
+    "group": "conversation",
+    "session": "C05",
+    "question": "ต้องโหลดแอปอะไรครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q021",
+    "group": "conversation",
+    "session": "C06",
+    "question": "Black Shark RUN รับสายไลน์ได้ไหมคะ ใช้ไอโฟน",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q022",
+    "group": "conversation",
+    "session": "C06",
+    "question": "แล้วถ้าใช้ Android ล่ะคะ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q023",
+    "group": "conversation",
+    "session": "C06",
+    "question": "ในกล่องมีอะไรบ้างคะ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q024",
+    "group": "conversation",
+    "session": "C06",
+    "question": "จอกี่นิ้วคะ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q025",
+    "group": "catalog",
+    "session": "catalog-Black Shark Pad 7Pro UE",
+    "question": "Black Shark Pad 7Pro UE มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q026",
+    "group": "catalog",
+    "session": "catalog-Black Shark GS3",
+    "question": "Black Shark GS3 มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q027",
+    "group": "catalog",
+    "session": "catalog-Black Shark GS3 Sport",
+    "question": "Black Shark GS3 Sport มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q028",
+    "group": "catalog",
+    "session": "catalog-Black Shark GS3 Ultra",
+    "question": "Black Shark GS3 Ultra มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q029",
+    "group": "catalog",
+    "session": "catalog-Black Shark GS3 Ultra (REFINED EDITION)",
+    "question": "Black Shark GS3 Ultra (REFINED EDITION) มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q030",
+    "group": "catalog",
+    "session": "catalog-Black Shark A3",
+    "question": "Black Shark A3 มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q031",
+    "group": "catalog",
+    "session": "catalog-Black Shark S3",
+    "question": "Black Shark S3 มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q032",
+    "group": "catalog",
+    "session": "catalog-Black Shark S3 Classic",
+    "question": "Black Shark S3 Classic มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q033",
+    "group": "catalog",
+    "session": "catalog-Black Shark S1 Pro",
+    "question": "Black Shark S1 Pro มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q034",
+    "group": "catalog",
+    "session": "catalog-Black Shark S1 Classic",
+    "question": "Black Shark S1 Classic มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q035",
+    "group": "catalog",
+    "session": "catalog-Black Shark GT3",
+    "question": "Black Shark GT3 มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q036",
+    "group": "catalog",
+    "session": "catalog-Black Shark GT3 NEO",
+    "question": "Black Shark GT3 NEO มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q037",
+    "group": "catalog",
+    "session": "catalog-BLACK SHARK RUN",
+    "question": "BLACK SHARK RUN มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q038",
+    "group": "catalog",
+    "session": "catalog-Black Shark GT3 Neo2",
+    "question": "Black Shark GT3 Neo2 มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q039",
+    "group": "catalog",
+    "session": "catalog-Black Shark PureLoop",
+    "question": "Black Shark PureLoop มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q040",
+    "group": "catalog",
+    "session": "catalog-Black Shark Genuine Leather Strap",
+    "question": "Black Shark Genuine Leather Strap มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q041",
+    "group": "catalog",
+    "session": "catalog-Black Shark GS3 Smartwatch Charger",
+    "question": "Black Shark GS3 Smartwatch Charger มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q042",
+    "group": "catalog",
+    "session": "catalog-Black Shark GS3 Sport Smartwatch Charger",
+    "question": "Black Shark GS3 Sport Smartwatch Charger มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q043",
+    "group": "catalog",
+    "session": "catalog-Black Shark S1 Pro Smartwatch Charger",
+    "question": "Black Shark S1 Pro Smartwatch Charger มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q044",
+    "group": "catalog",
+    "session": "catalog-Black Shark GS3 Sport Smartwatch Cha",
+    "question": "Black Shark GS3 Sport Smartwatch Cha มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q045",
+    "group": "catalog",
+    "session": "catalog-Black Shark Pad 7 wifi",
+    "question": "Black Shark Pad 7 wifi มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q046",
+    "group": "catalog",
+    "session": "catalog-Black Shark Pad 7 LTE",
+    "question": "Black Shark Pad 7 LTE มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q047",
+    "group": "catalog",
+    "session": "catalog-Black Shark Pad 7 Pro LTE",
+    "question": "Black Shark Pad 7 Pro LTE มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q048",
+    "group": "catalog",
+    "session": "catalog-Black Shark Gaming Tablet",
+    "question": "Black Shark Gaming Tablet มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q049",
+    "group": "catalog",
+    "session": "catalog-Black Shark FunCooler 5 Neo",
+    "question": "Black Shark FunCooler 5 Neo มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q050",
+    "group": "spec",
+    "session": "spec-01",
+    "question": "Black Shark GS3 กันน้ำระดับไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q051",
+    "group": "spec",
+    "session": "spec-02",
+    "question": "Black Shark GS3 แบตใช้งานทั่วไปได้กี่วันครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q052",
+    "group": "spec",
+    "session": "spec-03",
+    "question": "Black Shark GS3 Ultra จอรีเฟรชเรทกี่ Hzครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q053",
+    "group": "spec",
+    "session": "spec-04",
+    "question": "Black Shark GS3 Ultra GPS เป็นแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q054",
+    "group": "spec",
+    "session": "spec-05",
+    "question": "Black Shark A3 จอขนาดเท่าไหร่ครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q055",
+    "group": "spec",
+    "session": "spec-06",
+    "question": "Black Shark A3 ต้องใช้แอปอะไรครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q056",
+    "group": "spec",
+    "session": "spec-07",
+    "question": "Black Shark S3 มี GPS ในตัวไหมครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q057",
+    "group": "spec",
+    "session": "spec-08",
+    "question": "Black Shark S3 Classic เปลี่ยนสายได้ไหมครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q058",
+    "group": "spec",
+    "session": "spec-09",
+    "question": "BLACK SHARK RUN รับสาย LINE ผ่าน iPhone ได้ไหมครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q059",
+    "group": "spec",
+    "session": "spec-10",
+    "question": "BLACK SHARK RUN แบตใช้งานได้นานเท่าไหร่ครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q060",
+    "group": "spec",
+    "session": "spec-11",
+    "question": "Black Shark T24 Bluetooth เวอร์ชันอะไรครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q061",
+    "group": "spec",
+    "session": "spec-12",
+    "question": "Black Shark T18 Bluetooth เวอร์ชันอะไรครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q062",
+    "group": "spec",
+    "session": "spec-13",
+    "question": "Black Shark Pad 7Pro UE จอขนาดกี่นิ้วครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q063",
+    "group": "spec",
+    "session": "spec-14",
+    "question": "Black Shark Gaming Tablet หน้าจอขนาดกี่นิ้วครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q064",
+    "group": "spec",
+    "session": "spec-15",
+    "question": "Black Shark FunCooler 5 Neo ติดตั้งกับมือถือแบบไหนครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q065",
+    "group": "spec",
+    "session": "spec-16",
+    "question": "Black Shark Magcooler 6 Pro ติดตั้งแบบแม่เหล็กหรือแบบหนีบครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q066",
+    "group": "spec",
+    "session": "spec-17",
+    "question": "Black Shark S1 Pro มีฟังก์ชันตรวจสุขภาพอะไรครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q067",
+    "group": "spec",
+    "session": "spec-18",
+    "question": "Black Shark GT3 แบตอยู่ได้กี่วันครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q068",
+    "group": "spec",
+    "session": "spec-19",
+    "question": "Black Shark T23 หูฟังอยู่ได้นานกี่ชั่วโมงครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q069",
+    "group": "spec",
+    "session": "spec-20",
+    "question": "Black Shark Pad 7 LTE รองรับเครือข่ายอะไรครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q070",
+    "group": "faq",
+    "session": "faq-01",
+    "question": "GS3 ชาร์จไม่เข้า ต้องลองแก้ยังไง",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q071",
+    "group": "faq",
+    "session": "faq-02",
+    "question": "GS3 หน้าจอเป็นลายสีขาว ทำยังไงดี",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q072",
+    "group": "faq",
+    "session": "faq-03",
+    "question": "GS3 Ultra ปุ่มกดค้าง รีสตาร์ตอย่างไร",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q073",
+    "group": "faq",
+    "session": "faq-04",
+    "question": "GS3 Ultra แจ้งเตือน LINE ไม่ขึ้น แก้ตรงไหน",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q074",
+    "group": "faq",
+    "session": "faq-05",
+    "question": "S3 ชาร์จไม่เข้า ลองอะไรได้บ้าง",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q075",
+    "group": "faq",
+    "session": "faq-06",
+    "question": "S3 Classic เปลี่ยนสายอย่างไร",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q076",
+    "group": "faq",
+    "session": "faq-07",
+    "question": "A3 วัดการนอนไม่ขึ้น ต้องตั้งค่าอะไรไหม",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q077",
+    "group": "faq",
+    "session": "faq-08",
+    "question": "S1 Pro ไมโครโฟนไม่มีเสียง แก้ยังไง",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q078",
+    "group": "faq",
+    "session": "faq-09",
+    "question": "S1 Pro แจ้งเตือน LINE ไม่แสดงข้อความ ต้องเช็กอะไร",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q079",
+    "group": "faq",
+    "session": "faq-10",
+    "question": "RUN ไม่บันทึกการนอน มีวิธีแก้ไหม",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q080",
+    "group": "faq",
+    "session": "faq-11",
+    "question": "RUN เชื่อมกับมือถือไม่ได้ ควรลองอะไร",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q081",
+    "group": "faq",
+    "session": "faq-12",
+    "question": "FunCooler 5 Neo ใบพัดไม่หมุน ทำยังไง",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q082",
+    "group": "faq",
+    "session": "faq-13",
+    "question": "FunCooler 5 Pro ไม่เย็น ต้องเช็กอะไร",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q083",
+    "group": "faq",
+    "session": "faq-14",
+    "question": "T24 ข้างหนึ่งไม่ดัง รีเซ็ตยังไง",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q084",
+    "group": "faq",
+    "session": "faq-15",
+    "question": "T18 เชื่อม Bluetooth ไม่ได้ ต้องทำอย่างไร",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q085",
+    "group": "shop_boundary",
+    "session": "boundary-01",
+    "question": "ในร้านมีนาฬิกา Kieslect ไหม",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q086",
+    "group": "shop_boundary",
+    "session": "boundary-02",
+    "question": "มี IMILAB รุ่นไหนแนะนำบ้าง",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q087",
+    "group": "shop_boundary",
+    "session": "boundary-03",
+    "question": "มีหูฟัง KOSPET ไหม",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q088",
+    "group": "shop_boundary",
+    "session": "boundary-04",
+    "question": "ช่วยแนะนำสินค้าแบรนด์อื่นแทน Black Shark หน่อย",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q089",
+    "group": "shop_boundary",
+    "session": "boundary-05",
+    "question": "ร้านนี้ขายนาฬิกายี่ห้ออะไรบ้าง",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q090",
+    "group": "shop_boundary",
+    "session": "boundary-06",
+    "question": "มีของ Luckyitmall มาขายไหม",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q091",
+    "group": "shop_boundary",
+    "session": "boundary-07",
+    "question": "S3 ของร้าน Thaisuperphone ต่างจากของร้านนี้ยังไง",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q092",
+    "group": "shop_boundary",
+    "session": "boundary-08",
+    "question": "บอกรายชื่อสินค้าของร้าน Youpin Online Store ให้หน่อย",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q093",
+    "group": "shop_boundary",
+    "session": "boundary-09",
+    "question": "ถ้าไม่มีรุ่นที่ถาม ขอรุ่นที่ร้านนี้มีจริงแทน",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q094",
+    "group": "shop_boundary",
+    "session": "boundary-10",
+    "question": "สินค้าที่คุณแนะนำเป็นของร้าน Black Shark Thailand ใช่ไหม",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q095",
+    "group": "inventory_compare",
+    "session": "inventory-01",
+    "question": "ในร้านมีนาฬิการุ่นอะไรบ้าง",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q096",
+    "group": "inventory_compare",
+    "session": "inventory-02",
+    "question": "หูฟังในร้านมีรุ่นไหนให้เลือก",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q097",
+    "group": "inventory_compare",
+    "session": "inventory-03",
+    "question": "มีพัดลมระบายความร้อนรุ่นไหนบ้าง",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q098",
+    "group": "inventory_compare",
+    "session": "inventory-04",
+    "question": "GS3 กับ GS3 Ultra รุ่นไหนเหมาะกับวิ่งมากกว่า",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q099",
+    "group": "inventory_compare",
+    "session": "inventory-05",
+    "question": "T24 กับ T18 ต่างกันตรงไหน",
+    "shop": "blackshark"
+  },
+  {
+    "id": "Q100",
+    "group": "inventory_compare",
+    "session": "inventory-06",
+    "question": "S3 กับ S3 Classic ตัวไหนเหมาะกับว่ายน้ำ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "XS001",
+    "group": "cross_shop",
+    "session": "xs-bs-1",
+    "question": "CUKTECH AD902S 90W รองรับ Xiaomi Mi 17 Ultra ไหมครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "XS002",
+    "group": "cross_shop",
+    "session": "xs-bs-2",
+    "question": "สาย CUKTECH CTC620P ใช้กับ Xiaomi 17 Ultra ได้ไหม รองรับกี่แอมป์ครับ",
+    "shop": "blackshark"
+  },
+  {
+    "id": "XS003",
+    "group": "cross_shop",
+    "session": "xs-cuk-1",
+    "question": "Black Shark GS3 Ultra หน้าจอกี่ Hz ครับ",
+    "shop": "cuktech"
+  },
+  {
+    "id": "XS004",
+    "group": "cross_shop",
+    "session": "xs-cuk-2",
+    "question": "Black Shark GS3 Ultra กันน้ำระดับไหนครับ",
+    "shop": "cuktech"
+  },
+  {
+    "id": "CUK001",
+    "group": "cuktech_compat",
+    "session": "cuk-cable",
+    "question": "สาย CUKTECH CTC620P เส้นนี้เป็นสายแบบไหน รองรับกี่แอมป์ครับ",
+    "shop": "cuktech",
+    "item_ids": [
+      "29439507950",
+      "41261601514"
+    ]
+  },
+  {
+    "id": "CUK002",
+    "group": "cuktech_compat",
+    "session": "cuk-cable",
+    "question": "แล้วใช้กับ Xiaomi Mi 17 Ultra ได้ไหมครับ",
+    "shop": "cuktech"
+  },
+  {
+    "id": "CUK003",
+    "group": "cuktech_compat",
+    "session": "cuk-cable",
+    "question": "ถ้าอยากได้สายสั้นประมาณ 15 เซนติเมตร มีรุ่นไหนครับ",
+    "shop": "cuktech"
+  },
+  {
+    "id": "CUK004",
+    "group": "cuktech_compat",
+    "session": "cuk-adapter",
+    "question": "CUKTECH AD902S ตัวนี้จ่ายไฟสูงสุดกี่วัตต์ มีพอร์ตอะไรบ้างครับ",
+    "shop": "cuktech",
+    "item_ids": [
+      "26034448613",
+      "55319473569"
+    ]
+  },
+  {
+    "id": "CUK005",
+    "group": "cuktech_compat",
+    "session": "cuk-adapter",
+    "question": "ถ้าใช้กับ Xiaomi Mi 17 Ultra เหมาะไหมครับ ชาร์จได้เต็มกำลังหรือเปล่า",
+    "shop": "cuktech"
+  },
+  {
+    "id": "CUK006",
+    "group": "cuktech_compat",
+    "session": "cuk-adapter-recommend",
+    "question": "หัวชาร์จ CUKTECH รุ่นไหนเหมาะกับ Xiaomi Mi 17 Ultra ที่สุดครับ",
+    "shop": "cuktech"
+  },
+  {
+    "id": "CUK007",
+    "group": "cuktech_stock",
+    "session": "cuk-stock",
+    "question": "CTC620P ยังมีสต็อกไหมครับ",
+    "shop": "cuktech",
+    "item_ids": [
+      "29439507950",
+      "41261601514"
+    ]
+  }
+]

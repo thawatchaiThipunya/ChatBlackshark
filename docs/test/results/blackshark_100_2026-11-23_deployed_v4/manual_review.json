@@ -1,0 +1,114 @@
+{
+  "Q025": {
+    "reviewer_verdict": "correct",
+    "note": "KB B2 ระบุ Android 16, Gemini AI และ Google Lens ชัดเจน; เหตุผล judge สับสน Android กับชิป Unisoc"
+  },
+  "Q027": {
+    "reviewer_verdict": "correct",
+    "note": "ข้อกล่าวหา judge เรื่อง Bluetooth 5.4 ขัดกับคำตอบซึ่งไม่ได้กล่าวถึง; KB B4 รองรับแอป Shark Fitlife ทั้ง iOS/Android"
+  },
+  "Q036": {
+    "reviewer_verdict": "correct",
+    "note": "จุดเด่นที่ตอบตรง KB B13; การไม่ระบุชนิดจอ TFT เป็นข้อมูลตกหล่น ไม่ใช่ข้อกล่าวอ้างผิด"
+  },
+  "Q044": {
+    "reviewer_verdict": "correct",
+    "note": "คำถามตัดชื่อไว้ที่ 'Cha'; source B19 เป็น Smartwatch Charger และคำตอบอธิบายสายชาร์จ/รุ่นที่ใช้ได้ตรง"
+  },
+  "Q054": {
+    "reviewer_verdict": "correct",
+    "note": "ขนาด 1.53 นิ้วและ 360x360p อยู่ใน KB A3; การไม่ระบุ TFT ไม่ทำให้คำตอบผิด"
+  },
+  "Q095": {
+    "reviewer_verdict": "partial",
+    "note": "รายชื่อสะท้อนหมวด KB ครบ แต่ 'z Black Shark PureLoop' เป็นข้อมูลต้นทางผิดรูป/ซ้ำ ควรแก้ KB"
+  },
+  "Q096": {
+    "reviewer_verdict": "correct",
+    "note": "รายชื่อหูฟัง 7 รุ่นตรงหมวด TWS ใน KB; เหตุผล judge ขัดกับ evidence"
+  },
+  "Q069": {
+    "reviewer_verdict": "partial",
+    "note": "ตอบว่าไม่มีรายละเอียดเครือข่ายทั้งหมด ทั้งที่ชื่อรุ่นเป็น Pad 7 LTE; retrieved B23 ไม่มีย่านความถี่มือถือ จึงควรบอก LTE และไม่ยืนยัน band"
+  },
+  "Q072": {
+    "reviewer_verdict": "partial",
+    "note": "ขั้นรีสตาร์ตมีหลักฐาน แต่คำแนะนำใช้น้ำยาสเตคลีน/ทิ้งไว้ 3–5 นาทีไม่อยู่ใน evidence ที่ judge ได้รับ"
+  },
+  "Q083": {
+    "reviewer_verdict": "partial",
+    "note": "ขั้นรีเซ็ต T24 ตรง FAQ แต่ไม่แก้อาการเสียงข้างหนึ่งเบาตาม FAQ แยก"
+  },
+  "Q004": {
+    "reviewer_verdict": "correct",
+    "note": "ตัวเลข 18/9/45 วันและ GPS 25 ชั่วโมงตรงหลักฐาน; judge อธิบายเองว่าถูก"
+  },
+  "Q048": {
+    "reviewer_verdict": "correct",
+    "note": "จุดเด่นหลักของ Gaming Tablet ตรง KB; สรุปสั้นกว่า baseline แต่ไม่มีข้อกล่าวอ้างผิด"
+  },
+  "Q051": {
+    "reviewer_verdict": "correct",
+    "note": "GS3 Daily Use 21 วันและ Standby 45 วันตรง KB"
+  },
+  "Q068": {
+    "reviewer_verdict": "correct",
+    "note": "T23 ฟังต่อเนื่อง 8 ชั่วโมง/รวมเคส 40 ชั่วโมงตรง KB"
+  },
+  "Q074": {
+    "reviewer_verdict": "correct",
+    "note": "วิธีแก้ S3 ชาร์จไม่เข้าตรง FAQ ที่ดึง"
+  },
+  "Q076": {
+    "reviewer_verdict": "correct",
+    "note": "วิธีแก้ A3 sleep tracking สอดคล้อง FAQ"
+  },
+  "Q081": {
+    "reviewer_verdict": "correct",
+    "note": "ตรวจใบพัดและลองหัว/สายชาร์จ 15W ตรง FAQ FunCooler 5 Neo"
+  },
+  "XS001": {
+    "reviewer_verdict": "needs_review",
+    "note": "ไม่พบข้อมูลร้านอื่นหลุด แต่ระบุสินค้าแล้วกลับถามชื่อรุ่นซ้ำ"
+  },
+  "XS002": {
+    "reviewer_verdict": "needs_review",
+    "note": "scope ผ่าน แต่ระบุ CTC620P และ Xiaomi 17 Ultra แล้วกลับถามรุ่นซ้ำ"
+  },
+  "XS003": {
+    "reviewer_verdict": "needs_review",
+    "note": "ไม่มี KB Black Shark หลุดไป CUKTECH แต่ถามชื่อรุ่น GS3 Ultra ซ้ำ"
+  },
+  "XS004": {
+    "reviewer_verdict": "needs_review",
+    "note": "ไม่มี KB Black Shark หลุดไป CUKTECH แต่ถามชื่อรุ่น GS3 Ultra ซ้ำ"
+  },
+  "CUK001": {
+    "reviewer_verdict": "incorrect",
+    "note": "การ์ดแนบ item_id แล้วได้ card_lookup_unavailable; ไม่ตอบชนิด/กระแสสาย"
+  },
+  "CUK002": {
+    "reviewer_verdict": "incorrect",
+    "note": "บริบท CTC620P และ Xiaomi Mi 17 Ultra ชัด แต่ handoff ด้วย llm_unsupported_number"
+  },
+  "CUK003": {
+    "reviewer_verdict": "correct",
+    "note": "แนะนำ CTC615S/CTC620S ยาว 15 ซม. แบบ USB-C 6A ตรง KB"
+  },
+  "CUK004": {
+    "reviewer_verdict": "incorrect",
+    "note": "การ์ด AD902S แนบ item_id แต่ได้ card_lookup_unavailable; ไม่ตอบวัตต์/พอร์ต"
+  },
+  "CUK005": {
+    "reviewer_verdict": "correct",
+    "note": "ระบุอย่างระวังว่า KB ยังยืนยัน Mi 17 Ultra ไม่ได้; ไม่อ้างเกินข้อมูล"
+  },
+  "CUK006": {
+    "reviewer_verdict": "incorrect",
+    "note": "ระบุ Xiaomi Mi 17 Ultra และต้องการหัว CUKTECH ชัด แต่ได้ need_model"
+  },
+  "CUK007": {
+    "reviewer_verdict": "incorrect",
+    "note": "คำถาม stock แนบ item_id แต่ card lookup ล้มเหลว"
+  }
+}

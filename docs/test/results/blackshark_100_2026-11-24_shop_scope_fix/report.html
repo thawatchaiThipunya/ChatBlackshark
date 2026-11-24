@@ -1,0 +1,2444 @@
+<!doctype html><html lang="th"><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1"><title>Provider rerun · Black Shark</title>
+    <style>
+    :root{--bg:#f4f2ec;--ink:#242a2a;--line:#d9ddd8;--accent:#075b50;--muted:#697371}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,sans-serif}
+    main{max-width:1200px;margin:auto;padding:28px 18px 70px}h1{font-size:clamp(1.8rem,4vw,3rem);line-height:1.1}
+    .panel,.case{background:white;border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin:20px 0}
+    .stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px}.stat b{font-size:1.6rem;display:block}
+    .filters{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}input,select{font:inherit;padding:9px;border:1px solid var(--line);border-radius:8px;background:white}
+    input{min-width:230px;flex:1}.head{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.muted{color:var(--muted)}
+    .badge{background:#dcefe8;color:#075b50;border-radius:20px;padding:2px 8px;font-weight:700}
+    .flag{color:#a33;font-weight:700}.answer{white-space:pre-wrap}details{border-top:1px solid var(--line);margin-top:12px;padding-top:10px}
+    summary{cursor:pointer;color:var(--accent);font-weight:700}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f2f4f2;padding:10px;border-radius:8px}
+    table{width:100%;border-collapse:collapse}td,th{padding:8px;border-bottom:1px solid var(--line);text-align:left}
+    </style><main><p class="muted">LIVE PROVIDER · SHOP SCOPED</p><h1>เทียบผล provider กับชุด 100 คำถาม</h1>
+    <section class="panel"><b>ร้าน:</b> Black Shark Thailand · shopee / 1191420560<br>
+    <b>Provider / model:</b> openrouter / google/gemini-3.5-flash-lite<br>
+    <b>หมายเหตุ:</b> ผลนี้เทียบ status, answer, source และ shop scope กับ baseline ไม่มีการส่งคำตอบหรือ KB ไปให้ judge provider รายที่สอง
+    </section><section class="stats">
+    <div class="stat"><b>100/100</b>คำถามที่รัน</div><div class="stat"><b>54</b>answered</div>
+    <div class="stat"><b>0</b>need_model</div><div class="stat"><b>0</b>handoff</div>
+    <div class="stat"><b>54</b>คำตอบที่เปลี่ยนจาก baseline</div><div class="stat"><b>0</b>status regression / scope fail</div>
+    <div class="stat"><b>$0.2150</b>ค่าใช้จ่าย provider</div>
+    <div class="stat"><b>209/209</b>AI Usage Hub accepted</div>
+    <div class="stat"><b>4.39s</b>median ต่อคำถาม</div></section>
+    <section class="panel"><h2>แยกตามกลุ่มคำถาม</h2><table><thead><tr><th>กลุ่ม</th><th>จำนวน</th><th>answered</th><th>scope fail</th><th>scope ไม่ได้ทดสอบ</th></tr></thead><tbody><tr><td>conversation</td><td>24</td><td>24</td><td>0</td><td>0</td></tr><tr><td>catalog</td><td>25</td><td>25</td><td>0</td><td>0</td></tr><tr><td>spec</td><td>20</td><td>5</td><td>0</td><td>15</td></tr><tr><td>faq</td><td>15</td><td>0</td><td>0</td><td>15</td></tr><tr><td>shop_boundary</td><td>10</td><td>0</td><td>0</td><td>10</td></tr><tr><td>inventory_compare</td><td>6</td><td>0</td><td>0</td><td>6</td></tr></tbody></table></section>
+    <section class="panel"><h2>ประเด็นที่ตรวจเทียบกับ KB ด้วยมือ</h2><p>เป็นการตรวจเฉพาะรายการที่ระบุ ไม่ใช่คะแนน accuracy ครบทั้ง 100 ข้อ</p><ul><li><b>Q002 · improved · direct_answer</b> — The answer now starts with a direct verdict: รองรับครับ, then grounds it in the KB&#x27;s 5ATM/IP69K and swim-tracking facts.</li><li><b>Q092 · not_evaluated · other_shop_scope</b> — This is the key cross-shop case, but OpenRouter rejected it with HTTP 403 before intent was returned. The shop_id-anchored behavior is covered by regression tests, not confirmed by this live case.</li><li><b>Q055–Q100 · blocked · provider_limit</b> — 46 questions received no model answer after OpenRouter returned HTTP 403. The provider reported its weekly key limit was $4.01 of $4.00 and resets 2026-11-30 00:00 UTC. These cases are not answer-quality results.</li></ul></section>
+    <div class="filters"><input id="q" placeholder="ค้นคำถาม/คำตอบ/รุ่น"><select id="group"><option value="">ทุกกลุ่ม</option><option value="conversation">conversation</option><option value="catalog">catalog</option><option value="spec">spec</option><option value="faq">faq</option><option value="shop_boundary">shop_boundary</option><option value="inventory_compare">inventory_compare</option></select>
+    <select id="status"><option value="">ทุก status</option><option value="answered">answered</option><option value="temporarily_unavailable">temporarily_unavailable</option></select>
+    <select id="change"><option value="">ทุกแถว</option><option value="yes">คำตอบเปลี่ยน</option><option value="no">คำตอบไม่เปลี่ยน</option></select>
+    <select id="regression"><option value="">รวมทุกผล</option><option value="yes">เฉพาะ regression/scope fail</option></select>
+    <select id="review"><option value="">ทุกแถวตรวจมือ</option><option value="yes">มีประเด็นตรวจมือ</option><option value="no">ไม่มีประเด็นตรวจมือ</option></select></div>
+    <article class="case" data-group="conversation"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q001</b><span class="badge">answered</span>
+          <span class="muted">conversation · 5.19s · $0.003745</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>gs3 ultra กันน้ำระดับไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">รองรับมาตรฐานกันน้ำ 5ATM และ IP69K ครับ โดยระดับ 5ATM ทนแรงดันน้ำเทียบเท่าความลึก 50 เมตร ส่วนมาตรฐาน IP69K กันฝุ่นสมบูรณ์และทนน้ำร้อนสูงถึง 80°C ครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">รุ่นนี้มาพร้อมมาตรฐานกันน้ำ 5ATM และ IP69K ครับ โดยระดับ 5ATM ทนแรงดันน้ำเทียบเท่าความลึก 50 เมตร และ IP69K ช่วยกันฝุ่นสมบูรณ์รวมถึงทนน้ำร้อนสูงถึง 80°C ครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark GS3 Ultra<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B5<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1313 in / 141 out · $0.000746 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 5006 in / 75 out · $0.001689 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3756 in / 73 out · $0.001309 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 5,
+    &quot;cell&quot;: &quot;B5&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="conversation"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="yes">
+          <div class="head"><b>Q002</b><span class="badge">answered</span>
+          <span class="muted">conversation · 4.79s · $0.003752</span>
+          <span class="flag">คำตอบเปลี่ยน · มีประเด็นตรวจมือ</span></div>
+          <h3>ใส่ว่ายน้ำได้มั้ย</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">รองรับครับ รุ่นนี้มีมาตรฐานกันน้ำ 5ATM ซึ่งทนแรงดันน้ำเทียบเท่าความลึกถึง 50 เมตร และ IP69K พร้อมทั้งมีฟังก์ชันติดตามท่าว่ายน้ำเพื่อช่วยพัฒนาการว่ายน้ำให้แม่นยำยิ่งขึ้นด้วยครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">รุ่นนี้ใส่ว่ายน้ำได้ครับ เพราะมาพร้อมมาตรฐานกันน้ำ 5ATM และมีฟังก์ชันติดตามท่าว่ายน้ำ รวมถึงช่วยพัฒนาการว่ายน้ำให้แม่นยำขึ้นด้วยครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark GS3 Ultra<br>
+          <b>Intent:</b> compatibility<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B5<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1468 in / 131 out · $0.000768 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 5115 in / 67 out · $0.001702 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3697 in / 69 out · $0.001282 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 5,
+    &quot;cell&quot;: &quot;B5&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="conversation"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q003</b><span class="badge">answered</span>
+          <span class="muted">conversation · 4.58s · $0.004060</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>อาบน้ำอุ่น เข้าซาวน่าได้ไหม</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ไม่ได้ครับ นาฬิกาออกแบบให้ทนต่ออุณหภูมิสูงถึง 80°C แต่ไม่แนะนำให้ใช้นาฬิกาในสภาพแวดล้อมที่ร้อนจัด เช่น ห้องซาวน่า ใช้อาบน้ำร้อน หรือสภาพแวดล้อมอื่นๆ ที่มีความร้อนสะสมเป็นเวลานาน เพราะอาจทำให้ชิ้นส่วนภายในของนาฬิกาเสียหายได้ครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับ Black Shark GS3 Ultra แม้ตัวนาฬิกาจะออกแบบมาให้ทนต่ออุณหภูมิสูงได้ถึง 80°C แต่ทางเราไม่แนะนำให้ใช้งานในสภาพแวดล้อมที่ร้อนจัด เช่น ห้องซาวน่า หรือใส่อาบน้ำร้อน รวมถึงสภาพแวดล้อมที่มีความร้อนสะสมเป็นเวลานาน เพราะอาจทำให้ชิ้นส่วนภายในของนาฬิกาเสียหายได้ครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark GS3 Ultra<br>
+          <b>Intent:</b> compatibility<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B5<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1627 in / 170 out · $0.000913 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 5299 in / 83 out · $0.001797 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3717 in / 94 out · $0.001350 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 5,
+    &quot;cell&quot;: &quot;B5&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="conversation"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q004</b><span class="badge">answered</span>
+          <span class="muted">conversation · 4.79s · $0.004180</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>แบตอยู่ได้กี่วัน</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">แบตเตอรี่ใช้งานทั่วไปได้นานสูงสุดถึง 18 วันเลยครับ 
+
+นอกจากนี้ยังมีโหมดการใช้งานอื่น ๆ ให้เลือกปรับตามไลฟ์สไตล์ด้วยนะครับ เช่น โหมดการใช้งานหนักจะอยู่ได้ประมาณ 9 วัน โหมด AOD อยู่ที่ประมาณ 2–3 วัน โหมด GPS ต่อเนื่องราว 25 ชั่วโมง หรือถ้าเปิดเป็นโหมดสแตนด์บายยาวนานพิเศษจะอยู่ได้นานสุดถึง 45 วันครับผม</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับ Black Shark GS3 Ultra ระยะเวลาการใช้งานแบตเตอรี่จะแตกต่างกันไปตามโหมดการใช้งานครับ โดยในโหมดการใช้งานทั่วไปจะอยู่ได้นานสูงสุดประมาณ 18 วัน ส่วนถ้าใช้งานหนักจะอยู่ได้ประมาณ 9 วัน หรือหากเปิดโหมดสแตนด์บายยาวนานพิเศษจะอยู่ได้นานสุดถึง 45 วันครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark GS3 Ultra<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B5<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1811 in / 126 out · $0.000858 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 5501 in / 99 out · $0.001898 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3781 in / 116 out · $0.001424 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 5,
+    &quot;cell&quot;: &quot;B5&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="conversation"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q005</b><span class="badge">answered</span>
+          <span class="muted">conversation · 6.58s · $0.007009</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>GS3 กับ GS3 Ultra ต่างกันยังไงคะ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">น้อง Black Shark ขอสรุปความต่างระหว่างสมาร์ทวอทช์ทั้งสองรุ่นให้ฟังครับ โดยรุ่น Ultra จะมีการอัปเกรดวัสดุตัวเรือน ระบบ GPS และโหมดกีฬาให้มีความครอบคลุมมากยิ่งขึ้นครับ
+
+| คุณสมบัติ | Black Shark GS3 | Black Shark GS3 Ultra |
+| :--- | :--- | :--- |
+| วัสดุตัวเรือน | ไฟเบอร์กลาส (Fiberglass) | Zinc Alloy |
+| ระบบ GPS | 5 เครือข่าย | Dual-Band 6 เครือข่าย |
+| ความสว่างหน้าจอ | 600Nit | 1000Nits |
+| โหมดกีฬา | มากกว่า 100 ชนิด | 160 ชนิด |
+| การใช้งานทั่วไป | สูงสุด 21 วัน | สูงสุด 18 วัน |
+| แอปพลิเคชัน | Shark Wearable (iOS) / Shark Sport (Android) | Shark Track |
+
+หากเน้นแบตเตอรี่ที่ใช้งานได้ยาวนานกว่าเล็กน้อย รุ่นมาตรฐานจะตอบโจทย์ได้ดีครับ แต่ถ้าชอบวัสดุโลหะที่พรีเมียมขึ้น พร้อมระบบ GPS แบบ Dual-Band และหน้าจอที่สว่างสู้แสงได้มากกว่า รุ่น Ultra ก็เป็นตัวเลือกที่น่าสนใจครับผม</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับ Black Shark GS3 และ Black Shark GS3 Ultra ทั้งสองรุ่นมีความแตกต่างกันหลัก ๆ ดังนี้ครับ
+
+- วัสดุตัวเรือน: รุ่น GS3 ใช้ Corning® Gorilla® Glass 3 + Fiberglass ส่วนรุ่น GS3 Ultra ใช้ Corning® Gorilla® Glass 3 + Zinc Alloy
+- ความสว่างหน้าจอ: รุ่น GS3 มีความสว่าง 600Nit ส่วนรุ่น GS3 Ultra มีความสว่าง 1000Nits
+- เครือข่ายดาวเทียม GPS: รุ่น GS3 รองรับ 5 เครือข่าย (GPS, BeiDou, GLONASS, GALILEO, QZSS) ส่วนรุ่น GS3 Ultra รองรับ Dual-Band 6 เครือข่าย (GPS, BeiDou, GLONASS, GALILEO, NAVIC, QZSS)
+- โหมดกีฬา: รุ่น GS3 รองรับมากกว่า 100 ชนิด ส่วนรุ่น GS3 Ultra รองรับ 160 ชนิด
+- แอปพลิเคชันที่รองรับ: รุ่น GS3 รองรับแอป Shark Wearable สำหรับ iOS และ Shark Sport สำหรับ Android ส่วนรุ่น GS3 Ultra รองรับแอป Shark Track ทั้ง iOS และ Android
+- ระยะเวลาใช้งานทั่วไป: รุ่น GS3 นานสุด 21 วัน ส่วนรุ่น GS3 Ultra นานสุด 18 วัน
+- น้ำหนัก (ไม่รวมสาย): รุ่น GS3 หนัก 44.9 กรัม ส่วนรุ่น GS3 Ultra หนัก 56.3 กรัม</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark GS3, Black Shark GS3 Ultra<br>
+          <b>Intent:</b> comparison<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B3, สินค้า - Black Shark Thailand (sellcenter).xlsx B5<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1316 in / 159 out · $0.000792 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 8517 in / 294 out · $0.003290 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 7204 in / 306 out · $0.002926 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 3,
+    &quot;cell&quot;: &quot;B3&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  },
+  {
+    &quot;row&quot;: 5,
+    &quot;cell&quot;: &quot;B5&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="conversation"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q006</b><span class="badge">answered</span>
+          <span class="muted">conversation · 5.48s · $0.006643</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>ตัวไหนแบตอึดกว่าคะ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">รุ่น Black Shark GS3 ใช้งานได้ยาวนานกว่าครับ น้อง Black Shark สรุปข้อมูลระยะเวลาการใช้งานแบตเตอรี่ของทั้งสองรุ่นมาให้เทียบกันดูตามตารางนี้เลยครับ
+
+| คุณสมบัติ | Black Shark GS3 | Black Shark GS3 Ultra |
+| :--- | :--- | :--- |
+| ความจุแบตเตอรี่ | 470mAh | 440mAh |
+| การใช้งานทั่วไป | สูงสุด 21 วัน | สูงสุด 18 วัน |
+| โหมดสแตนด์บาย | สูงสุด 45 วัน | สูงสุด 45 วัน |
+
+ถ้าหากคุณลูกค้าเน้นเรื่องแบตเตอรี่ที่ใช้งานต่อเนื่องในชีวิตประจำวันได้ยาวนานกว่า รุ่นมาตรฐานจะตอบโจทย์ความต้องการได้ดีกว่าครับผม</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับเรื่องแบตเตอรี่ รุ่น Black Shark GS3 จะใช้งานทั่วไปได้นานสุด 21 วัน และสแตนด์บายได้นานสุด 45 วัน ส่วนรุ่น Black Shark GS3 Ultra จะใช้งานทั่วไปได้นานสุด 18 วัน และสแตนด์บายนานสุด 45 วันครับ โดยรุ่น Black Shark GS3 จะรองรับการใช้งานทั่วไปได้นานกว่าครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark GS3, Black Shark GS3 Ultra<br>
+          <b>Intent:</b> comparison<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B3, สินค้า - Black Shark Thailand (sellcenter).xlsx B5<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1698 in / 166 out · $0.000924 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 8912 in / 174 out · $0.003109 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 7082 in / 194 out · $0.002610 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 3,
+    &quot;cell&quot;: &quot;B3&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  },
+  {
+    &quot;row&quot;: 5,
+    &quot;cell&quot;: &quot;B5&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="conversation"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q007</b><span class="badge">answered</span>
+          <span class="muted">conversation · 5.13s · $0.006446</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>ในกล่องแถมสายมาด้วยมั้ยคะ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">มีสายแถมมาในกล่องครับ รองรับ โดยสำหรับรุ่น Black Shark GS3 ภายในกล่องจะประกอบด้วยตัวนาฬิกา สายผ้า Woven Strap สายชาร์จ และคู่มือการใช้งาน และสำหรับรุ่น Black Shark GS3 Ultra ภายในกล่องจะได้รับตัวนาฬิกา สายชาร์จ และคู่มือการใช้งานครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับรุ่น Black Shark GS3 ในกล่องจะมีตัวเรือน, สายผ้า (Woven Strap), สายชาร์จ และคู่มือการใช้งานครับ ส่วนรุ่น Black Shark GS3 Ultra ในกล่องจะมีตัวเรือน, สายชาร์จ และคู่มือการใช้งานครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark GS3, Black Shark GS3 Ultra<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B3, สินค้า - Black Shark Thailand (sellcenter).xlsx B5<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1971 in / 152 out · $0.000971 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 9243 in / 142 out · $0.003128 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 7091 in / 88 out · $0.002347 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 3,
+    &quot;cell&quot;: &quot;B3&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  },
+  {
+    &quot;row&quot;: 5,
+    &quot;cell&quot;: &quot;B5&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="conversation"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q008</b><span class="badge">answered</span>
+          <span class="muted">conversation · 4.7s · $0.004273</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>จอ Ultra กี่ Hz คะ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">รองรับ 60Hz ครับ หน้าจอของ Black Shark GS3 Ultra มีอัตรารีเฟรชเรทอยู่ที่ 60Hz ครับ โดยมาพร้อมหน้าจอ AMOLED ขนาด 1.43 นิ้ว และความละเอียด 466x466 พิกเซลครับผม</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับ Black Shark GS3 Ultra หน้าจอมีความลื่นไหลอยู่ที่ 60Hz ครับ ช่วยให้การแสดงผลบนหน้าจอ AMOLED ขนาด 1.43 นิ้วมีความราบรื่นดีครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark GS3 Ultra<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B5<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 2145 in / 154 out · $0.001028 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 5856 in / 73 out · $0.001939 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3751 in / 72 out · $0.001305 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 5,
+    &quot;cell&quot;: &quot;B5&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="conversation"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q009</b><span class="badge">answered</span>
+          <span class="muted">conversation · 6.34s · $0.006093</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>S3 Classic กับ S3 เฉย ๆ ต่างกันยังไงคะ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">น้อง Black Shark ขอสรุปความต่างคร่าว ๆ ให้ฟังนะครับว่า ทั้งสองรุ่นนี้มีดีไซน์และฟังก์ชันบางจุดที่ไม่เหมือนกัน โดยรุ่น S3 จะเด่นเรื่อง GPS ในตัวและการรองรับแอป Strava ครับ 
+
+| คุณสมบัติ | Black Shark S3 Classic | Black Shark S3 |
+| :--- | :--- | :--- |
+| เวอร์ชั่นบลูทูธ | 5.4 | 5.3 |
+| มาตรฐานการกันน้ำ | 3ATM | 5ATM |
+| ความจุแบตเตอรี่ | 350mAh | 500mAh |
+| น้ำหนัก (ไม่รวมสาย) | 38 กรัม | 44.3 กรัม |
+| GPS | ไม่พบข้อมูล | มี Built-in GPS 5 เครือข่าย |
+| Strava | ไม่รองรับ | รองรับ |
+
+หากเน้นใช้ออกกำลังกายกลางแจ้งและต้องการแทร็กเส้นทางด้วย GPS พร้อมเชื่อมต่อ Strava รุ่น S3 จะตอบโจทย์กว่าครับ แต่ถ้าชอบดีไซน์และแบตเตอรี่ รุ่น S3 Classic ก็เป็นตัวเลือกที่ดีครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สวัสดีครับ น้อง Black Shark ยินดีช่วยเปรียบเทียบข้อมูลให้ฟังครับ ระหว่างรุ่น Black Shark S3 Classic และรุ่น Black Shark S3 มีรายละเอียดสเปกที่แตกต่างกันดังนี้ครับ
+
+- บลูทูธ: รุ่น S3 Classic รองรับเวอร์ชัน 5.4 ส่วนรุ่น S3 รองรับเวอร์ชัน 5.3
+- วัสดุสาย: รุ่น S3 Classic เป็นสายซิลิโคน ส่วนรุ่น S3 เป็นสายซิลิโคนแม่เหล็ก
+- ความจุแบตเตอรี่: รุ่น S3 Classic 350mAh ส่วนรุ่น S3 500mAh
+- ขนาดตัวเรือน: รุ่น S3 Classic ขนาด 46.5 x 49.5 x 13.3 มิลลิเมตร ส่วนรุ่น S3 ขนาด 45.2 x 45.2 x 12.2 มิลลิเมตร
+- น้ำหนักสินค้า: รุ่น S3 Classic หนัก 38 กรัม (ไม่รวมสาย) ส่วนรุ่น S3 หนัก 44.3 กรัม
+- มาตรฐานการกันน้ำ: รุ่น S3 Classic รองรับ 3ATM ส่วนรุ่น S3 รองรับ 5ATM
+- Strava: รุ่น S3 Classic ไม่รองรับ ส่วนรุ่น S3 รองรับ
+- ไฟฉาย: รุ่น S3 Classic ไม่พบข้อมูล ส่วนรุ่น S3 มี
+
+หากต้องการสอบถามข้อมูลเพิ่มเติมส่วนไหน สามารถแจ้งได้เลยนะครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark S3 Classic, Black Shark S3<br>
+          <b>Intent:</b> comparison<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B9, สินค้า - Black Shark Thailand (sellcenter).xlsx B8<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1319 in / 156 out · $0.000786 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 7260 in / 260 out · $0.002828 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 6031 in / 268 out · $0.002479 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 9,
+    &quot;cell&quot;: &quot;B9&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  },
+  {
+    &quot;row&quot;: 8,
+    &quot;cell&quot;: &quot;B8&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="conversation"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q010</b><span class="badge">answered</span>
+          <span class="muted">conversation · 4.68s · $0.003266</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>S3 Classic เปลี่ยนสายได้มั้ยคะ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">เปลี่ยนได้ครับ 
+
+รุ่นนี้รองรับการเปลี่ยนสายโดยใช้ขนาดสาย 22 มิลลิเมตร และมีข้อมูลวิธีการใส่สายนาฬิกาแนะนำให้ดูเป็นแนวทางครับ หากสนใจเปลี่ยนสายเพื่อให้เข้ากับลุคการแต่งตัวก็ทำได้สะดวกเลยครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สามารถดูวิธีการใส่สายนาฬิกาได้ที่ youtu.be/Oen126kBRzI ครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark S3 Classic<br>
+          <b>Intent:</b> compatibility<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B9<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1666 in / 148 out · $0.000870 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 4245 in / 51 out · $0.001401 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 2683 in / 76 out · $0.000995 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 9,
+    &quot;cell&quot;: &quot;B9&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="conversation"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q011</b><span class="badge">answered</span>
+          <span class="muted">conversation · 4.61s · $0.003802</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>แล้ว S3 ตอบข้อความไลน์จากนาฬิกาได้มั้ย</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ไม่ได้ครับ รุ่นนี้ยังไม่รองรับการพิมพ์ข้อความตอบกลับจากตัวนาฬิกาครับ โดยจะรองรับเฉพาะการแสดงผลการแจ้งเตือนจากแอปพลิเคชันโซเชียลมีเดียเท่านั้นครับผม</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับรุ่น Black Shark S3 จะยังไม่สามารถพิมพ์ข้อความตอบกลับได้ครับ โดยตัวนาฬิกาสามารถรองรับการแจ้งเตือนจากแอปพลิเคชันโซเชียลมีเดียเพื่อให้แสดงผลบนหน้าจอได้เท่านั้นครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark S3<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B8<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1826 in / 158 out · $0.000943 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 5220 in / 46 out · $0.001681 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3434 in / 59 out · $0.001178 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 8,
+    &quot;cell&quot;: &quot;B8&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="conversation"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q012</b><span class="badge">answered</span>
+          <span class="muted">conversation · 5.15s · $0.005909</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>ว่ายน้ำได้ทั้งคู่ไหมคะ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ยังยืนยันไม่ได้ครับ เนื่องจากข้อมูลระดับการกันน้ำของทั้งสองรุ่นมีความแตกต่างกัน โดยรุ่น S3 Classic มีมาตรฐานกันน้ำ 3ATM ที่สามารถกันน้ำ ทนฝน และละอองน้ำ ส่วนรุ่น S3 มีมาตรฐานการกันน้ำระดับ 5ATM ที่สามารถทนต่อแรงดันน้ำได้เทียบเท่าความลึกถึง 50 เมตร และทั้งสองรุ่นมีข้อควรระวังเหมือนกันคือไม่แนะนำให้ใช้นาฬิกาในสภาพแวดล้อมที่ร้อนจัด เช่น ห้องซาวน่า หรือใช้อาบน้ำร้อนครับ เนื่องจากความร้อนสะสมอาจทำให้ชิ้นส่วนภายในเสียหายได้ครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับรุ่น Black Shark S3 มาพร้อมมาตรฐานการกันน้ำระดับ 5ATM และสามารถทนต่อแรงดันน้ำได้เทียบเท่าความลึกถึง 50 เมตร ส่วนรุ่น Black Shark S3 Classic มีมาตรฐานการกันน้ำ 3ATM ที่สามารถกันน้ำ ทนฝน และละอองน้ำได้ครับ ทั้งนี้ สำหรับการใส่ว่ายน้ำ แหล่งข้อมูลไม่ได้ระบุยืนยันไว้โดยตรงครับ นอกจากนี้ ทั้งสองรุ่นมีข้อควรระวังคือไม่แนะนำให้ใช้งานในสภาพแวดล้อมที่ร้อนจัด เช่น ห้องซาวน่า หรือใช้อาบน้ำร้อนครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark S3 Classic, Black Shark S3<br>
+          <b>Intent:</b> compatibility<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B9, สินค้า - Black Shark Thailand (sellcenter).xlsx B8<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1974 in / 171 out · $0.001020 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 7926 in / 151 out · $0.002755 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 5879 in / 148 out · $0.002134 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 9,
+    &quot;cell&quot;: &quot;B9&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  },
+  {
+    &quot;row&quot;: 8,
+    &quot;cell&quot;: &quot;B8&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="conversation"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q013</b><span class="badge">answered</span>
+          <span class="muted">conversation · 6.27s · $0.006557</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>อยากได้นาฬิกาไว้วิ่ง มี GPS ในตัว และใช้กับ Strava ได้ แนะนำรุ่นไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">รองรับครับ แนะนำรุ่น Black Shark Run ครับ เพราะมี GPS ในตัวสำหรับติดตามเส้นทางการวิ่งอย่างแม่นยำ และสามารถซิงค์ข้อมูลผ่านแอปพลิเคชัน Strava ได้ครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">น้อง Black Shark ขอแนะนำรุ่น BLACK SHARK RUN เลยครับ ตอบโจทย์ความต้องการของคุณได้อย่างครบถ้วน เพราะรุ่นนี้มี GPS ในตัวสำหรับการติดตามเส้นทางการวิ่งอย่างแม่นยำ พร้อมทั้งรองรับการซิงค์ข้อมูลผ่านแอปฯ Strava ครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> BLACK SHARK RUN<br>
+          <b>Intent:</b> product_search<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B14<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 4</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1329 in / 136 out · $0.000739 · Hub ✓</li><li>chat.product_selection · google/gemini-3.5-flash-lite · 10484 in / 16 out · $0.003185 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 4476 in / 74 out · $0.001528 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3219 in / 56 out · $0.001106 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 14,
+    &quot;cell&quot;: &quot;B14&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="conversation"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q014</b><span class="badge">answered</span>
+          <span class="muted">conversation · 4.84s · $0.003288</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>ใช้กับ iPhone ได้ไหม</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">รองรับครับ สำหรับรุ่น Black Shark Run สามารถใช้งานร่วมกับ iPhone ได้ โดยจะเชื่อมต่อผ่านแอปพลิเคชัน Shark Wearable บนระบบ iOS ครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">ใช้งานกับ iPhone ได้ครับ โดยสามารถเชื่อมต่อผ่านแอปพลิเคชัน Shark Wearable สำหรับระบบ iOS ครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> BLACK SHARK RUN<br>
+          <b>Intent:</b> compatibility<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B14<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1478 in / 132 out · $0.000773 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 4582 in / 35 out · $0.001462 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3126 in / 46 out · $0.001053 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 14,
+    &quot;cell&quot;: &quot;B14&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="conversation"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q015</b><span class="badge">answered</span>
+          <span class="muted">conversation · 4.71s · $0.003782</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>ถ้าเอา Ultra เปิด GPS วิ่ง แบตได้กี่ชั่วโมง</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">รองรับครับ สำหรับโหมด GPS จะสามารถใช้งานต่อเนื่องได้ประมาณ 25 ชั่วโมง โดยทดสอบจากการชาร์จเต็มและเปิดใช้งานติดตามตำแหน่งด้วย GPS แบบปิดหน้าจอต่อเนื่องจนแบตหมดครับผม</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับรุ่น Ultra เมื่อเปิดใช้งานโหมด GPS จะสามารถใช้งานแบตเตอรี่ต่อเนื่องได้ประมาณ 25 ชั่วโมงครับ โดยทดสอบจากการชาร์จเต็มและใช้งานติดตามตำแหน่งด้วย GPS แบบปิดหน้าจอต่อเนื่องจนแบตหมดครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark GS3 Ultra<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B5<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1608 in / 142 out · $0.000837 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 5304 in / 41 out · $0.001694 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3729 in / 53 out · $0.001251 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 5,
+    &quot;cell&quot;: &quot;B5&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="conversation"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q016</b><span class="badge">answered</span>
+          <span class="muted">conversation · 5.0s · $0.004130</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Ultra วัดความดันได้ไหม</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ไม่ได้ครับ สำหรับรุ่นนี้จะไม่รองรับฟังก์ชันการวัดความดันโลหิตครับผม
+
+แต่ตัวเรือนมีฟังก์ชันดูแลสุขภาพด้านอื่นๆ มาให้ครบถ้วนครับ ไม่ว่าจะเป็นการตรวจวัดอัตราการเต้นของหัวใจ วัดออกซิเจนในเลือด วัดความเครียด อารมณ์ รวมถึงติดตามการนอนหลับครับ หากต้องการสอบถามข้อมูลส่วนไหนเพิ่มเติม แจ้งได้เลยนะครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับรุ่น Ultra จะไม่รองรับฟังก์ชันการวัดความดันโลหิตครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark GS3 Ultra<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B5<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1754 in / 138 out · $0.000871 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 5446 in / 94 out · $0.001869 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3775 in / 103 out · $0.001390 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 5,
+    &quot;cell&quot;: &quot;B5&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="conversation"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q017</b><span class="badge">answered</span>
+          <span class="muted">conversation · 4.74s · $0.003684</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>A3 ใส่อาบน้ำได้ไหมครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ไม่ได้ครับ ทางเราไม่แนะนำให้สวมใส่อาบน้ำครับ 
+
+แม้ตัวเรือนจะมีมาตรฐานการกันน้ำ 3ATM ที่ใส่ลุยฝนหรือล้างมือได้ แต่ไม่แนะนำให้สวมใส่อาบน้ำหรือใช้งานในสภาพแวดล้อมที่มีอุณหภูมิสูง เช่น ห้องซาวน่า อาบน้ำอุ่น หรืออาบน้ำร้อนครับ เพราะหากมีความร้อนสะสมเป็นเวลานาน อาจทำให้ชิ้นส่วนภายในของนาฬิกาเสียหายได้ครับผม</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">ไม่แนะนำให้สวมใส่ขณะอาบน้ำครับ 
+
+แม้ว่า Black Shark A3 จะมีมาตรฐานการกันน้ำ 3ATM ที่สามารถใส่ลุยฝนหรือล้างมือได้ แต่ไม่แนะนำให้สวมใส่อาบน้ำครับ นอกจากนี้ไม่แนะนำให้ใช้นาฬิกาในสภาพแวดล้อมที่มีอุณหภูมิสูง เช่น ห้องซาวน่า อาบน้ำอุ่น หรืออาบน้ำร้อน เนื่องจากหากมีความร้อนสะสมเป็นเวลานาน อาจทำให้ชิ้นส่วนภายในของนาฬิกาเสียหายได้ครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark A3<br>
+          <b>Intent:</b> compatibility<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B7<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1316 in / 141 out · $0.000747 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 4622 in / 91 out · $0.001614 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3427 in / 118 out · $0.001323 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 7,
+    &quot;cell&quot;: &quot;B7&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="conversation"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q018</b><span class="badge">answered</span>
+          <span class="muted">conversation · 4.65s · $0.003584</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>จอเป็นแบบไหน กี่นิ้วครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">หน้าจอเป็นแบบ TFT ขนาด 1.53 นิ้ว ความละเอียด 360x360 พิกเซล ความสว่าง 600nits และมีความลื่นไหล 60Hz ครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับ Black Shark A3 จะมาพร้อมหน้าจอแสดงผลแบบ TFT ขนาด 1.53 นิ้วครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark A3<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B7<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1519 in / 132 out · $0.000786 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 4857 in / 65 out · $0.001620 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3429 in / 60 out · $0.001179 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 7,
+    &quot;cell&quot;: &quot;B7&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="conversation"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q019</b><span class="badge">answered</span>
+          <span class="muted">conversation · 4.27s · $0.003708</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>รับสายไลน์ผ่านนาฬิกาได้มั้ย</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ไม่ได้ครับ ฟังก์ชันโทรผ่านนาฬิกาไม่รองรับการโทรผ่านแอปพลิเคชันโซเชียลมีเดีย เช่น LINE ครับผม แต่ตัวเรือนรองรับการแจ้งเตือนข้อความจากแอปพลิเคชันโซเชียลมีเดียให้ดูบนหน้าจอได้ครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับ Black Shark A3 ฟังก์ชันบลูทูธโทรเข้า-ออกจะไม่รองรับการโทรผ่านแอปพลิเคชันโซเชียลมีเดีย เช่น LINE แต่จะรองรับการรับการแจ้งเตือนข้อความจากแอปพลิเคชัน LINE บนหน้าปัดนาฬิกาครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark A3<br>
+          <b>Intent:</b> compatibility<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B7<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1659 in / 142 out · $0.000853 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 4971 in / 64 out · $0.001651 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3398 in / 74 out · $0.001204 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 7,
+    &quot;cell&quot;: &quot;B7&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="conversation"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q020</b><span class="badge">answered</span>
+          <span class="muted">conversation · 5.06s · $0.003770</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>ต้องโหลดแอปอะไรครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">รองรับครับ สามารถดาวน์โหลดและใช้งานผ่านแอปพลิเคชัน Shark Fitlife ได้เลยครับ โดยรองรับการใช้งานทั้งบนระบบ iOS และ Android ครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับ Black Shark A3 จะใช้งานร่วมกับแอปพลิเคชัน Shark Fitlife ครับ โดยรองรับการเชื่อมต่อได้ทั้งระบบ iOS และ Android ครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark A3<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B7<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1819 in / 151 out · $0.000923 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 5166 in / 61 out · $0.001702 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3423 in / 47 out · $0.001144 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 7,
+    &quot;cell&quot;: &quot;B7&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="conversation"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q021</b><span class="badge">answered</span>
+          <span class="muted">conversation · 4.37s · $0.003327</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark RUN รับสายไลน์ได้ไหมคะ ใช้ไอโฟน</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">รองรับครับ สำหรับผู้ใช้งานระบบปฏิบัติการ iOS ฟีเจอร์ ENC Bluetooth Calling ของนาฬิการุ่นนี้สามารถรองรับการรับสายโทรเข้าของแอปพลิเคชันยอดนิยมอย่าง LINE ผ่านนาฬิกาได้โดยตรงครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สวัสดีครับ Black Shark Run รองรับฟีเจอร์ ENC Bluetooth Calling ซึ่งสามารถรองรับการรับสายโทรเข้าของแอปพลิเคชันยอดนิยมอย่าง Line ผ่านนาฬิกาได้โดยตรงสำหรับระบบปฏิบัติการ iOS ครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> BLACK SHARK RUN<br>
+          <b>Intent:</b> compatibility<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B14<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1318 in / 144 out · $0.000755 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 4428 in / 53 out · $0.001461 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3152 in / 66 out · $0.001111 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 14,
+    &quot;cell&quot;: &quot;B14&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="conversation"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q022</b><span class="badge">answered</span>
+          <span class="muted">conversation · 4.5s · $0.003429</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>แล้วถ้าใช้ Android ล่ะคะ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ยังไม่รองรับครับ สำหรับผู้ใช้งานระบบ Android ฟีเจอร์ ENC Bluetooth Calling ของนาฬิการุ่นนี้ในฝั่ง Android ยังอยู่ในระหว่างการพัฒนาครับผม ตอนนี้จึงยังไม่สามารถรับสาย LINE บนนาฬิกาโดยตรงได้เหมือนกับฝั่ง iOS ครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับระบบปฏิบัติการ Android ในตอนนี้ ฟีเจอร์ ENC Bluetooth Calling สำหรับการรับสายผ่านแอปพลิเคชันจะยังอยู่ในระหว่างการพัฒนาครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> BLACK SHARK RUN<br>
+          <b>Intent:</b> compatibility<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B14<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1464 in / 138 out · $0.000784 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 4573 in / 58 out · $0.001517 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3150 in / 73 out · $0.001128 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 14,
+    &quot;cell&quot;: &quot;B14&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="conversation"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q023</b><span class="badge">answered</span>
+          <span class="muted">conversation · 4.33s · $0.003435</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>ในกล่องมีอะไรบ้างคะ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ภายในกล่องจะมีตัวเครื่อง Black Shark Run, สายนาฬิกาซิลิโคน, สายนาฬิกาผ้า, สายชาร์จ และคู่มือการใช้งานครับผม</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">ภายในกล่องจะได้รับตัวเรือน Black Shark Run, สายนาฬิกาซิลิโคน, สายนาฬิกาผ้า, สายชาร์จ และคู่มือการใช้งานครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> BLACK SHARK RUN<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B14<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1611 in / 130 out · $0.000808 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 4768 in / 47 out · $0.001548 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3195 in / 48 out · $0.001079 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 14,
+    &quot;cell&quot;: &quot;B14&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="conversation"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q024</b><span class="badge">answered</span>
+          <span class="muted">conversation · 4.33s · $0.003582</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>จอกี่นิ้วคะ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">หน้าจอของสมาร์ตวอทช์รุ่นนี้มีขนาด 1.43 นิ้วครับ โดยมาพร้อมกับหน้าจอแบบ AMOLED ที่ให้ความคมชัดและสีสันสดใส ช่วยให้มองเห็นข้อมูลต่างๆ บนหน้าจอได้อย่างชัดเจนครับผม</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">Black Shark Run มาพร้อมหน้าจอ AMOLED ขนาด 1.43 นิ้วครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> BLACK SHARK RUN<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B14<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1738 in / 125 out · $0.000834 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 4895 in / 57 out · $0.001611 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3206 in / 70 out · $0.001137 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 14,
+    &quot;cell&quot;: &quot;B14&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="catalog"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q025</b><span class="badge">answered</span>
+          <span class="muted">catalog · 5.4s · $0.003385</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark Pad 7Pro UE มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">รองรับครับ สำหรับ Black Shark Pad 7Pro UE จะโดดเด่นด้วยดีไซน์ตัวเรือนอลูมิเนียมเกรดอุตสาหกรรมการบิน บางเพียง 7.5 มม. หน้าจอ 11 นิ้ว ความละเอียด FHD+ พร้อมอัตรารีเฟรช 120Hz และรองรับ Widevine L1 สำหรับรับชมสตรีมมิ่งความละเอียดสูงบน Netflix, Prime Video และ Disney+ Hotstar ได้เต็มอารมณ์ครับ
+
+ในด้านการใช้งาน รุ่นนี้มาพร้อมชิปประมวลผล Unisoc 7300 Octa-Core และระบบปฏิบัติการ Android 16 ที่มี Gemini AI และ Google Lens ในตัว ช่วยค้นหาข้อมูล แปลภาษา รวมถึงรองรับการแบ่งหน้าจอเพื่อทำงาน แชท หรือดูวิดีโอพร้อมกันได้ นอกจากนี้ยังมีลำโพง K9 Smart Amplifier 4 ตัว แบตเตอรี่ขนาดใหญ่ 8800mAh และรองรับการเชื่อมต่อทั้ง Wi-Fi และ 4G LTE ครับผม</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สวัสดีครับ Black Shark Pad 7Pro UE โดดเด่นด้วยดีไซน์ตัวเรือนอลูมิเนียมเกรดอุตสาหกรรมการบินที่บางเพียง 7.5 มม. น้ำหนัก 513 กรัม และหน้าจอ IPS LCD ขนาด 11 นิ้ว ความละเอียด FHD+ (1200×1900 พิกเซล) อัตรารีเฟรช 120Hz ความสว่างสูงสุด 450 Nits แสดงผลสีสัน 16.7 ล้านสี 
+
+ด้านประสิทธิภาพ ขับเคลื่อนด้วยชิปประมวลผล Unisoc 7300 Octa-Core หน่วยความจำ 256GB รองรับ MicroSD Card สูงสุด 2TB และทำงานบนระบบปฏิบัติการ Android 16 ที่มี Gemini AI และ Google Lens ในตัว ช่วยยกระดับการทำงาน ค้นหาข้อมูล แปลภาษา และสแกนผ่านภาพ นอกจากนี้ยังรองรับการแบ่งหน้าจอเพื่อทำงาน แชท หรือดูวิดีโอพร้อมกันในหน้าเดียว
+
+สำหรับความบันเทิง มาพร้อมลำโพง K9 Smart Amplifier 4 ตัว รองรับ Widevine L1 สำหรับรับชมสตรีมมิ่งความละเอียดสูง Full HD 1080P บนแพลตฟอร์มอย่าง Netflix, Prime Video และ Disney+ Hotstar และมีแบตเตอรี่ขนาดใหญ่ 8800mAh รองรับการเชื่อมต่อทั้ง Wi-Fi และ 4G LTE ครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark Pad 7Pro UE<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B2<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1323 in / 168 out · $0.000817 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 2657 in / 271 out · $0.001475 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 1704 in / 233 out · $0.001094 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 2,
+    &quot;cell&quot;: &quot;B2&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="catalog"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q026</b><span class="badge">answered</span>
+          <span class="muted">catalog · 5.25s · $0.004313</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark GS3 มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">Black Shark GS3 มีจุดเด่นและเหมาะกับการใช้งานดังนี้ครับ 
+
+จุดเด่นหลักของสมาร์ตวอทช์รุ่นนี้คือดีไซน์สปอร์ตที่แข็งแกร่งทนทานด้วยวัสดุไฟเบอร์กลาสและกระจก Corning® Gorilla® Glass หน้าจอ AMOLED คมชัดขนาด 1.43 นิ้ว พร้อม GPS ในตัวถึง 5 เครือข่าย และแบตเตอรี่ที่ใช้งานแบบ Daily Use ได้นานสุด 21 วันครับ 
+
+สำหรับการใช้งานที่เหมาะสม ตัวเรือนรองรับมาตรฐานความทนทาน MIL-STD 810H, กันน้ำลึก 5 ATM, กันน้ำกันฝุ่น IP69K และมีโหมดกีฬามากกว่า 100 ชนิด พร้อมสายนาฬิกา 2 แบบ (สายซิลิโคนนุ่มนวลทำความสะอาดง่ายเหมาะใส่ออกกำลังกาย และสายผ้า Woven Strap ระบายอากาศดีเหมาะสำหรับวันสบายๆ) จึงตอบโจทย์การใส่ออกกำลังกายและทำกิจกรรมต่างๆ ได้อย่างครอบคลุมครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">Black Shark GS3 โดดเด่นด้วยดีไซน์สปอร์ตดุดัน แข็งแกร่งทนทานผ่านมาตรฐานทหาร MIL-STD 810H ทนทานต่อแรงดันน้ำถึง 5 ATM และกันน้ำกันฝุ่นระดับ IP69K ตัวหน้าจอเป็น AMOLED ขนาด 1.43 นิ้ว ความละเอียด 466x466p ความสว่าง 600Nit มี Built-in GPS ในตัว 5 เครือข่าย และแบตเตอรี่อึดใช้งานแบบ Daily Use ได้นานสูงสุด 21 วัน พร้อมฟังก์ชัน AI Shark GPT และรองรับ ENC Bluetooth Calling ครับ
+
+สำหรับการใช้งานนั้นเหมาะกับสายสปอร์ตและผู้ที่ชื่นชอบการออกกำลังกายครับ เนื่องจากรองรับโหมดกีฬามากกว่า 100 ชนิด มีฟังก์ชันตรวจวัดสุขภาพครบถ้วนทั้งอัตราการเต้นของหัวใจ ออกซิเจนในเลือด ความเครียด และการนอนหลับ พร้อมสายนาฬิกา 2 เส้นให้เลือกเปลี่ยนใช้งานได้ตามกิจกรรมครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark GS3<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B3<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1320 in / 154 out · $0.000781 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 4893 in / 139 out · $0.001815 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3672 in / 246 out · $0.001717 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 3,
+    &quot;cell&quot;: &quot;B3&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="catalog"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q027</b><span class="badge">answered</span>
+          <span class="muted">catalog · 5.39s · $0.004397</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark GS3 Sport มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">รองรับครับ Black Shark GS3 Sport มีจุดเด่นและเหมาะกับการใช้งานดังนี้ครับ รุ่นนี้โดดเด่นด้วยดีไซน์น้ำหนักเบาเพียง 31 กรัม สวมใส่สบาย หน้าจอ AMOLED ขนาด 1.43 นิ้ว ความละเอียด 466x466p ความสว่าง 600Nit มีความทนทานผ่านมาตรฐาน MIL-STD 810H กันน้ำระดับ 5 ATM มี GPS ในตัวถึง 5 เครือข่าย ไฟฉาย LED ปรับความสว่างได้ 4 ระดับ แบตเตอรี่ใช้งานแบบ Daily Use Mode ได้นานสุด 18 วัน รองรับโหมดออกกำลังกายมากถึง 120 ชนิด รองรับการโทรเข้า-ออกผ่านบลูทูธ และมีฟังก์ชันตรวจวัดสุขภาพตลอด 24 ชั่วโมงครับ เหมาะกับการสวมใส่ในชีวิตประจำวัน ออกกำลังกาย และกิจกรรมที่ต้องการความทนทานครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับ Black Shark GS3 Sport มีจุดเด่นด้วยหน้าจอ AMOLED ขนาด 1.43 นิ้ว ความละเอียด 466x466 พิกเซล พร้อมตัวเรือนน้ำหนักเบาเพียง 31 กรัม และผ่านมาตรฐานความทนทาน MIL-STD 810H รวมถึงมี Built-in GPS 5 เครือข่าย และแบตเตอรี่ที่ใช้งานโหมดปกติได้นานสูงสุด 18 วันครับ
+
+ส่วนด้านการใช้งาน สมาร์ทวอทช์รุ่นนี้ตอบโจทย์การออกกำลังกายด้วยโหมดกีฬามากกว่า 120 ชนิด มีฟังก์ชันติดตามและวิเคราะห์สุขภาพตลอด 24 ชั่วโมง ทั้งอัตราการเต้นของหัวใจ ออกซิเจนในเลือด ความเครียด และการนอนหลับ พร้อมรองรับมาตรฐานการกันน้ำ 5 ATM ครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark GS3 Sport<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B4<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1321 in / 160 out · $0.000796 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 4819 in / 203 out · $0.001953 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3740 in / 210 out · $0.001647 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 4,
+    &quot;cell&quot;: &quot;B4&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="catalog"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q028</b><span class="badge">answered</span>
+          <span class="muted">catalog · 5.62s · $0.004584</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark GS3 Ultra มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">รองรับ Black Shark GS3 Ultra โดดเด่นด้วยความแข็งแกร่งทนทานด้วยตัวเรือนวัสดุ Zinc Alloy กระจก Corning Gorilla Glass 3 พร้อมมาตรฐาน MIL-STD 810G และ MIL-STD 810H หน้าจอ AMOLED ขนาด 1.43 นิ้ว ความสว่าง 1000 Nits และมาตรฐานกันน้ำ 5ATM &amp; IP69K ครับ
+
+ด้านการใช้งานมีความเหมาะสมดังนี้ครับ:
+- การออกกำลังกาย: รองรับกีฬา 160 ชนิด พร้อม GPS แบบ Dual-Band 6 เครือข่าย และระบบติดตามท่าว่ายน้ำ
+- การดูแลสุขภาพ: มีระบบตรวจวัดอัตราการเต้นของหัวใจ ออกซิเจนในเลือด ความเครียด อารมณ์ และการนอนหลับครบ 4 ระยะตลอด 24 ชั่วโมง
+- การใช้งานทั่วไป: รองรับฟังก์ชัน Bluetooth Calling สำหรับโทรเข้า-โทรออกผ่านเบอร์ และใช้งานทั่วไปได้นานสูงสุด 18 วันครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สวัสดีครับ Black Shark ยินดีให้บริการครับ สำหรับ Black Shark GS3 Ultra โดดเด่นด้วยตัวเรือนวัสดุ Zinc Alloy และหน้าจอกระจก Corning Gorilla Glass 3 พร้อมผ่านมาตรฐานความทนทาน MIL-STD 810G และ MIL-STD 810H รวมถึงกันน้ำมาตรฐาน 5ATM และ IP69K ครับ
+
+ด้านการใช้งาน ตัวเรือนรองรับโหมดออกกำลังกาย 160 ชนิด มี GPS แบบ Dual-Band รองรับการโทรผ่านบลูทูธ (Bluetooth Calling) และมีฟังก์ชันดูแลสุขภาพตลอด 24 ชั่วโมง เช่น ตรวจวัดอัตราการเต้นของหัวใจ ออกซิเจนในเลือด ความเครียด อารมณ์ และติดตามการนอนหลับครบทุกระยะครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark GS3 Ultra<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B5<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1321 in / 152 out · $0.000776 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 5024 in / 218 out · $0.002052 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3910 in / 233 out · $0.001755 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 5,
+    &quot;cell&quot;: &quot;B5&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="catalog"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q029</b><span class="badge">answered</span>
+          <span class="muted">catalog · 5.53s · $0.004624</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark GS3 Ultra (REFINED EDITION) มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">สวัสดีครับ Black Shark ยินดีให้บริการครับ สำหรับจุดเด่นและลักษณะการใช้งานของ Black Shark GS3 Ultra (REFINED EDITION) ตัวนี้จะโดดเด่นเรื่องความทนทานด้วยตัวเรือนวัสดุ Zinc Alloy ผสานกระจกหน้าจอ Corning Gorilla Glass 3 ผ่านมาตรฐานความทนทาน MIL-STD 810G และ MIL-STD 810H รวมถึงกันน้ำมาตรฐาน 5ATM และ IP69K พร้อมลุยในทุกพื้นที่และรองรับกีฬาถึง 160 ชนิดครับ 
+
+นอกจากนี้ยังมาพร้อมหน้าจอ AMOLED ขนาด 1.43 นิ้ว ความสว่าง 1000 Nits, รองรับ GPS แบบ Dual-Band 6 เครือข่าย, มีฟังก์ชัน Bluetooth Calling สำหรับโทรเข้า-ออกผ่านเบอร์, เซนเซอร์ดูแลสุขภาพตลอด 24 ชั่วโมง และแบตเตอรี่ที่ใช้งานทั่วไปได้นานสูงสุดถึง 18 วันครับผม</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">น้อง Black Shark ยินดีให้บริการครับ สำหรับ Black Shark GS3 Ultra (REFINED EDITION) รุ่นนี้โดดเด่นด้วยความแข็งแกร่งทนทาน ตัวเรือนใช้วัสดุ Zinc Alloy พร้อมหน้าจอกระจก Corning Gorilla Glass 3 ผ่านมาตรฐานความทนทาน MIL-STD 810G และ MIL-STD 810H รวมถึงกันน้ำมาตรฐาน 5ATM และ IP69K จึงพร้อมลุยในทุกพื้นที่ครับ นอกจากนี้ยังมาพร้อมหน้าจอ AMOLED ขนาด 1.43 นิ้ว ความสว่าง 1000 Nits รองรับ GPS แบบ Dual-Band 6 เครือข่ายเพื่อความแม่นยำ มีฟังก์ชัน Bluetooth Calling ให้โทรเข้าโทรออกผ่านเบอร์ได้ และแบตเตอรี่ที่ใช้งานทั่วไปได้นานสูงสุดถึง 18 วันครับ
+
+ในส่วนของการใช้งาน สมาร์ทวอทช์รุ่นนี้เหมาะกับการใช้งานในชีวิตประจำวันและการออกกำลังกายครับ โดยรองรับโหมดกีฬาถึง 160 ชนิด ทั้งแบบ Indoor และ Outdoor พร้อมระบบตรวจจับการออกกำลังกายและติดตามท่าว่ายน้ำ นอกจากนี้ยังดูแลสุขภาพตลอด 24 ชั่วโมง ทั้งการวัดอัตราการเต้นของหัวใจ ออกซิเจนในเลือด ความเครียด อารมณ์ และติดตามการนอนหลับครบทุกระยะครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark GS3 Ultra (REFINED EDITION)<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B6<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1326 in / 168 out · $0.000818 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 5131 in / 217 out · $0.002082 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3982 in / 212 out · $0.001725 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 6,
+    &quot;cell&quot;: &quot;B6&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="catalog"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q030</b><span class="badge">answered</span>
+          <span class="muted">catalog · 5.93s · $0.004343</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark A3 มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">Black Shark A3 มีจุดเด่นเรื่องหน้าจอขนาดใหญ่ 1.53 นิ้ว ขอบจอบางพิเศษ ความละเอียด 360x360p (240ppi) ความสว่างหน้าจอระดับ 600nits ความลื่นไหล 60Hz ตัวเรือนและขอบหน้าจอผลิตจากโลหะ โหมดหน้าปัดหลากหลายกว่า 240 รูปแบบ รองรับโหมดกีฬามากกว่า 120 ชนิด มีมาตรฐานกันน้ำ 3ATM และใช้งานทั่วไป (ต่อแอปพลิเคชัน) ได้นานสุดถึง 14 วันครับ
+
+สำหรับการใช้งาน เหมาะกับการสวมใส่ในชีวิตประจำวันเพื่อติดตามสุขภาพตลอด 24 ชั่วโมง เช่น ตรวจวัดอัตราการเต้นของหัวใจ, ตรวจวัดออกซิเจนในเลือด (SpO2), วิเคราะห์ความเครียด, วิเคราะห์การนอนหลับ และวิเคราะห์ด้านประจำเดือน ผ่านแอปพลิเคชัน Shark Fitlife ทั้งบน iOS และ Android พร้อมรองรับการโทรผ่านบลูทูธ (ENC Bluetooth Calling) และการแจ้งเตือนจากแอปพลิเคชันโซเชียลมีเดียครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สวัสดีครับ Black Shark A3 โดดเด่นด้วยหน้าจอขนาดใหญ่ 1.53 นิ้ว ความละเอียด 360x360 พิกเซล ความสว่าง 600 nits และอัตรารีเฟรช 60 Hz ตัวเรือนโลหะดีไซน์สวยงามทนทาน ใช้งานได้นานสูงสุดถึง 14 วันต่อการชาร์จครับ
+
+ในด้านการใช้งาน รุ่นนี้รองรับการติดตามและวิเคราะห์ข้อมูลด้านสุขภาพตลอด 24 ชั่วโมง เช่น การตรวจวัดอัตราการเต้นของหัวใจ ออกซิเจนในเลือด ความเครียด การนอนหลับ และรอบเดือน พร้อมทั้งรองรับโหมดกีฬามากกว่า 120 ชนิด นอกจากนี้ยังมีฟีเจอร์ ENC Bluetooth Calling สำหรับการรับสาย วางสาย และโทรออกได้จากข้อมือ รวมถึงมีมาตรฐานการกันน้ำ 3ATM ที่สามารถสวมใส่ลุยฝนหรือล้างมือได้ครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark A3<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B7<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1320 in / 158 out · $0.000791 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 4671 in / 180 out · $0.001851 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3553 in / 254 out · $0.001701 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 7,
+    &quot;cell&quot;: &quot;B7&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="catalog"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q031</b><span class="badge">answered</span>
+          <span class="muted">catalog · 5.61s · $0.004637</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark S3 มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">รองรับ Black Shark S3 โดดเด่นด้วยหน้าจอ AMOLED ขนาด 1.43 นิ้ว ความละเอียด 466 x 466 Pixels พร้อมความสว่าง 600 nits ใช้งานกลางแจ้งได้ ตัวเรือนผลิตจากโลหะทั้งชิ้นพร้อมเม็ดมะยมที่ออกแบบอย่างประณีต และสวมใส่ง่ายด้วยสายนาฬิกาแม่เหล็ก Magnetic Strap ที่มีตัวล็อกแม่เหล็กแรงดูดสูง
+
+ด้านความเหมาะสมในการใช้งาน รุ่นนี้ตอบโจทย์การออกกำลังกายและสุขภาพด้วย 150 โหมดกีฬา ระบบ Built-in GPS ถึง 5 เครือข่าย (GPS, BeiDou, GLONASS, GALILEO, QZSS) สำหรับติดตามเส้นทางการวิ่งอย่างแม่นยำ มีมาตรฐานการกันน้ำระดับ 5ATM ที่สามารถทนต่อแรงดันน้ำเทียบเท่าความลึกถึง 50 เมตร รองรับการตรวจวัดสุขภาพด้วย 8 Channel PPG Monitoring ได้แก่ อัตราการเต้นของหัวใจ (Heart Rate), ออกซิเจนในเลือด (SpO2), ประสิทธิภาพการนอน (Sleep Monitoring) และความเครียด (Stress Monitoring) รวมถึงสะดวกในการสื่อสารด้วยฟังก์ชัน ENC Bluetooth Calling สำหรับกดรับสาย วางสาย โทรออก และจัดการรายชื่อผู้ติดต่อได้จากข้อมือ พร้อมแบตเตอรี่ที่ใช้งานทั่วไปได้นานถึง 15 วันครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สวัสดีครับ Black Shark S3 รุ่นนี้โดดเด่นด้วยหน้าจอ AMOLED ขนาด 1.43 นิ้ว ความละเอียด 466 x 466 พิกเซล ด้วยความสว่างหน้าจอสูงถึง 600 nits ทำให้ใช้งานกลางแจ้งได้ดี ดีไซน์ตัวเรือนผลิตจากโลหะทั้งชิ้นเสริมความคลาสสิกด้วยเม็ดมะยม ด้านการใช้งานมาพร้อม GPS ในตัวถึง 5 เครือข่าย (GPS, BeiDou, GLONASS, GALILEO, QZSS) รองรับมาตรฐานการกันน้ำระดับ 5ATM มีโหมดกีฬาถึง 150 โหมด และรองรับ ENC Bluetooth Calling สำหรับการสนทนา พร้อมทั้งฟังก์ชันการตรวจวัดสุขภาพทั้งอัตราการเต้นของหัวใจ ออกซิเจนในเลือด (SpO2) ประสิทธิภาพการนอน และความเครียดครับ เหมาะสำหรับผู้ที่มองหาสมาร์ทวอทช์ดีไซน์พรีเมี่ยมที่ตอบโจทย์การออกกำลังกายและการใช้งานในชีวิตประจำวันครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark S3<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B8<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1320 in / 148 out · $0.000766 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 4702 in / 235 out · $0.001998 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3626 in / 314 out · $0.001873 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 8,
+    &quot;cell&quot;: &quot;B8&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="catalog"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q032</b><span class="badge">answered</span>
+          <span class="muted">catalog · 5.36s · $0.003883</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark S3 Classic มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">สวัสดีครับ Black Shark ยินดีให้บริการครับ สำหรับจุดเด่นของ Black Shark S3 Classic จะอยู่ที่ตัวเรือน Zinc Alloy พร้อมการออกแบบเส้นสายที่เรียบเนียน ลงตัวกับทุกสไตล์ และหน้าจอ AMOLED ขนาด 1.43 นิ้ว ความละเอียด 466 x 466p ความสว่าง 600nits พร้อมหน้าปัดให้เลือกใช้งานกว่า 150 รูปแบบครับ
+
+ในด้านการใช้งาน รุ่นนี้ตอบโจทย์การใช้งานในชีวิตประจำวันด้วยแบตเตอรี่ที่ใช้งานได้ยาวนานสุดถึง 15 วัน รองรับการรับสายโทรศัพท์ผ่านระบบ Bluetooth Calling พร้อมไมโครโฟนตัดเสียงรบกวนขณะสนทนาด้วยเทคโนโลยี ENC มีโหมดกีฬามากกว่า 120 ชนิด ติดตามสุขภาพตลอด 24 ชั่วโมง และมีความมั่นใจด้วยมาตรฐานการกันน้ำ 3ATM ที่สามารถกันน้ำ ทนฝน และละอองน้ำครับผม</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">Black Shark S3 Classic โดดเด่นด้วยตัวเรือน Zinc Alloy พร้อมการออกแบบเส้นสายที่เรียบเนียนลงตัวกับทุกสไตล์ หน้าจอ AMOLED ขนาด 1.43 นิ้ว ความละเอียด 466 x 466p ความสว่าง 600nits และ 326ppi พร้อมหน้าปัดให้เลือกใช้งานกว่า 150 รูปแบบ มีมาตรฐานการกันน้ำ 3ATM สามารถกันน้ำ ทนฝน และละอองน้ำได้ แบตเตอรี่ใช้งานได้ยาวนานสุดถึง 15 วัน หรือสแตนด์บายได้นานสุดถึง 30 วัน รองรับโหมดกีฬามากกว่า 120 ชนิด ติดตามสุขภาพตลอด 24 ชั่วโมง รวมถึงรองรับการแจ้งเตือนต่างๆ และการรับสายโทรศัพท์ผ่านระบบ Bluetooth Calling ครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark S3 Classic<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B9<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1321 in / 164 out · $0.000806 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 3957 in / 193 out · $0.001670 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 2881 in / 217 out · $0.001407 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 9,
+    &quot;cell&quot;: &quot;B9&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="catalog"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q033</b><span class="badge">answered</span>
+          <span class="muted">catalog · 5.54s · $0.004386</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark S1 Pro มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">สำหรับจุดเด่นและลักษณะการใช้งานของ Black Shark S1 Pro มีดังนี้ครับ
+
+จุดเด่นสินค้า:
+1. มี AI Chat GPT ติดตั้งมาให้ในตัวนาฬิกา
+2. หน้าจอ AMOLED ขนาด 1.43 นิ้ว ความละเอียด 466 x 466 พิกเซล (326 PPI) พร้อมความสว่าง 600 nit และค่า Refresh Rate ระดับ 60Hz
+3. ดีไซน์สปอร์ตพรีเมียม ตัวเรือนทำจากซิงค์อัลลอยที่มีความแข็งแรงและทนทาน ขอบ Bezel ขัดเงาและขึ้นรูปด้วยเครื่อง CNC พร้อมสายซิลิโคนเกรดสูง
+4. รองรับ Bluetooth Calling สามารถโทรเข้า โทรออก และบันทึกรายชื่อผู้ติดต่อได้ (รองรับเฉพาะการโทรออกผ่านระบบเบอร์โทรศัพท์ Cellular เท่านั้น)
+5. มี Gaming Health Monitoring Mode และฟังก์ชันเปิด Game Mode เพื่อวัดอัตราการเต้นของหัวใจและความเครียดเมื่อเล่นเกม
+6. รองรับการแจ้งเตือนจากแอปพลิเคชันโซเชียลมีเดียบนหน้าจอนาฬิกา
+
+การใช้งานทั่วไป:
+รุ่นนี้รองรับการใช้งานในชีวิตประจำวัน เช่น การติดตามคุณภาพการนอนหลับด้วย Sleep Monitoring, ตรวจวัดระดับออกซิเจนในเลือดด้วย SpO2 Monitoring รวมถึงมีฟังก์ชันไฟฉายและการตรวจวัดสุขภาพเบื้องต้นครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">Black Shark S1 Pro มีจุดเด่นดังนี้ครับ
+
+- มี AI Chat GPT ในตัวนาฬิกาสำหรับช่วยตอบคำถาม
+- หน้าจอ AMOLED ขนาด 1.43 นิ้ว ความละเอียด 466 x 466 Pixel (326PPI) สว่าง 600nit และมีรีเฟรชเรท 60Hz
+- ดีไซน์สปอร์ตพรีเมียม ตัวเรือนใช้วัสดุซิงค์อัลลอย ขอบ Bezel ขัดเงาด้วยเครื่อง CNC และสายซิลิโคนเกรดสูง
+- รองรับ Bluetooth Calling สามารถโทรเข้า โทรออก และบันทึกรายชื่อ (รองรับการโทรผ่านเบอร์โทรศัพท์ Cellular)
+- มี Gaming Health Monitoring Mode และ Game Mode สำหรับวัดอัตราการเต้นของหัวใจและความเครียดขณะเล่นเกม
+- รองรับการแจ้งเตือนจากแอปพลิเคชันโซเชียลมีเดียบนหน้าจอ
+
+รุ่นนี้เหมาะสำหรับการใช้งานในชีวิตประจำวันทั่วไป เช่น การรับการแจ้งเตือน การติดตามสุขภาพเบื้องต้น และการใช้งานฟังก์ชันสำหรับชาวเกมมิ่งครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark S1 Pro<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B10<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1321 in / 149 out · $0.000769 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 4485 in / 181 out · $0.001798 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3346 in / 326 out · $0.001819 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 10,
+    &quot;cell&quot;: &quot;B10&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="catalog"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q034</b><span class="badge">answered</span>
+          <span class="muted">catalog · 5.66s · $0.004638</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark S1 Classic มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">สวัสดีครับ Black Shark S1 Classic มีจุดเด่นคือ ดีไซน์เรียบหรูสไตล์ย้อนยุคผสมความทันสมัย ตัวเรือนซิงค์อัลลอยพร้อมเม็ดมะยมสเตนเลสสตีลเกรดสูง หน้าจอ AMOLED ขนาด 1.43 นิ้ว ความละเอียด 326PPI (466 x 466 พิกเซล) ความสว่าง 600nit สู้แดดได้ดี และมีรีเฟรชเรต 60Hz ใช้งานลื่นไหล
+
+ด้านฟังก์ชันการใช้งาน รองรับการโทรเข้า-ออกผ่านระบบบลูทูธ (รองรับการโทรผ่านเบอร์โทรศัพท์ Cellular เท่านั้น) มีโหมด Gaming Health Monitoring เพื่อวัดอัตราการเต้นของหัวใจและความเครียดขณะเล่นเกม รองรับหน้าปัดนาฬิกากว่า 150 รูปแบบ แบตเตอรี่อึดใช้งานได้สูงสุดถึง 12 วัน มีฟังก์ชันตรวจจับและวัดคุณภาพการนอน (Sleep Monitoring) ตรวจวัดระดับออกซิเจนในเลือด (SpO2) โหมดออกกำลังกายมากกว่า 100 โหมด และมาตรฐานกันน้ำกันฝุ่นระดับ IP68
+
+เหมาะกับการสวมใส่ในชีวิตประจำวันเพื่อติดตามสุขภาพ ออกกำลังกาย และใช้งานทั่วไปครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สวัสดีครับ Black Shark ยินดีให้บริการครับ สำหรับ Black Shark S1 Classic โดดเด่นด้วยดีไซน์เรียบหรูสไตล์คลาสสิกผสมความทันสมัย ตัวเรือนซิงค์อัลลอยคู่กับเม็ดมะยมสเตนเลสสตีล หน้าจอ AMOLED ขนาด 1.43 นิ้ว ความละเอียด 466 x 466 พิกเซล (326 PPI) สู้แดดได้ดียิ่งขึ้นด้วยความสว่าง 600nit และใช้งานลื่นไหลด้วยอัตรารีเฟรช 60Hz ครับ 
+
+นอกจากนี้ยังมีฟังก์ชันบลูทูธสำหรับการโทรเข้า-ออก โหมดเกมที่ช่วยวัดอัตราการเต้นของหัวใจและความเครียดเมื่อเล่นเกม มีโหมดออกกำลังกายมากกว่า 100 โหมด ฟังก์ชันตรวจจับและวัดคุณภาพการนอน ตรวจวัดระดับออกซิเจนในเลือด (SpO2) หน้าปัดนาฬิกากว่า 150 รูปแบบ แบตเตอรี่ใช้งานได้นานสูงสุด 12 วัน และมีมาตรฐานการกันน้ำกันฝุ่นระดับ IP68 ครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark S1 Classic<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B11<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1321 in / 158 out · $0.000791 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 4703 in / 249 out · $0.002033 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3612 in / 292 out · $0.001814 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 11,
+    &quot;cell&quot;: &quot;B11&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="catalog"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q035</b><span class="badge">answered</span>
+          <span class="muted">catalog · 5.53s · $0.004282</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark GT3 มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">สวัสดีครับ น้อง Black Shark ยินดีให้บริการครับ 
+
+สำหรับจุดเด่นของ Black Shark GT3 จะโดดเด่นด้วยหน้าจอ AMOLED ขนาด 1.78 นิ้ว ที่มีความสว่าง 600nit และความละเอียด 368 x 448 Pixel ตัวเรือนทำจากวัสดุอลูมิเนียมอัลลอยที่มีน้ำหนักเบาเพียง 25 กรัม พร้อมทั้งรองรับการโทรเข้า-ออกผ่านบลูทูธ มีโหมดกีฬาให้ใช้งานถึง 100 โหมด และฟังก์ชันตรวจวัดสุขภาพครบถ้วนตลอด 24 ชั่วโมง เช่น การวัดอัตราการเต้นของหัวใจ ออกซิเจนในเลือด และคุณภาพการนอนหลับครับ 
+
+ในด้านความเหมาะสมกับการใช้งาน รุ่นนี้ตอบโจทย์ผู้ที่ต้องการสมาร์ทวอทช์สำหรับใส่ทำกิจกรรมในชีวิตประจำวัน ออกกำลังกายหลากหลายรูปแบบด้วยโหมดกีฬาที่มีให้เลือก พร้อมช่วยดูแลสุขภาพเบื้องต้นและใช้งานต่อเนื่องได้ยาวนานสูงสุดถึง 10 วันครับผม</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สวัสดีครับ Black Shark GT3 มีจุดเด่นคือหน้าจอ AMOLED ขนาด 1.78 นิ้ว ความละเอียด 368 x 448 พิกเซล สู้แดดด้วยความสว่าง 600 nit ตัวเรือนทำจากอลูมิเนียมอัลลอย น้ำหนักเบาเพียง 25 กรัม มีฟังก์ชัน Bluetooth Calling รองรับการโทรเข้า-ออกพร้อมบันทึกรายชื่อ และแบตเตอรี่ที่ใช้งานได้ยาวนานสูงสุด 10 วันครับ
+
+นอกจากนี้ยังมีโหมดกีฬาถึง 100 โหมด พร้อมฟังก์ชันตรวจวัดสุขภาพตลอด 24 ชั่วโมง ทั้งอัตราการเต้นของหัวใจ ออกซิเจนในเลือด และคุณภาพการนอนหลับ รวมถึงมีมาตรฐานกันน้ำและกันฝุ่น IP68 ครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark GT3<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B12<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1320 in / 164 out · $0.000806 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 4362 in / 239 out · $0.001906 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3299 in / 232 out · $0.001570 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 12,
+    &quot;cell&quot;: &quot;B12&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="catalog"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q036</b><span class="badge">answered</span>
+          <span class="muted">catalog · 6.05s · $0.004447</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark GT3 NEO มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">รองรับค่ะ สำหรับ Black Shark GT3 NEO จุดเด่นที่น่าสนใจคือมาพร้อมหน้าจอ TFT ขนาดใหญ่เต็มตา 2.022 นิ้ว ความละเอียด 240 x 296 พิกเซล พร้อมความสว่าง 600nit รองรับการโทรเข้า-ออกผ่านบลูทูธ มีโหมดกีฬามากถึง 100 โหมด ฟังก์ชันตรวจวัดสุขภาพครบครันตลอด 24 ชั่วโมง ทั้งอัตราการเต้นของหัวใจ ออกซิเจนในเลือด (SpO2) และตรวจจับคุณภาพการนอนหลับ มาพร้อมมาตรฐานกันน้ำกันฝุ่น IP68 กันน้ำลึก 1.5 เมตร ได้นานประมาณ 30 นาที แบตเตอรี่ใช้งานใน Daily mode ได้นานสุด 7 วัน และรองรับการแจ้งเตือนจากแอปพลิเคชันโซเชียลมีเดียบนหน้าจอได้ค่ะ ส่วนความเหมาะสมในการใช้งาน รุ่นนี้เหมาะสำหรับผู้ที่มองหาสมาร์ตวอทช์สำหรับติดตามกิจกรรมในชีวิตประจำวันและออกกำลังกายทั่วไป แต่มีข้อควรระวังคือไม่แนะนำให้ใช้งานในสภาพแวดล้อมที่ร้อนจัด เช่น ห้องซาวน่า หรือใส่อาบน้ำร้อนค่ะ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สวัสดีครับ Black Shark ยินดีให้บริการครับ สำหรับ Black Shark GT3 NEO รุ่นนี้จะโดดเด่นด้วยหน้าจอขนาดใหญ่เต็มตา 2.02 นิ้ว พร้อมความสว่าง 600nit และมีความละเอียด 240 x 296 Pixel พร้อมฟังก์ชันโทรเข้า-ออก มีโหมดกีฬามากถึง 100 โหมด มีแบตเตอรี่ที่ใช้งานได้นานสุด 7 วัน รวมถึงมีฟังก์ชันตรวจวัดสุขภาพครบครันดูแลได้ตลอด 24 ชั่วโมง ไม่ว่าจะเป็นอัตราการเต้นของหัวใจ ออกซิเจนในเลือด และการนอนหลับครับ 
+
+ในด้านความเหมาะสมกับการใช้งาน รุ่นนี้ตอบโจทย์ผู้ที่ต้องการสมาร์ทวอทช์สำหรับติดตามกิจกรรมและสุขภาพในชีวิตประจำวัน พร้อมช่วยอำนวยความสะดวกในการรับสายและแจ้งเตือนจากแอปพลิเคชันโซเชียลมีเดียได้ดีครับ หากสนใจหรือมีข้อสงสัยเพิ่มเติมสอบถามได้เลยนะครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark GT3 NEO<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B13<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1321 in / 150 out · $0.000771 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 4316 in / 287 out · $0.002012 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3295 in / 270 out · $0.001664 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 13,
+    &quot;cell&quot;: &quot;B13&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="catalog"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q037</b><span class="badge">answered</span>
+          <span class="muted">catalog · 5.45s · $0.004333</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>BLACK SHARK RUN มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">สำหรับจุดเด่นและความเหมาะสมในการใช้งานของสมาร์ทวอทช์รุ่นนี้ น้อง Black Shark ขอสรุปให้ฟังดังนี้ครับ
+
+ตัวเรือนได้รับการออกแบบมาในสไตล์สปอร์ต น้ำหนักเบาพิเศษเพียง 30 กรัม ทำให้สวมใส่สบายและเคลื่อนไหวได้อย่างคล่องตัว มาพร้อมหน้าจอ AMOLED ขนาด 1.43 นิ้ว ความสว่างสูงสุด 1,000 Nits ที่ช่วยให้มองเห็นได้อย่างคมชัดแม้ใช้งานกลางแจ้ง และยังรองรับโหมดกีฬาถึง 150 แบบ พร้อมด้วย Built-in GPS สำหรับช่วยติดตามเส้นทางการวิ่งอย่างแม่นยำครับ
+
+นอกจากนี้ยังโดดเด่นด้วยมาตรฐานกันน้ำ 5ATM จึงพร้อมลุยในทุกกิจวัตรประจำวัน และมีฟังก์ชันวัดค่าสุขภาพตลอด 24 ชั่วโมง ทั้งอัตราการเต้นของหัวใจ ออกซิเจนในเลือด และความเครียด รวมถึงแบตเตอรี่ที่ใช้งานทั่วไปได้ยาวนานสูงสุดถึง 15 วัน ตอบโจทย์การใช้งานในชีวิตประจำวันและการออกกำลังกายได้เป็นอย่างดีเลยครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">BLACK SHARK RUN โดดเด่นด้วยดีไซน์สปอร์ต สวมใส่สบาย น้ำหนักเบาเพียง 30 กรัม มาพร้อมหน้าจอ AMOLED ขนาด 1.43 นิ้ว ความสว่างสูงสุด 1000 Nits มองเห็นชัดเจนแม้ใช้งานกลางแจ้ง และรองรับโหมดกีฬาถึง 150 แบบครับ
+
+สำหรับการใช้งาน รุ่นนี้เหมาะสำหรับผู้ที่ต้องการติดตามกิจกรรมในชีวิตประจำวันและการออกกำลังกายครับ เนื่องจากมี Built-in GPS ช่วยติดตามเส้นทางการวิ่งอย่างแม่นยำ พร้อมระบบวัดค่าสุขภาพตลอด 24 ชั่วโมง และมาตรฐานกันน้ำ 5ATM ให้สวมใส่ลุยกิจวัตรประจำวันได้อย่างมั่นใจครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> BLACK SHARK RUN<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B14<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1320 in / 153 out · $0.000779 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 4489 in / 231 out · $0.001924 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3392 in / 245 out · $0.001630 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 14,
+    &quot;cell&quot;: &quot;B14&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="catalog"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q038</b><span class="badge">answered</span>
+          <span class="muted">catalog · 5.12s · $0.003993</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark GT3 Neo2 มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">สวัสดีครับ Black Shark ยินดีให้บริการครับ สำหรับรุ่น Black Shark GT3 Neo2 จะโดดเด่นด้วยหน้าจอขนาด 2.01 นิ้ว ความสว่าง 600 Nits พร้อมอัตรารีเฟรช 60Hz ตัวเรือนน้ำหนักเบา 23.7 กรัม สวมใส่สบายตลอดวันครับ 
+
+ในด้านการใช้งาน รุ่นนี้รองรับ Dual Bluetooth สำหรับการรับสายและแจ้งเตือนแบบเรียลไทม์ มีระบบตัดเสียงรบกวน ENC รองรับโหมดกีฬาถึง 34 ชนิด พร้อมติดตามสุขภาพและวิเคราะห์คุณภาพการนอนหลับตลอด 24 ชั่วโมง และมีมาตรฐานกันน้ำระดับ IP68 ครับผม</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สวัสดีครับ Black Shark ยินดีให้บริการครับ สำหรับ Black Shark GT3 Neo2 มีจุดเด่นอยู่ที่หน้าจอขนาด 2.01 นิ้ว ความสว่าง 600 Nits พร้อมอัตรารีเฟรช 60Hz ตัวเรือนมีน้ำหนักเบาเพียง 23.7 กรัม และรองรับโหมดกีฬาถึง 34 ชนิดครับ
+
+ในส่วนของการใช้งาน รุ่นนี้ตอบโจทย์การใช้งานในชีวิตทั่วไปและการออกกำลังกาย มีมาตรฐานกันน้ำระดับ IP68 แบตเตอรี่ใช้งานทั่วไปได้นานสูงสุด 8 วัน รองรับการรับสายผ่านบลูทูธด้วยระบบตัดเสียงรบกวน ENC รวมถึงแจ้งเตือนข้อความจากแอปพลิเคชันยอดนิยมได้ครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark GT3 Neo2<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B15<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1322 in / 167 out · $0.000814 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 4316 in / 197 out · $0.001787 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3239 in / 168 out · $0.001392 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 15,
+    &quot;cell&quot;: &quot;B15&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="catalog"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q039</b><span class="badge">answered</span>
+          <span class="muted">catalog · 5.22s · $0.003583</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark PureLoop มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">สำหรับ Black Shark PureLoop จุดเด่นจะอยู่ที่การดีไซน์แบบไม่มีหน้าจอแสดงผล ช่วยโฟกัสกับตัวเองได้มากขึ้นแบบไร้การแจ้งเตือน น้ำหนักเบาเพียง 11.4 กรัม พร้อมสายผ้าเกรดพรีเมียมสวมใส่นอนได้สบาย และแบตเตอรี่ที่ใช้งานทั่วไปได้ยาวนานถึง 14 วันครับ
+
+ส่วนด้านการใช้งานจะเหมาะสำหรับผู้ที่ต้องการติดตามข้อมูลสุขภาพตลอด 24 ชั่วโมง ทั้งอัตราการเต้นของหัวใจ, HRV, ออกซิเจนในเลือด, ความเครียด, การนอนหลับ รวมถึงรองรับการออกกำลังกายกว่า 30 ชนิดกีฬา และมีมาตรฐานกันน้ำ 3ATM ที่ช่วยทนเหงื่อ ทนฝน หรือละอองน้ำในการใช้ชีวิตประจำวันครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">น้อง Black Shark ขอแจ้งว่า Black Shark PureLoop โดดเด่นด้วยดีไซน์แบบไม่มีหน้าจอแสดงผล ช่วยลดการมองหรือความกังวลใจเรื่องการแสดงข้อมูลบนหน้าจอ ตัวเรือนน้ำหนักเบาเพียง 11.4 กرام สวมใส่สบายด้วยสายผ้าเกรดพรีเมียม และแบตเตอรี่ที่ใช้งานทั่วไปได้ถึง 14 วันครับ 
+
+สำหรับการใช้งานที่เหมาะสม รุ่นนี้เหมาะกับการติดตามและวิเคราะห์สุขภาพตลอด 24 ชั่วโมง เช่น อัตราการเต้นของหัวใจ ออกซิเจนในเลือด การนอนหลับ รวมถึงรองรับการออกกำลังกายกว่า 30 ชนิดกีฬา พร้อมกันน้ำระดับ 3ATM สำหรับใช้ชีวิตประจำวันครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark PureLoop<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B16<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1320 in / 146 out · $0.000761 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 3734 in / 175 out · $0.001558 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 2641 in / 189 out · $0.001265 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 16,
+    &quot;cell&quot;: &quot;B16&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="catalog"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q040</b><span class="badge">answered</span>
+          <span class="muted">catalog · 4.52s · $0.001958</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark Genuine Leather Strap มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">สวัสดีครับ Black Shark Genuine Leather Strap โดดเด่นด้วยการใช้วัสดุหนังแท้ มีขนาดสาย 22 มิลลิเมตร และความยาวสาย (ไม่รวมตัวเครื่อง) 74.5 มิลลิเมตร บวก 120 มิลลิเมตร สามารถติดตั้ง ถอดออกได้ง่ายโดยไม่ต้องใช้เครื่องมือ และปรับความยาวให้เข้ากับข้อมือได้ครับ สำหรับความเหมาะสมในการใช้งาน สายรุ่นนี้ระบุไว้ว่าสำหรับรุ่น Black Shark A3 เท่านั้นครับผม</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สวัสดีครับคุณลูกค้า สำหรับสายนาฬิกา Black Shark Genuine Leather Strap มีจุดเด่นคือใช้วัสดุหนังแท้ มีขนาดสาย 22 มิลลิเมตร สามารถติดตั้งและถอดออกได้ง่ายโดยไม่ต้องใช้เครื่องมือใด ๆ และปรับความยาวสายให้เข้ากับข้อมือผู้สวมใส่ได้ครับ
+
+ในด้านการใช้งาน สายรุ่นนี้ระบุไว้ว่าสำหรับรุ่น Black Shark A3 เท่านั้นครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark Genuine Leather Strap<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B17<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1321 in / 152 out · $0.000776 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 1376 in / 124 out · $0.000723 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 520 in / 121 out · $0.000458 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 17,
+    &quot;cell&quot;: &quot;B17&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="catalog"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q041</b><span class="badge">answered</span>
+          <span class="muted">catalog · 4.76s · $0.001815</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark GS3 Smartwatch Charger มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">รองรับครับ สำหรับ Black Shark GS3 Smartwatch Charger ตัวนี้มีจุดเด่นคือผลิตจากวัสดุคุณภาพสูง ทนทาน และใช้งานได้ยาวนาน ออกแบบมาเพื่อความสะดวกสบายในการใช้งานและชาร์จสมาร์ทวอทช์ รูปแบบสายเป็น USB และใช้งานสำหรับสมาร์ทวอทช์รุ่น Black Shark GS3 เท่านั้นครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สวัสดีครับคุณลูกค้า สำหรับ Black Shark GS3 Smartwatch Charger มีจุดเด่นคือผลิตจากวัสดุคุณภาพสูง ทนทาน ใช้งานได้ยาวนาน และใช้งานง่าย สะดวก ออกแบบมาเพื่อความสะดวกสบายในการชาร์จสมาร์ทวอทช์ครับ โดยสินค้านี้เหมาะสำหรับใช้งานกับสมาร์ทวอทช์รุ่น Black Shark GS3 เท่านั้น และรูปแบบสายเป็น USB ครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark GS3 Smartwatch Charger<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B18<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1323 in / 152 out · $0.000777 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 1468 in / 95 out · $0.000678 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 468 in / 88 out · $0.000360 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 18,
+    &quot;cell&quot;: &quot;B18&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="catalog"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q042</b><span class="badge">answered</span>
+          <span class="muted">catalog · 4.73s · $0.001884</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark GS3 Sport Smartwatch Charger มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">สวัสดีครับ Black Shark ยินดีให้บริการครับ สำหรับ Black Shark GS3 Sport Smartwatch Charger จุดเด่นคือผลิตจากวัสดุคุณภาพสูง ทนทาน ใช้งานได้ยาวนาน และออกแบบมาให้ใช้งานง่าย สะดวกสบายในการชาร์จสมาร์ทวอทช์ สินค้าชิ้นนี้เหมาะสำหรับการใช้งานสำหรับสมาร์ทวอทช์รุ่น Black Shark GS3 Sport เท่านั้นครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับ Black Shark GS3 Sport Smartwatch Charger มีจุดเด่นคือผลิตจากวัสดุคุณภาพสูง ทนทาน ใช้งานได้ยาวนาน ออกแบบมาให้ใช้งานง่ายและสะดวกสบายในการชาร์จสมาร์ทวอทช์ โดยรูปแบบสายเป็น USB ครับ สินค้าชิ้นนี้ใช้สำหรับสมาร์ทวอทช์รุ่น Black Shark GS3 Sport เท่านั้นครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark GS3 Sport Smartwatch Charger<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B19<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1324 in / 159 out · $0.000795 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 1476 in / 102 out · $0.000698 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 479 in / 99 out · $0.000391 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 19,
+    &quot;cell&quot;: &quot;B19&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="catalog"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q043</b><span class="badge">answered</span>
+          <span class="muted">catalog · 4.46s · $0.001922</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark S1 Pro Smartwatch Charger มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">สวัสดีครับ Black Shark S1 Pro Smartwatch Charger โดดเด่นด้วยการผลิตจากวัสดุคุณภาพสูง มีความทนทาน ใช้งานได้ยาวนาน และออกแบบมาให้ใช้งานง่าย สะดวกสบายในการชาร์จไฟครับ
+
+ตัวสินค้าเหมาะสำหรับการใช้งานร่วมกับสมาร์ทวอทช์รุ่น Black Shark S1 Pro เท่านั้น และมีรูปแบบสายเป็นแบบ USB ครับผม</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สวัสดีครับคุณลูกค้า สำหรับ Black Shark S1 Pro Smartwatch Charger ตัวนี้ผลิตจากวัสดุคุณภาพสูง ทนทาน ใช้งานได้ยาวนาน และออกแบบมาเพื่อความสะดวกสบายในการชาร์จสมาร์ทวอทช์ครับ 
+
+ในด้านการใช้งาน จะใช้สำหรับสมาร์ทวอทช์รุ่น Black Shark S1 Pro เท่านั้น และรูปแบบสายเป็น USB ครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark S1 Pro Smartwatch Charger<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B20<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1324 in / 162 out · $0.000802 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 1475 in / 112 out · $0.000723 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 491 in / 100 out · $0.000397 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 20,
+    &quot;cell&quot;: &quot;B20&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="catalog"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q044</b><span class="badge">answered</span>
+          <span class="muted">catalog · 5.0s · $0.004097</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark GS3 Sport Smartwatch Cha มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">รองรับครับ สำหรับ Black Shark GS3 Sport มีจุดเด่นในเรื่องความทนทานตามมาตรฐาน MIL-STD 810H หน้าจอ AMOLED ขนาด 1.43 นิ้ว พร้อม GPS ในตัว 5 เครือข่าย และน้ำหนักเบาเพียง 31 กรัม ในด้านความเหมาะสมกับการใช้งาน รุ่นนี้ตอบโจทย์ผู้ที่ชอบออกกำลังกายด้วยโหมดกีฬามากกว่า 120 ชนิด รองรับการกันน้ำ 5 ATM มีแบตเตอรี่ที่ใช้งานในชีวิตประจำวันได้นานสูงสุด 18 วัน มีฟังก์ชันดูแลสุขภาพตลอด 24 ชั่วโมง และรองรับการโทรผ่าน Bluetooth สะดวก ๆ ครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สวัสดีครับ สายชาร์จ Black Shark GS3 Sport Smartwatch Charger มีจุดเด่นคือผลิตจากวัสดุคุณภาพสูง ทนทาน ใช้งานได้ยาวนาน และใช้งานง่าย สะดวก ออกแบบมาเพื่อความสะดวกสบายในการชาร์จสมาร์ทวอทช์ครับ โดยตัวสินค้าเหมาะสำหรับใช้งานกับสมาร์ทวอทช์รุ่น Black Shark GS3 Sport เท่านั้นครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark GS3 Sport<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B4<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1324 in / 156 out · $0.000787 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 4812 in / 155 out · $0.001831 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3697 in / 148 out · $0.001479 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 4,
+    &quot;cell&quot;: &quot;B4&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="catalog"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q045</b><span class="badge">answered</span>
+          <span class="muted">catalog · 5.74s · $0.003619</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark Pad 7 wifi มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">รองรับ น้อง Black Shark ขอแนะนำข้อมูลเลยครับ สำหรับจุดเด่นของ Black Shark Pad 7 wifi จะอยู่ที่น้ำหนักเบาเพียง 505 กรัม พร้อมวัสดุฝาหลังและขอบเครื่อง Aluminum หน้าจอ IPS LCD ขนาด 11 นิ้ว ความละเอียด 1200 x 1900 (FHD) รองรับ Refresh Rate 90Hz ความสว่าง 420 nits 
+
+นอกจากนี้ยังโดดเด่นด้านความบันเทิงด้วยความคมชัดระดับ 1080P รองรับ Netflix Widevine L1 พร้อมทั้ง YouTube, HBO และ Prime Video ขับเคลื่อนด้วยชิปประมวลผล MediaTek Helio G88 ทำงานบนระบบปฏิบัติการ Android 15 (Joy OS) มีหน่วยความจำ RAM ในตัว 6GB พร้อม Extended RAM สูงสุด 16GB รวมเป็น 24GB ความจุภายใน ROM 128GB และรองรับ Micro-SD Card สูงสุด 1TB แบตเตอรี่ความจุ 7700mAh พร้อมรองรับการเปิดใช้งาน 2 แอปพลิเคชันพร้อมกันในหน้าจอเดียวครับ
+
+รุ่นนี้จึงเหมาะกับการใช้งานด้านความบันเทิง ดูหนัง ฟังเพลง ท่องเว็บไซต์ การเรียนออนไลน์ และการใช้งานทั่วไปในชีวิตประจำวันครับผม</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สวัสดีครับ Black Shark Pad 7 wifi โดดเด่นด้วยดีไซน์ตัวเครื่องวัสดุฝาหลังและขอบเครื่องอะลูมิเนียม น้ำหนักเบาเพียง 505 กรัม มาพร้อมหน้าจอ IPS LCD ขนาด 11 นิ้ว ความละเอียด 1920 × 1200 (FHD) รีเฟรชเรต 90Hz ความสว่าง 420 nits ขับเคลื่อนด้วยชิปประมวลผล MediaTek Helio G88 และหน่วยความจำ RAM 6GB พร้อม Extended RAM สูงสุด 16GB รวมเป็น 24GB ทั้งยังมาพร้อมลำโพงคู่ (2 Speakers) พร้อมชิปเสียง K9 Smart Amplifier และรองรับความคมชัดระดับ 1080P จากแอปพลิเคชันอย่าง Netflix Widevine L1, YouTube, HBO และ Prime Video ครับ
+
+ในด้านการใช้งาน รุ่นนี้เหมาะสำหรับการพกพาเพื่อความบันเทิง ดูหนัง ฟังเพลง หรือใช้งานทั่วไป เช่น การท่องเว็บ การเพิ่มหน่วยความจำ ROM 128GB ด้วย Micro-SD Card สูงสุด 1TB และรองรับการเปิดใช้งาน 2 แอปพลิเคชันพร้อมกันในหน้าจอเดียวครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark Pad 7 wifi<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B22<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1322 in / 151 out · $0.000774 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 2888 in / 258 out · $0.001511 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 1988 in / 295 out · $0.001334 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 22,
+    &quot;cell&quot;: &quot;B22&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="catalog"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q046</b><span class="badge">answered</span>
+          <span class="muted">catalog · 4.72s · $0.002775</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark Pad 7 LTE มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">รองรับครับ สำหรับ Black Shark Pad 7 LTE มีจุดเด่นหลักอยู่ที่น้ำหนักเบาเพียง 505 กรัม ใช้วัสดุฝาหลังและขอบเครื่องอะลูมิเนียม เหมาะกับการพกพาไปใช้งานความบันเทิงด้วยหน้าจอ IPS LCD ขนาด 11 นิ้ว 90Hz รองรับ Netflix 1080P และสตรีมมิ่งอื่นๆ พร้อมแบตเตอรี่ 7700mAh ที่ใช้งานได้ยาวนาน ขับเคลื่อนด้วยชิป MediaTek Helio G88 ผสานหน่วยความจำสูงสุด 24GB ทำให้สลับแอปใช้งานได้ลื่นไหล รองรับการเปิดใช้งาน 2 แอปพลิเคชันพร้อมกันในหน้าจอเดียว และเพิ่ม Micro-SD Card ได้สูงสุดถึง 1TB ครับผม</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สวัสดีครับ สำหรับ Black Shark Pad 7 LTE มีจุดเด่นดังนี้ครับ
+
+- ดีไซน์และหน้าจอ: น้ำหนักเบา 505 กรัม วัสดุฝาหลังและขอบเครื่อง Aluminum หน้าจอ IPS LCD ขนาด 11 นิ้ว ความละเอียด 1920 × 1200 (FHD) อัตรารีเฟรช 90Hz ความสว่างสูงสุด 420 nits
+- ความบันเทิง: รองรับ Netflix Widevine L1 พร้อมทั้ง YouTube, HBO และ Prime Video มีลำโพงคู่พร้อมชิปเสียง K9 Smart Amplifier และรองรับพอร์ตหูฟัง 3.5 มม.
+- ประสิทธิภาพและหน่วยความจำ: ชิปประมวลผล MediaTek Helio G88, GPU ARM Mali-G52 ทำงานบนระบบปฏิบัติการ Android 15 ครอบด้วย Joy OS, RAM 6GB พร้อม Extended RAM สูงสุด 16GB รวมเป็น 24GB, ROM 128GB และรองรับ Micro-SD Card สูงสุด 1TB
+- แบตเตอรี่และการใช้งาน: แบตเตอรี่ 7,700mAh ใช้งานได้สูงสุดประมาณ 13 ชั่วโมง (ฟังเพลงได้ 13 ชั่วโมง, ท่องเว็บ 9 ชั่วโมง, คุยโทรศัพท์ 7 ชั่วโมง, ดูวิดีโอ 6 ชั่วโมง, เล่นเกม 5.5 ชั่วโมง) รองรับการเปิดใช้งาน 2 แอปพลิเคชันพร้อมกันในหน้าจอเดียว และรองรับ Google Lens
+- กล้อง: กล้องหลัง 13MP และกล้องหน้า 5MP
+
+รุ่นนี้จึงเหมาะกับการใช้งานด้านความบันเทิง ดูหนัง ฟังเพลง ท่องเว็บไซต์ และการใช้งานทั่วไปครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark Pad 7 LTE<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B23<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1322 in / 161 out · $0.000799 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 2374 in / 159 out · $0.001110 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 1394 in / 179 out · $0.000866 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 23,
+    &quot;cell&quot;: &quot;B23&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="catalog"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q047</b><span class="badge">answered</span>
+          <span class="muted">catalog · 5.12s · $0.003477</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark Pad 7 Pro LTE มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">Black Shark Pad 7 Pro LTE โดดเด่นด้วยดีไซน์เพียวบางพกพาสะดวก น้ำหนักเบาเพียง 513 กรัม และมาพร้อมหน้าจอ IPS LCD ขนาด 11 นิ้ว ความละเอียดระดับ FHD รีเฟรชเรต 120Hz ภาพลื่นไหลคมชัด
+
+ด้านการใช้งาน รุ่นนี้เหมาะสำหรับการรับชมความบันเทิงระดับโรงภาพยนตร์ผ่านมาตรฐาน Widevine L1 (รองรับ Netflix, YouTube, HBO และ Prime Video) มีระบบเสียงลำโพง 4 ตัว พร้อมรองรับการเชื่อมต่อ 4G LTE และ Wi-Fi ใช้งานนอกสถานที่ได้อย่างมีประสิทธิภาพ นอกจากนี้ยังเหมาะสำหรับการเรียนออนไลน์ ประชุมงานด้วยกล้องหน้า 8MP ขับเคลื่อนด้วยหน่วยประมวลผล MediaTek Helio G100 แบตเตอรี่ความจุ 8800mAh และรองรับการใช้งาน 2 แอปพลิเคชันพร้อมกันในหน้าจอเดียวครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">Black Shark Pad 7 Pro LTE มีจุดเด่นเรื่องดีไซน์เพรียวบาง พกพาสะดวกด้วยน้ำหนักเบาเพียง 513 กรัม และหน้าจอ IPS LCD ขนาด 11 นิ้ว ความละเอียดระดับ FHD (1920 × 1200) ที่มีรีเฟรชเรต 120Hz และความสว่างสูงสุด 420 nits ครับ ตัวเครื่องขับเคลื่อนด้วยหน่วยประมวลผล MediaTek Helio G100 พร้อม RAM 8GB และความจุภายใน 256GB รองรับการเพิ่ม MicroSD Card สูงสุด 1TB ทั้งยังรองรับความบันเทิงด้วยมาตรฐาน Widevine L1 สำหรับรับชมสตรีมมิ่งระดับ Full HD, ระบบเสียงลำโพง 4 ตัว, รองรับการเชื่อมต่อ 4G LTE และ Wi-Fi ใช้งานนอกสถานที่ได้ และมีแบตเตอรี่ความจุ 8800mAh ที่ใช้งานต่อเนื่องได้ยาวนานสูงสุด 13 ชั่วโมง
+
+ในด้านการใช้งาน แท็บเล็ตตัวนี้เหมาะสำหรับความบันเทิงทั่วไปและการรับชมมัลติมีเดีย, เหมาะสำหรับการเรียนออนไลน์และประชุมงานด้วยกล้องหน้า 8MP, รวมถึงเพิ่มความคล่องตัวในการทำงานด้วยฟังก์ชัน Split Screen รองรับการใช้งาน 2 แอปพลิเคชันพร้อมกันในหน้าจอเดียวครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark Pad 7 Pro LTE<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B24<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1323 in / 165 out · $0.000809 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 3157 in / 219 out · $0.001495 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 2128 in / 214 out · $0.001173 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 24,
+    &quot;cell&quot;: &quot;B24&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="catalog"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q048</b><span class="badge">answered</span>
+          <span class="muted">catalog · 5.32s · $0.003619</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark Gaming Tablet มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">รองรับครับ สำหรับ Black Shark Gaming Tablet มีจุดเด่นและรูปแบบการใช้งานที่เหมาะสมดังนี้ครับ
+
+ตัวเครื่องโดดเด่นด้วยดีไซน์กะทัดรัด น้ำหนักเบา 332 กรัม และบางแค่ 7.7 มม. พกพาง่าย ขอบเครื่องและฝาหลังผลิตจากอะลูมิเนียมเกรดอากาศยาน แข็งแกร่งทนทาน ภายในแรงระดับเรือธงด้วยชิปประมวลผล Snapdragon 8s Gen 3 พร้อม RAM 12GB และ ROM 256GB หน้าจอขนาด 8.8 นิ้ว ความละเอียด 2.5K พร้อมค่า Refresh rate สูงถึง 144Hz ระบายความร้อนด้วย Vapor Chamber และกราฟีน รองรับการดู Netflix แบบ Widevine L1 ให้ความคมชัดขั้นสุด แบตเตอรี่ขนาด 7,300mAh ใช้งานได้ยาวนาน เล่นเกมลื่นไหลด้วย Pro Level Gaming Mode และระบบเสียงเต็มพิกัดด้วยลำโพงคู่พร้อมระบบ K9 Smart Amplifier รวมถึงรองรับการใช้งาน Gemini AI ผู้ช่วยอัจฉริยะครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สวัสดีครับ สำหรับ Black Shark Gaming Tablet มีจุดเด่นดังนี้ครับ
+
+- ดีไซน์กะทัดรัด น้ำหนักเบา พกพาง่าย ขอบเครื่องและฝาหลังผลิตจากอะลูมิเนียมเกรดอากาศยาน
+- ประสิทธิภาพแรงระดับเรือธงด้วยชิปประมวลผล Snapdragon 8s Gen 3 พร้อมหน่วยความจำ RAM 12GB และ ROM 256GB
+- หน้าจอขนาด 8.8 นิ้ว ความละเอียด 2.5K พร้อมค่า Refresh Rate สูงถึง 144Hz
+- ระบบระบายความร้อนด้วย Vapor Chamber และกราฟีน พร้อมรองรับการติดตั้งพัดลมเกมมิ่งระบายความร้อน
+- รองรับการดู Netflix แบบ Widevine L1
+- มี Pro Level Gaming Mode ช่วยตัดการแจ้งเตือนและรีดประสิทธิภาพสูงสุดของเครื่อง พร้อมรักษารักษาเฟรมเรตให้นิ่ง
+- ระบบเสียงลำโพงคู่ พร้อมระบบ K9 Smart Amplifier
+- รองรับการใช้งาน Gemini AI ผู้ช่วยอัจฉริยะ
+
+รุ่นนี้จึงเหมาะสำหรับการเล่นเกม ความบันเทิง และการใช้งานทั่วไปครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark Gaming Tablet<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B25<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1320 in / 147 out · $0.000763 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 3020 in / 268 out · $0.001576 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 2082 in / 262 out · $0.001280 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 25,
+    &quot;cell&quot;: &quot;B25&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="catalog"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q049</b><span class="badge">answered</span>
+          <span class="muted">catalog · 5.07s · $0.002493</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark FunCooler 5 Neo มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">รองรับครับ สำหรับ Black Shark FunCooler 5 Neo โดดเด่นด้วยดีไซน์ใหม่ที่ได้แรงบันดาลใจจากวาฬ แผ่นทำความเย็นขนาด 1.2 x 1.2 นิ้ว ทำงานร่วมกับพัดลมกำลังสูงที่มีรอบการหมุนสูงถึง 5000rpm และฮีตซิงก์ขนาดใหญ่ ช่วยลดอุณหภูมิได้อย่างรวดเร็วและมีประสิทธิภาพประมาณ 32°C ใช้พลังงาน 15W พร้อมควบคุมการทำงานง่ายด้วยปุ่มเดียว
+
+ในด้านการใช้งาน เหมาะสำหรับการเล่นเกมเนื่องจากมีการออกแบบทิศทางลมให้ลมออกทั้งด้านบนและด้านล่าง ช่วยให้ไม่รู้สึกร้อนมือเมื่อเล่นเกม อีกทั้งยังมีไฟ RGB เพิ่มความรู้สึกเกมมิ่งและใช้งานร่วมกับขาตั้งกล้องหรือกิมบอลได้สะดวกด้วยรูสกรู 1/4 นิ้วครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">Black Shark FunCooler 5 Neo โดดเด่นด้วยดีไซน์ใหม่ที่ได้แรงบันดาลใจจากวาฬครับ มีจุดเด่นเรื่องการใช้แผ่นทำความเย็น Peltier ร่วมกับฮีตซิงก์ขนาดใหญ่และพัดลมความเร็วสูง 5000rpm ช่วยลดอุณหภูมิได้อย่างมีประสิทธิภาพประมาณ 32°C พร้อมออกแบบทิศทางลมออกทั้งบนและล่างเพื่อให้ไม่รู้สึกร้อนมือเมื่อเล่นเกม ควบคุมการใช้งานง่ายด้วยปุ่มเดียว มีไฟ RGB เพิ่มบรรยากาศความเป็นเกมมิ่ง และรองรับการใช้งานร่วมกับขาตั้งกล้องหรือกิมบอลผ่านรูสกุล 1/4 นิ้วครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark FunCooler 5 Neo<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B26<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1324 in / 155 out · $0.000785 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 1794 in / 161 out · $0.000941 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 885 in / 201 out · $0.000768 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 26,
+    &quot;cell&quot;: &quot;B26&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="spec"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q050</b><span class="badge">answered</span>
+          <span class="muted">spec · 4.42s · $0.003641</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark GS3 กันน้ำระดับไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">รองรับครับ Black Shark GS3 รองรับการกันน้ำระดับ 5 ATM หรือทนแรงดันน้ำได้ประมาณ 50 เมตร และผ่านการทดสอบมาตรฐานกันน้ำกันฝุ่นระดับ IP69K สามารถกันฝุ่นได้อย่างสมบูรณ์และกันน้ำอุณหภูมิสูงสุด 80°C ครับผม</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">Black Shark GS3 รองรับการกันน้ำระดับ 5 ATM ซึ่งทนทานต่อแรงดันน้ำได้ถึงประมาณ 50 เมตร และผ่านมาตรฐานการกันน้ำกันฝุ่นระดับ IP69K ที่สามารถกันฝุ่นได้อย่างสมบูรณ์พร้อมกันน้ำอุณหภูมิสูงสุด 80°C ครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark GS3<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B3<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1314 in / 142 out · $0.000749 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 4880 in / 59 out · $0.001612 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3584 in / 82 out · $0.001280 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 3,
+    &quot;cell&quot;: &quot;B3&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="spec"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q051</b><span class="badge">answered</span>
+          <span class="muted">spec · 4.55s · $0.003528</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark GS3 แบตใช้งานทั่วไปได้กี่วันครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">รองรับครับ แบตเตอรี่สำหรับการใช้งานทั่วไป (Daily Use) สามารถใช้งานได้นานสูงสุดถึง 21 วันต่อการชาร์จเต็มหนึ่งครั้งครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับ Black Shark GS3 สามารถใช้งานแบบ Daily Use หรือการใช้งานทั่วไปได้นานสุดถึง 21 วันต่อการชาร์จเต็มหนึ่งครั้ง และสามารถใช้งานใน Standby Mode ได้นานสุด 45 วันครับ ทั้งนี้ระยะเวลาการใช้งานอาจขึ้นอยู่กับพฤติกรรมการใช้งานของแต่ละบุคคลนะครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark GS3<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B3<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1319 in / 137 out · $0.000738 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 4879 in / 56 out · $0.001604 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3586 in / 44 out · $0.001186 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 3,
+    &quot;cell&quot;: &quot;B3&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="spec"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q052</b><span class="badge">answered</span>
+          <span class="muted">spec · 4.71s · $0.003665</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark GS3 Ultra จอรีเฟรชเรทกี่ Hzครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">รองรับ 60Hz ครับ หน้าจอของรุ่นนี้รองรับรีเฟรชเรท 60Hz ช่วยให้การแสดงผลบนหน้าจอ AMOLED ขนาด 1.43 นิ้วใช้งานได้อย่างสมูทครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">หน้าจอของ Black Shark GS3 Ultra รองรับอัตรารีเฟรชเรท 60Hz ครับ โดยมาพร้อมหน้าจอ AMOLED ขนาด 1.43 นิ้ว ครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark GS3 Ultra<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B5<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1322 in / 137 out · $0.000739 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 5014 in / 57 out · $0.001647 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3747 in / 62 out · $0.001279 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 5,
+    &quot;cell&quot;: &quot;B5&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="spec"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q053</b><span class="badge">answered</span>
+          <span class="muted">spec · 4.71s · $0.003847</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark GS3 Ultra GPS เป็นแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">รองรับครับ ระบบ GPS ของรุ่นนี้ได้รับการอัปเกรดเป็นแบบ Dual-Band ที่รองรับถึง 6 เครือข่ายดาวเทียม ได้แก่ GPS, BeiDou, GLONASS, GALILEO, NAVIC และ QZSS ซึ่งช่วยเพิ่มความแม่นยำในการระบุตำแหน่งมากยิ่งขึ้น และยังมีโหมด GPS เฉพาะที่ใช้งานต่อเนื่องได้ประมาณ 25 ชั่วโมงด้วยครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สมาร์ทวอทช์รุ่นนี้มาพร้อมการอัปเกรด GPS เป็น Dual-Band รองรับ 6 เครือข่าย ได้แก่ GPS, BeiDou, GLONASS, GALILEO, NAVIC และ QZSS เพื่อความแม่นยำยิ่งขึ้นครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark GS3 Ultra<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B5<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1315 in / 146 out · $0.000759 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 5015 in / 84 out · $0.001715 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3767 in / 97 out · $0.001373 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 5,
+    &quot;cell&quot;: &quot;B5&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="spec"
+          data-status="answered" data-changed="yes"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q054</b><span class="badge">answered</span>
+          <span class="muted">spec · 4.5s · $0.003340</span>
+          <span class="flag">คำตอบเปลี่ยน</span></div>
+          <h3>Black Shark A3 จอขนาดเท่าไหร่ครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">รองรับครับ Black Shark A3 มีหน้าจอขนาด 1.53 นิ้วครับ</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">Black Shark A3 มาพร้อมหน้าจอขนาด 1.53 นิ้วครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> Black Shark A3<br>
+          <b>Intent:</b> product_info<br>
+          <b>Source:</b> สินค้า - Black Shark Thailand (sellcenter).xlsx B7<br>
+          <b>Scope:</b> ผ่าน · <b>จำนวน call:</b> 3</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · 1316 in / 133 out · $0.000727 · Hub ✓</li><li>chat.answer · google/gemini-3.5-flash-lite · 4649 in / 44 out · $0.001505 · Hub ✓</li><li>chat.answer_review · google/gemini-3.5-flash-lite · 3411 in / 34 out · $0.001108 · Hub ✓</li></ul><pre>[
+  {
+    &quot;row&quot;: 7,
+    &quot;cell&quot;: &quot;B7&quot;,
+    &quot;file&quot;: &quot;สินค้า - Black Shark Thailand (sellcenter).xlsx&quot;,
+    &quot;sheet&quot;: &quot;ข้อมูลสินค้า&quot;
+  }
+]</pre>
+          </details></article><article class="case" data-group="spec"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q055</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">spec · 0.47s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>Black Shark A3 ต้องใช้แอปอะไรครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สวัสดีครับ สำหรับ Black Shark A3 จะใช้งานร่วมกับแอปพลิเคชัน Shark Fitlife โดยสามารถใช้งานได้ทั้งในระบบ iOS และ Android ครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="spec"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q056</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">spec · 0.43s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>Black Shark S3 มี GPS ในตัวไหมครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">มีครับ Black Shark S3 มี Built-in GPS ในตัวถึง 5 เครือข่าย ช่วยติดตามเส้นทางการวิ่งได้อย่างแม่นยำครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="spec"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q057</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">spec · 0.79s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>Black Shark S3 Classic เปลี่ยนสายได้ไหมครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับ Black Shark S3 Classic สามารถเปลี่ยนสายนาฬิกาได้ครับ โดยตัวสายมีขนาด 22 มิลลิเมตร และสามารถดูวิดีโอแนะนำวิธีการใส่สายนาฬิกาได้ที่ youtu.be/Oen126kBRzI ครับ หากต้องการสอบถามข้อมูลเพิ่มเติมสามารถสอบถามได้เลยนะครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="spec"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q058</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">spec · 0.47s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>BLACK SHARK RUN รับสาย LINE ผ่าน iPhone ได้ไหมครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">รับสาย LINE ผ่าน iPhone ได้ครับผม สำหรับ BLACK SHARK RUN รองรับฟีเจอร์ ENC Bluetooth Calling ที่ช่วยให้สามารถรับสายโทรเข้าของแอปพลิเคชันยอดนิยมอย่าง LINE ผ่านนาฬิกาได้โดยตรงสำหรับระบบปฏิบัติการ iOS ครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="spec"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q059</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">spec · 0.48s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>BLACK SHARK RUN แบตใช้งานได้นานเท่าไหร่ครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สวัสดีครับ สำหรับแบตเตอรี่ของ Black Shark Run จะใช้งานต่อเนื่องยาวนานสูงสุดถึง 15 วันครับ โดยแบ่งเป็นการใช้งานทั่วไปสูงสุด 15 วัน และการใช้งานหนักสูงสุด 8 วันครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="spec"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q060</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">spec · 0.46s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>Black Shark T24 Bluetooth เวอร์ชันอะไรครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับ Black Shark T24 จะใช้บลูทูธเวอร์ชัน 5.4 ครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="spec"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q061</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">spec · 0.46s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>Black Shark T18 Bluetooth เวอร์ชันอะไรครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">Black Shark T18 ใช้บลูทูธเวอร์ชัน 5.3 ครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="spec"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q062</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">spec · 0.47s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>Black Shark Pad 7Pro UE จอขนาดกี่นิ้วครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สวัสดีครับ Black Shark Pad 7Pro UE มาพร้อมหน้าจอขนาด 11 นิ้ว ความละเอียดระดับ FHD+ ครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="spec"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q063</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">spec · 0.43s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>Black Shark Gaming Tablet หน้าจอขนาดกี่นิ้วครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">Black Shark Gaming Tablet มาพร้อมหน้าจอขนาด 8.8 นิ้ว ความละเอียด 2.5K ครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="spec"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q064</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">spec · 0.47s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>Black Shark FunCooler 5 Neo ติดตั้งกับมือถือแบบไหนครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สวัสดีครับคุณลูกค้า สำหรับ Black Shark FunCooler 5 Neo จากข้อมูลระบุวิธีการติดตั้งแบบหนีบครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="spec"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q065</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">spec · 0.43s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>Black Shark Magcooler 6 Pro ติดตั้งแบบแม่เหล็กหรือแบบหนีบครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับ Black Shark Magcooler 6 Pro รุ่นนี้รองรับการติดตั้งแบบแม่เหล็กครับ โดยตัวเครื่องมาพร้อมกับแม่เหล็กแรงดูดพลังสูงแบบ 12N ที่ช่วยให้ติดแน่นและใช้งานได้อย่างมั่นใจครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="spec"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q066</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">spec · 0.45s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>Black Shark S1 Pro มีฟังก์ชันตรวจสุขภาพอะไรครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สวัสดีครับ สำหรับ Black Shark S1 Pro จะมีฟังก์ชันตรวจวัดสุขภาพและความฟิต ได้แก่ Sleep Monitoring ฟังก์ชันตรวจจับและวัดคุณภาพการนอนหลับ, SpO2 Monitoring ฟังก์ชันตรวจวัดระดับออกซิเจนในเลือด และ Gaming Health Monitoring Mode ฟังก์ชันตรวจวัดสุขภาพสำหรับชาวเกมมิ่ง ซึ่งสามารถเปิด Game Mode เพื่อวัดอัตราการเต้นของหัวใจและความเครียดเมื่อเล่นเกมได้ครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="spec"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q067</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">spec · 0.45s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>Black Shark GT3 แบตอยู่ได้กี่วันครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับรุ่น Black Shark GT3 แบตเตอรี่ใช้งานได้นานสูงสุดถึง 10 วันครับ ทั้งนี้ระยะเวลาการใช้งานอาจขึ้นอยู่กับการใช้งานของแต่ละบุคคลด้วยครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="spec"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q068</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">spec · 0.47s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>Black Shark T23 หูฟังอยู่ได้นานกี่ชั่วโมงครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับ Black Shark T23 สามารถใช้งานฟังต่อเนื่องได้สูงสุด 8 ชั่วโมงต่อการชาร์จหนึ่งครั้ง และเมื่อใช้งานร่วมกับเคสชาร์จจะใช้งานรวมกันได้สูงสุดถึง 40 ชั่วโมงครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="spec"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q069</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">spec · 0.44s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>Black Shark Pad 7 LTE รองรับเครือข่ายอะไรครับ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับ Black Shark Pad 7 LTE ตามข้อมูลสินค้าในระบบของเรายังไม่มีการระบุรายละเอียดเรื่องการรองรับเครือข่ายมือถือไว้ครับ หากต้องการสอบถามข้อมูลส่วนไหนเพิ่มเติม แจ้งเข้ามาได้เลยนะครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="faq"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q070</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">faq · 0.45s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>GS3 ชาร์จไม่เข้า ต้องลองแก้ยังไง</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">เบื้องต้นให้ตรวจสอบไฟเซ็นเซอร์สีเขียวที่ด้านหลังตัวเรือนว่ายังติดอยู่หรือไม่ จากนั้นลองเปลี่ยนหัวชาร์จเป็นขนาด 5V 1A หรือ 5V 2A พร้อมทำความสะอาดขั้วชาร์จทั้งที่ตัวนาฬิกาและสายชาร์จ จากนั้นเสียบชาร์จทิ้งไว้ประมาณ 30 ถึง 60 นาที ก่อนลองเปิดเครื่องใหม่อีกครั้ง หากยังไม่สามารถใช้งานได้ รบกวนถ่ายวิดีโอขณะดำเนินการและแจ้งหมายเลขคำสั่งซื้อกลับมาเพื่อให้เจ้าหน้าที่ตรวจสอบและดูแลต่อได้เลยครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="faq"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q071</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">faq · 0.44s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>GS3 หน้าจอเป็นลายสีขาว ทำยังไงดี</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">เบื้องต้นแนะนำให้ลองรีสตาร์ทตัวเรือนดูก่อนนะครับ โดยกดปุ่ม HOME ที่มุมบนด้านขวาค้างไว้ประมาณ 10–25 วินาที จนกว่าหน้าจอจะมีการเปลี่ยนแปลงหรือดับลงและเริ่มทำงานใหม่ครับ หากทำตามขั้นตอนนี้แล้วหน้าจอยังคงแสดงผลผิดปกติอยู่ รบกวนถ่ายวิดีโอขณะดำเนินการพร้อมแจ้งหมายเลขคำสั่งซื้อส่งให้เจ้าหน้าที่ตรวจสอบเพื่อดำเนินการต่อได้เลยนะครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="faq"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q072</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">faq · 0.46s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>GS3 Ultra ปุ่มกดค้าง รีสตาร์ตอย่างไร</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">หากต้องการรีสตาร์ตนาฬิกา Black Shark GS3 Ultra สามารถทำได้โดยการกดปุ่ม Power ที่มุมบนด้านขวาค้างไว้ประมาณ 10 ถึง 25 วินาที จนกว่าหน้าจอนาฬิกาจะมีการเปลี่ยนแปลงและดับลงเพื่อเริ่มทำงานใหม่อีกครั้งครับ สำหรับอาการปุ่มกดติดขัด สามารถทำความสะอาดเบื้องต้นโดยใช้น้ำยาสเตคลีนหยดหรือทารอบปุ่ม ทิ้งไว้ประมาณ 3 ถึง 5 นาที แล้วใช้แปรงขนนุ่มทำความสะอาดเบา ๆ ก่อนเช็ดทำความสะอาดและรอให้แห้งสนิทเพื่อทดลองใช้งานอีกครั้งครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="faq"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q073</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">faq · 0.46s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>GS3 Ultra แจ้งเตือน LINE ไม่ขึ้น แก้ตรงไหน</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับการแก้ไขปัญหาแจ้งเตือน LINE ไม่ขึ้นบน GS3 Ultra เบื้องต้นแนะนำให้ตรวจสอบการตั้งค่าดังนี้ครับ
+
+1. ตรวจสอบการตั้งค่าในแอป ว่าได้เปิดใช้งานการแจ้งเตือนและเลือกแอป LINE เรียบร้อยแล้ว
+2. ตรวจสอบสิทธิ์ของแอป ว่ามือถือได้อนุญาตสิทธิ์การแจ้งเตือน บลูทูธ และการทำงานเบื้องหลังให้แอปแล้ว
+3. ตรวจสอบการเชื่อมต่อบลูทูธ ว่าเปิดบลูทูธและนาฬิกายังคงเชื่อมต่อกับแอปอยู่ หากไม่เชื่อมต่อให้ลองปิด-เปิดบลูทูธหรือเชื่อมต่อใหม่อีกครั้ง
+4. ทดลองส่งข้อความจากแอป LINE เพื่อตรวจสอบว่านาฬิกามีการแจ้งเตือนหรือไม่
+
+หากทำตามขั้นตอนแล้วยังไม่สามารถใช้งานได้ รบกวนแจ้งหมายเลขคำสั่งซื้อพร้อมแนบวิดีโอแก้ไขส่งให้แอดมินตรวจสอบเพื่อดำเนินการต่อไปครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="faq"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q074</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">faq · 0.44s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>S3 ชาร์จไม่เข้า ลองอะไรได้บ้าง</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">เบื้องต้นรบกวนตรวจสอบไฟเซ็นเซอร์สีเขียวที่ด้านหลังตัวเรือนดูก่อนครับว่ายังติดอยู่ไหม จากนั้นลองเปลี่ยนหัวชาร์จเป็นขนาด 5V 1A หรือ 5V 2A พร้อมกับทำความสะอาดขั้วชาร์จทั้งที่ตัวนาฬิกาและสายชาร์จให้สะอาดเรียบร้อย
+
+เมื่อทำความสะอาดเสร็จแล้ว ให้ลองเสียบชาร์จทิ้งไว้ประมาณ 30 ถึง 60 นาที ก่อนลองเปิดเครื่องใหม่อีกครั้งนะครับ หากลองทำตามขั้นตอนเหล่านี้แล้วยังพบปัญหาการชาร์จ รบกวนแจ้งหมายเลขคำสั่งซื้อพร้อมแนบวิดีโอแสดงอาการหรือขณะกำลังดำเนินการแก้ไขส่งกลับมาให้เจ้าหน้าที่ตรวจสอบเพื่อช่วยเหลือเพิ่มเติมได้เลยนะครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="faq"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q075</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">faq · 0.44s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>S3 Classic เปลี่ยนสายอย่างไร</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">แอดมินแนะนำให้ดูคลิปวิธีใส่สายนาฬิกาได้จากลิงก์ youtu.be/Oen126kBRzI นี้เลยครับ จะมีขั้นตอนการเปลี่ยนสายให้ดูครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="faq"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q076</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">faq · 0.42s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>A3 วัดการนอนไม่ขึ้น ต้องตั้งค่าอะไรไหม</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับการตรวจสอบการใช้งานฟังก์ชันตรวจวัดการนอนหลับของ Black Shark A3 เบื้องต้นแนะนำให้ตรวจสอบวิธีการสวมใส่และการตั้งค่าดังนี้ครับ
+
+1. การสวมใส่: ควรสวมใส่นาฬิกาให้เหนือกระดูกข้อมือขึ้นมาประมาณ 2 นิ้วมือ และไม่ควรสวมใส่ให้หลวมหรือแน่นจนเกินไป
+2. การตั้งค่าการวัดอัตโนมัติ: ลองเปิดการตั้งค่าการวัดอัตราการเต้นของหัวใจควบคู่กันไปด้วย
+3. การตั้งค่าสำหรับระบบ iOS: หากใช้งานโทรศัพท์ระบบ iOS ให้เข้าไปที่ตั้งค่ามือถือ &gt; ตั้งค่าทั่วไป &gt; ภาษาและภูมิภาค แล้วเปลี่ยนปฏิทินให้เป็นคริสต์ศักราช
+4. การซิงก์ข้อมูล: เปิดแอปพลิเคชันเพื่อทำการซิงก์ข้อมูลใหม่อีกครั้ง และตรวจสอบว่าแอปและเฟิร์มแวร์เป็นเวอร์ชันล่าสุดหรือไม่
+
+หากลองทำตามขั้นตอนทั้งหมดแล้วยังไม่สามารถใช้งานได้ รบกวนแจ้งหมายเลขคำสั่งซื้อพร้อมแนบวิดีโอแสดงอาการเพื่อให้เจ้าหน้าที่ตรวจสอบครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="faq"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q077</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">faq · 0.46s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>S1 Pro ไมโครโฟนไม่มีเสียง แก้ยังไง</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับปัญหาไมโครโฟนไม่มีเสียง แนะนำให้ลองตรวจสอบบริเวณช่องไมโครโฟน โดยสังเกตรูขนาดเล็กบริเวณข้างปุ่มควบคุมด้านขวาของอุปกรณ์ว่ามีฝุ่น เศษผง หรือสิ่งสกปรกอุดตันอยู่หรือไม่ หากพบสิ่งสกปรก สามารถใช้น้ำยาไล่ความชื้นสำหรับอุปกรณ์อิเล็กทรอนิกส์ช่วยทำความสะอาดอย่างระมัดระวัง โดยระวังอย่าใช้วัตถุมีคมแทงเข้าไปในช่องไมโครโฟนเด็ดขาด จากนั้นลองทดสอบใช้งานใหม่อีกครั้ง หากยังพบปัญหา สามารถแจ้งหมายเลขคำสั่งซื้อพร้อมแนบวิดีโอขณะดำเนินการแก้ไขเพื่อให้เจ้าหน้าที่ตรวจสอบได้เลยครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="faq"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q078</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">faq · 0.43s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>S1 Pro แจ้งเตือน LINE ไม่แสดงข้อความ ต้องเช็กอะไร</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สำหรับการแจ้งเตือน LINE ที่ไม่แสดงตัวอย่างข้อความบน Black Shark S1 Pro รบกวนตรวจสอบเบื้องต้นตามขั้นตอนนี้ครับ
+
+1. ให้ทำการทดสอบส่งข้อความ LINE เข้ามือถือที่ใช้เชื่อมต่อกับนาฬิกา (โดยให้ออกจากแอป LINE ก่อน) แล้วดูว่าป๊อปอัปแจ้งเตือนที่มือถือแสดงเป็นแจ้งเตือนข้อความเข้าหรือแสดงเนื้อหาแชท
+2. หากป๊อปอัปแจ้งเตือนแสดงเป็นข้อความเข้าโดยไม่แสดงรายละเอียดแชท ให้ตั้งค่ามือถือตามระบบดังนี้ครับ
+- **Android:** ไปที่การตั้งค่ามือถือ &gt; แอป LINE &gt; การแจ้งเตือน &gt; เปิดใช้งาน &quot;แสดงข้อความแชทที่ได้รับ&quot;
+- **iOS:** ไปที่การตั้งค่ามือถือ &gt; แอป LINE &gt; การแจ้งเตือน &gt; เปิด &quot;อนุญาตการแจ้งเตือน&quot; &gt; ไปที่หัวข้อ &quot;แสดงตัวอย่าง&quot; แล้วเลือก &quot;ตลอดเวลา (ค่าเริ่มต้น)&quot;
+
+หากลองทำตามขั้นตอนทั้งหมดนี้แล้วยังไม่สามารถใช้งานได้ รบกวนถ่ายคลิปขณะทดสอบ พร้อมแจ้งเบอร์โทรและเวลาที่สะดวกให้ติดต่อกลับ เพื่อให้เจ้าหน้าที่ตรวจสอบเพิ่มเติมได้เลยครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="faq"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q079</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">faq · 0.43s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>RUN ไม่บันทึกการนอน มีวิธีแก้ไหม</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">เบื้องต้นให้ลองเปิดแอปนาฬิกาเพื่อซิงก์ข้อมูลใหม่อีกครั้ง และตรวจสอบว่าแอปกับเฟิร์มแวร์เป็นเวอร์ชันล่าสุดหรือไม่ จากนั้นลองเปิดการตั้งค่าการวัดอัตราการเต้นของหัวใจแบบอัตโนมัติ โดยฟีเจอร์ตรวจจับการนอนหลับ ระบบจะเริ่มบันทึกข้อมูลเมื่อนอนอย่างน้อย 20 นาที หรือในช่วงเวลา 21.00 - 09.00 น. รวมถึงสวมใส่นาฬิกาให้เหนือข้อมือขึ้นมาประมาณ 2 นิ้วมือ และไม่รัดแน่นหรือหลวมจนเกินไป สำหรับผู้ใช้งาน iOS สามารถตรวจสอบการตั้งค่าปฏิทินให้เป็นคริสต์ศักราชผ่านลิงก์นี้ได้เลยครับ https://youtu.be/ch-xGMcKsT4 หากทำตามขั้นตอนแล้วยังไม่สามารถใช้งานได้ ให้ทำการรีเซ็ตนาฬิกาและโทรศัพท์แล้วลองเชื่อมต่อใหม่อีกครั้งนะครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="faq"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q080</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">faq · 0.46s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>RUN เชื่อมกับมือถือไม่ได้ ควรลองอะไร</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">แนะนำให้ลองตรวจสอบการตั้งค่าสิทธิ์และการเชื่อมต่อบลูทูธดูก่อนนะครับ โดยเปิดแอปนาฬิกาเพื่อเช็คสถานะการเชื่อมต่อ และไปที่เมนูด้านล่างเลือกอุปกรณ์เพื่อรอให้ระบบซิงค์ข้อมูลใหม่ประมาณ 1-2 นาทีครับ นอกจากนี้ควรตรวจสอบการอนุญาตสิทธิ์และการทำงานเบื้องหลังของแอป Shark Sport บน Android หรือแอป Shark Wearable บน iOS ให้เรียบร้อยครับ หากยังพบปัญหาการเชื่อมต่อ สามารถลองปิดและเปิดบลูทูธที่มือถือใหม่อีกครั้ง หรือทำการรีเซ็ตนาฬิกาโดยกดปุ่มด้านขวาบนค้างไว้ประมาณ 20-25 วินาทีจนเครื่องปิดแล้วเปิดใหม่ครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="faq"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q081</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">faq · 0.53s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>FunCooler 5 Neo ใบพัดไม่หมุน ทำยังไง</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">น้อง Black Shark แนะนำให้ลองตรวจสอบเบื้องต้นตามนี้ดูก่อนนะครับ 
+
+1. ลองตรวจดูว่ามีสิ่งแปลกปลอมหรือเส้นผมติดอยู่บริเวณใบพัดลมไหมครับ ถ้าพบ ให้ปิดเครื่องและถอดสายชาร์จก่อนนำออกทุกครั้ง โดยระมัดระวังห้ามใช้ของแข็งแหย่หรือออกแรงงัดใบพัด เพราะอาจทำให้ใบพัดหักหรือเสียหายได้ครับ
+2. ลองเปลี่ยนมาใช้หัวชาร์จ 15W และสายชาร์จเส้นอื่นที่ใช้งานได้ปกติ เพื่อเช็คว่าอาการผิดปกติเกิดจากอุปกรณ์ชาร์จหรือเปล่านะครับ
+
+หากลองทำตามขั้นตอนเหล่านี้แล้วยังพบปัญหาเดิม แจ้งอาการเพิ่มเติมให้แอดมินทราบ เพื่อช่วยตรวจสอบและแนะนำวิธีแก้ไขในขั้นตอนถัดไปได้เลยครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="faq"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q082</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">faq · 1.21s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>FunCooler 5 Pro ไม่เย็น ต้องเช็กอะไร</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">น้อง Black Shark แนะนำให้ลองตรวจสอบหัวชาร์จและสายชาร์จดูก่อนนะครับ ลองเปลี่ยนมาใช้หัวชาร์จ 35W และสายชาร์จเส้นอื่นที่ใช้งานได้ปกติ เพื่อทดสอบดูว่าอาการผิดปกติเกิดจากอุปกรณ์ชาร์จหรือไม่ครับ หากตรวจสอบตามขั้นตอนข้างต้นแล้ว แต่ยังพบปัญหาเดิม รบกวนแจ้งอาการเพิ่มเติมให้แอดมินทราบ เพื่อช่วยตรวจสอบต่อไปได้เลยนะครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="faq"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q083</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">faq · 0.42s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>T24 ข้างหนึ่งไม่ดัง รีเซ็ตยังไง</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">น้อง Black Shark แนะนำให้ลองแก้ไขเบื้องต้นตามอาการเสียงออกไม่เท่ากันหรือข้างหนึ่งไม่ดัง โดยตรวจสอบและทำความสะอาดบริเวณตะแกรงหูฟังครับ:
+1. ถอดหูฟังออกจากหู และตรวจสอบว่ามีฝุ่น เศษผง หรือสิ่งสกปรกอุดตันที่ตะแกรงหูฟังหรือไม่
+2. ใช้แปรงขนนุ่มหรือแปรงสำหรับทำความสะอาดอุปกรณ์อิเล็กทรอนิกส์ค่อย ๆ ปัดบริเวณตะแกรงหูฟังเพื่อกำจัดสิ่งสกปรก
+3. หากมีจุกซิลิโคน ให้ถอดจุกหูฟังออกก่อนแล้วทำความสะอาดแยกกัน
+4. ทำความสะอาดจุกหูฟังโดยใช้ผ้าแห้งหรือวิธีที่เหมาะสม แล้วเช็ดให้แห้งสนิทก่อนใส่กลับเข้าที่
+*(ข้อควรระวัง: ไม่ควรใช้ของแหลม แรงดันลมแรง หรือของเหลวเทลงบนตะแกรงโดยตรง)*
+
+ส่วนวิธีการรีเซ็ตหูฟัง Black Shark T24 มีขั้นตอนดังนี้ครับ:
+1. ลบการเชื่อมต่อเดิมบนมือถือ ไปที่เมนูบลูทูธและกดเลือกชื่อบลูทูธของหูฟัง จากนั้นกด &quot;ลืมอุปกรณ์นี้ (Forget Device)&quot;
+2. นำหูฟังทั้ง 2 ข้างใส่กลับเข้าไปในกล่องชาร์จ และเปิดฝากล่องไว้
+3. กดปุ่มสัมผัสที่หูฟังด้านซ้ายและขวาค้างไว้ประมาณ 10 วินาที หรือจนกว่าไฟสถานะที่หูฟังจะเริ่มกะพริบ
+4. เมื่อไฟสถานะกะพริบเป็นลักษณะเดียวกัน หมายถึงการรีเซ็ตสำเร็จ
+5. เชื่อมต่อกับมือถือใหม่อีกครั้ง ไปที่เมนูบลูทูธ ค้นหาอุปกรณ์ และกดเลือกชื่อบลูทูธ Black Shark T24 เพื่อจับคู่ใหม่
+
+หากดำเนินการแล้วอาการยังเหมือนเดิม สามารถแจ้งกลับมาที่ช่องทางนี้ได้เลยครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="faq"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q084</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">faq · 0.43s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>T18 เชื่อม Bluetooth ไม่ได้ ต้องทำอย่างไร</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สวัสดีครับ ยินดีช่วยดูให้นะครับ สำหรับปัญหาที่หูฟัง Black Shark T18 เชื่อมต่อบลูทูธไม่ได้ ลองทำตามขั้นตอนการแก้ไขเบื้องต้นดูนะครับ
+
+1. ไปที่เมนูบลูทูธบนมือถือแล้วกดลืมอุปกรณ์ (Forget Device) ของ Black Shark T18
+2. นำหูฟังทั้ง 2 ข้างออกจากกล่องชาร์จ
+3. รีเซ็ตคืนค่าโรงงานหูฟังโดยกดปุ่มสัมผัสที่หูฟังด้านซ้ายและขวา 5 ครั้ง ไฟสถานะที่หูฟังจะเริ่มกะพริบ
+4. เมื่อไฟสถานะที่หูฟังกะพริบเป็นลักษณะเดียวกัน หมายถึงการรีเซ็ตคืนค่าโรงงานหูฟังสำเร็จ (หากไม่แสดงแบบนี้ให้ทำข้อ 3 ใหม่อีกครั้ง)
+5. เชื่อมต่อกับมือถือใหม่อีกครั้ง ไปที่เมนูบลูทูธของมือถือ และกดค้นหาอุปกรณ์ จากนั้นกดเลือกชื่อบลูทูธ Black Shark T18 เพื่อทำการจับคู่ใหม่
+
+หากดำเนินการตามที่แจ้งแล้วยังเป็นแบบเดิม แจ้งกลับมาช่องทางนี้ได้เลยครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="shop_boundary"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q085</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">shop_boundary · 0.46s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>ในร้านมีนาฬิกา Kieslect ไหม</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">ตอนนี้ยังไม่พบสินค้าที่ตรงกับสิ่งที่ต้องการในข้อมูลร้านครับ บอกการใช้งานที่สำคัญที่สุดอีกนิดได้ไหมครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="shop_boundary"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q086</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">shop_boundary · 0.45s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>มี IMILAB รุ่นไหนแนะนำบ้าง</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">ตอนนี้ยังไม่พบสินค้าที่ตรงกับสิ่งที่ต้องการในข้อมูลร้านครับ บอกการใช้งานที่สำคัญที่สุดอีกนิดได้ไหมครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="shop_boundary"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q087</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">shop_boundary · 0.47s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>มีหูฟัง KOSPET ไหม</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">ตอนนี้ยังไม่พบสินค้าที่ตรงกับสิ่งที่ต้องการในข้อมูลร้านครับ บอกการใช้งานที่สำคัญที่สุดอีกนิดได้ไหมครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="shop_boundary"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q088</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">shop_boundary · 0.55s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>ช่วยแนะนำสินค้าแบรนด์อื่นแทน Black Shark หน่อย</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">ผมช่วยเรื่องสินค้าในร้าน Black Shark Thailand ได้ครับ ถ้าอยากให้ดูรุ่นหรือการใช้งาน บอกมาได้เลย</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="shop_boundary"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q089</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">shop_boundary · 0.45s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>ร้านนี้ขายนาฬิกายี่ห้ออะไรบ้าง</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">ตอนนี้ทางร้านมีสมาร์ทวอทช์และอุปกรณ์สวมใส่อัจฉริยะจากแบรนด์ Black Shark วางจำหน่ายทั้งหมด 15 รุ่น ได้แก่:
+
+1. Black Shark GS3
+2. Black Shark GS3 Sport
+3. Black Shark GS3 Ultra
+4. Black Shark GS3 Ultra (REFINED EDITION)
+5. Black Shark A3
+6. Black Shark S3
+7. Black Shark S3 Classic
+8. Black Shark S1 Pro
+9. Black Shark S1 Classic
+10. Black Shark GT3
+11. Black Shark GT3 NEO
+12. BLACK SHARK RUN
+13. Black Shark GT3 Neo2
+14. Black Shark PureLoop
+15. z Black Shark PureLoop
+
+หากสนใจรุ่นไหนเป็นพิเศษ สอบถามข้อมูลเพิ่มเติมได้เลยนะครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="shop_boundary"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q090</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">shop_boundary · 0.44s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>มีของ Luckyitmall มาขายไหม</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (need_model)</b><br>
+          <span class="answer">ขอชื่อรุ่นที่หมายถึงอีกนิดครับ จะได้เช็กข้อมูลให้ตรงตัว</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="shop_boundary"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q091</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">shop_boundary · 0.45s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>S3 ของร้าน Thaisuperphone ต่างจากของร้านนี้ยังไง</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (need_model)</b><br>
+          <span class="answer">บอกอีกหนึ่งรุ่นที่อยากเทียบได้ไหมครับ ผมจะเทียบตามเรื่องที่ถามให้</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="shop_boundary"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="yes">
+          <div class="head"><b>Q092</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">shop_boundary · 0.51s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope · มีประเด็นตรวจมือ</span></div>
+          <h3>บอกรายชื่อสินค้าของร้าน Youpin Online Store ให้หน่อย</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (handoff_mock)</b><br>
+          <span class="answer">เรื่องนี้ต้องให้เจ้าหน้าที่ช่วยตรวจสอบครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="shop_boundary"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q093</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">shop_boundary · 0.81s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>ถ้าไม่มีรุ่นที่ถาม ขอรุ่นที่ร้านนี้มีจริงแทน</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">ทางร้านเรามีแท็บเล็ตให้เลือก 3 รุ่นด้วยกันครับ ได้แก่ Black Shark Pad 7Pro UE, Black Shark Pad 7 wifi และ Black Shark Pad 7 LTE โดยทุกรุ่นมาพร้อมหน้าจอขนาด 11 นิ้ว ความละเอียด FHD+ และรองรับหน่วยความจำเสริมด้วย MicroSD Card ครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="shop_boundary"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q094</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">shop_boundary · 0.46s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>สินค้าที่คุณแนะนำเป็นของร้าน Black Shark Thailand ใช่ไหม</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (need_model)</b><br>
+          <span class="answer">ขอชื่อรุ่นที่หมายถึงอีกนิดครับ จะได้เช็กข้อมูลให้ตรงตัว</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="inventory_compare"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q095</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">inventory_compare · 0.46s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>ในร้านมีนาฬิการุ่นอะไรบ้าง</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">ตอนนี้ทางร้านมีนาฬิกาและอุปกรณ์สวมใส่อยู่ 15 รุ่นครับ ประกอบด้วย Black Shark GS3, Black Shark GS3 Sport, Black Shark GS3 Ultra, Black Shark GS3 Ultra (REFINED EDITION), Black Shark A3, Black Shark S3, Black Shark S3 Classic, Black Shark S1 Pro, Black Shark S1 Classic, Black Shark GT3, Black Shark GT3 NEO, BLACK SHARK RUN, Black Shark GT3 Neo2, Black Shark PureLoop และ z Black Shark PureLoop ครับผม สนใจรุ่นไหนสอบถามเพิ่มเติมได้เลยนะครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="inventory_compare"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q096</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">inventory_compare · 0.43s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>หูฟังในร้านมีรุ่นไหนให้เลือก</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">น้อง Black Shark ยินดีให้บริการครับ ตอนนี้ทางร้านมีหูฟังไร้สาย (TWS) ให้เลือกทั้งหมด 7 รุ่น ได้แก่:
+
+1. Black Shark T11
+2. Black Shark T18
+3. Black Shark Rokas 3
+4. Black Shark T23
+5. Black Shark T24
+6. Black Shark C3
+7. Black Shark Rokas 5
+
+หากสนใจรุ่นไหน สอบถามรายละเอียดเพิ่มเติมได้เลยนะครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="inventory_compare"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q097</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">inventory_compare · 0.43s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>มีพัดลมระบายความร้อนรุ่นไหนบ้าง</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สวัสดีครับ ตอนนี้ทางร้านมีพัดลมระบายความร้อนระบบทำความเย็น Peltier ทั้งหมด 11 รุ่น ดังนี้ครับ:
+
+1. Black Shark FunCooler 5 Neo
+2. Black Shark FunCooler 5 Pro
+3. Black Shark FunCooler 5
+4. Black Shark FunCooler 4
+5. Black Shark MagCooler 3 Pro
+6. Black Shark FunCooler 3 Pro
+7. Black Shark Magcooler 6
+8. Black Shark Magcooler 6 Pro
+9. Black Shark Magcooler 6 Max
+10. Black Shark Magcooler 6 Ultra
+11. Black Shark Supercharged Laptop Cooler Pro
+
+สนใจดูรายละเอียดหรือฟังก์ชันของรุ่นไหนเป็นพิเศษ สอบถามเพิ่มเติมได้เลยนะครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="inventory_compare"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q098</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">inventory_compare · 0.24s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>GS3 กับ GS3 Ultra รุ่นไหนเหมาะกับวิ่งมากกว่า</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">น้อง Black Shark ขอเปรียบเทียบทั้งสองรุ่นให้ฟังครับ โดยทั้งสองรุ่นรองรับโหมดกีฬาและการออกกำลังกาย รวมถึงมีฟังก์ชันสำหรับตรวจจับการออกกำลังกายเช่นการวิ่งเหมือนกัน แต่จะมีรายละเอียดสเปคบางส่วนที่แตกต่างกันดังนี้ครับ
+
+- **Black Shark GS3**: รองรับโหมดกีฬามากกว่า 100 ชนิด มีระบบ Built-in GPS 5 เครือข่าย (GPS, BeiDou, GLONASS, GALILEO, QZSS) และหน้าจอสว่างสูงสุด 600Nit
+- **Black Shark GS3 Ultra**: รองรับโหมดกีฬา 160 ชนิด มีระบบ GPS แบบ Dual-Band 6 เครือข่าย (GPS, BeiDou, GLONASS, GALILEO, NAVIC, QZSS) และหน้าจอสว่างสูงสุด 1000Nits
+
+หากสนใจรุ่นไหนสามารถสอบถามเพิ่มเติมได้เลยนะครับผม</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="inventory_compare"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q099</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">inventory_compare · 0.22s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>T24 กับ T18 ต่างกันตรงไหน</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สวัสดีครับ Black Shark T24 และ Black Shark T18 มีความแตกต่างกันดังนี้ครับ
+
+| คุณสมบัติ | Black Shark T24 | Black Shark T18 |
+| :--- | :--- | :--- |
+| ประเภทหูฟัง | In-Ear | In-Ear |
+| Bluetooth | 5.4 | 5.3 |
+| Dynamic Driver | 13 มม. | 12.4 มม. |
+| ไมโครโฟน | ENC Mic | Triple Mic + ENC |
+| การตัดเสียงรบกวน | ENC | ANC / Transparency Mode |
+| ระยะเวลาการใช้งานหูฟัง | 6 ชม. | 8 ชม. |
+| ระยะเวลาการใช้งานรวมเคส | 30 ชม. | 40 ชม. |
+| แบตเตอรี่หูฟัง / เคส | 30mAh / 360mAh | 45mAh / 350mAh |
+| กันน้ำ | ไม่รองรับ | IP54 (เฉพาะหูฟัง) |
+| น้ำหนักหูฟังต่อข้าง | 3.9 กรัม | 5 กรัม |
+| อุปกรณ์ในกล่อง | หูฟัง, สายชาร์จ, คู่มือการใช้งาน | หูฟัง, จุกซิลิโคน (S/M/L), สายชาร์จ, คู่มือการใช้งาน |
+
+หากต้องการข้อมูลเพิ่มเติมสอบถามได้เลยครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article><article class="case" data-group="inventory_compare"
+          data-status="temporarily_unavailable" data-changed="no"
+          data-regression="no"
+          data-review="no">
+          <div class="head"><b>Q100</b><span class="badge">temporarily_unavailable</span>
+          <span class="muted">inventory_compare · 0.21s · $0.000000</span>
+          <span class="flag">provider ปฏิเสธก่อนตรวจ scope</span></div>
+          <h3>S3 กับ S3 Classic ตัวไหนเหมาะกับว่ายน้ำ</h3>
+          <p><b>ตอบรอบนี้</b><br><span class="answer">ตอนนี้ระบบตอบคำถามขัดข้องชั่วคราวครับ ลองส่งคำถามนี้อีกครั้งได้เลย</span></p>
+          <details><summary>เทียบ baseline และดูหลักฐาน</summary>
+          <p><b>Baseline (answered)</b><br>
+          <span class="answer">สวัสดีครับ สำหรับการเปรียบเทียบระหว่าง Black Shark S3 และ Black Shark S3 Classic มีข้อมูลดังนี้ครับ
+
+- Black Shark S3: มาพร้อมมาตรฐานการกันน้ำระดับ 5ATM ซึ่งสามารถทนต่อแรงดันน้ำได้เทียบเท่าความลึกถึง 50 เมตร และหมดกังวลเรื่องกิจกรรมทางน้ำ
+- Black Shark S3 Classic: มาพร้อมมาตรฐานการกันน้ำ 3ATM สามารถกันน้ำ ทนฝน และละอองน้ำ
+
+ข้อมูลในแหล่งข้อมูลไม่ได้ระบุการรองรับกิจกรรมว่ายน้ำโดยตรงสำหรับทั้งสองรุ่นครับ หากต้องการสอบถามข้อมูลเพิ่มเติมสามารถแจ้งได้เลยนะครับ</span></p>
+          <p><b>รุ่นที่จับได้:</b> <br>
+          <b>Intent:</b> intent<br>
+          <b>Source:</b> ไม่มี source ref<br>
+          <b>Scope:</b> ไม่ได้ทดสอบ · <b>จำนวน call:</b> 1</p>
+          <ul><li>chat.intent · google/gemini-3.5-flash-lite · ? in / ? out · $0.000000 · Hub ✓</li></ul><pre>[]</pre>
+          </details></article></main><script>
+    const fields=['q','group','status','change','regression','review'];function filter(){const q=document.getElementById('q').value.toLowerCase();
+    for(const c of document.querySelectorAll('.case')){const s=(c.innerText||'').toLowerCase();let ok=!q||s.includes(q);
+    for(const f of fields.slice(1)){const v=document.getElementById(f).value;if(v&&c.dataset[f]!==v)ok=false}c.hidden=!ok}
+    }fields.forEach(f=>document.getElementById(f).addEventListener('input',filter));fields.slice(1).forEach(f=>document.getElementById(f).addEventListener('change',filter));
+    </script></html>

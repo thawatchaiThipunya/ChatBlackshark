@@ -5,11 +5,13 @@ import os
 import re
 import time
 import logging
-from collections import Counter
+import json
+from functools import lru_cache
 from dataclasses import replace
 from datetime import datetime, timezone
 from typing import Any
 from urllib.parse import urlparse
+from urllib.request import Request, urlopen
 
 from pymongo import MongoClient, DESCENDING
 
@@ -162,59 +164,6 @@ def _shop_id_values(shop_id: str) -> list[Any]:
     return values
 
 
-def _model_summary(model: dict[str, Any]) -> dict[str, Any]:
-    stock_info = model.get("stock_info_v2") or {}
-    summary = stock_info.get("summary_info") or {}
-    stock = summary.get("total_available_stock")
-    stock_known = isinstance(stock, (int, float))
-    if not stock_known:
-        for key in ("shopee_stock", "seller_stock"):
-            values = stock_info.get(key)
-            if isinstance(values, list):
-                usable = [item for item in values if isinstance(item, dict)
-                          and isinstance(item.get("stock"), (int, float))
-                          and (key != "seller_stock" or item.get("if_saleable") is not False)]
-                if usable:
-                    stock, stock_known = sum(int(item["stock"]) for item in usable), True
-                    break
-    available = int(stock or 0) if stock_known else None
-    return {"model_id": str(model.get("model_id") or "").removesuffix(".0"),
-            "model_name": str(model.get("model_name") or "")[:300],
-            "model_status": str(model.get("model_status") or ""),
-            "stock_known": stock_known,
-            "available": available if stock_known else None}
-
-
-def _tier_variation_summary(value: Any) -> list[dict[str, Any]]:
-    """Keep Shopee's selectable options as structured evidence, without raw listing data."""
-    entries = value if isinstance(value, list) else [value] if isinstance(value, dict) else []
-    result = []
-    for entry in entries[:10]:
-        if not isinstance(entry, dict):
-            continue
-        options = entry.get("options")
-        if not isinstance(options, list):
-            options = entry.get("option_list")
-        if not isinstance(options, list):
-            continue
-        normalized_options = [option.get("option") if isinstance(option, dict) else option for option in options]
-        clean_options = list(dict.fromkeys(str(option).strip()[:120] for option in normalized_options
-                                           if isinstance(option, (str, int, float)) and str(option).strip()))[:50]
-        if clean_options:
-            result.append({"name": str(entry.get("name") or "ตัวเลือก")[:120], "options": clean_options})
-    return result
-
-
-def _item_availability(item_status: str, models: list[dict[str, Any]]) -> str:
-    active = [model for model in models if model["model_status"].upper() == "MODEL_NORMAL"]
-    known = [model for model in active if model["stock_known"]]
-    availability = "available" if any((model["available"] or 0) > 0 for model in known) else (
-        "unavailable" if known or not active else "unknown")
-    if item_status.upper() != "NORMAL" and availability == "available":
-        return "unavailable"
-    return availability
-
-
 def _trusted_media_url(url: str) -> bool:
     try:
         parsed = urlparse(url)
@@ -227,31 +176,116 @@ def _trusted_media_url(url: str) -> bool:
         return False
 
 
+@lru_cache(maxsize=128)
+def _fetch_shopee_sticker_json(url: str) -> dict[str, Any]:
+    """Fetch Shopee's public sticker metadata with a bounded response and fixed host."""
+    parsed = urlparse(url)
+    if parsed.scheme != "https" or parsed.hostname != "deo.shopeemobile.com":
+        raise ValueError("untrusted_sticker_metadata_host")
+    request = Request(url, headers={"User-Agent": "BlackSharkSupport/1.0"})
+    with urlopen(request, timeout=2) as response:
+        body = response.read(1_000_001)
+    if not body or len(body) > 1_000_000:
+        raise ValueError("sticker_metadata_size_invalid")
+    result = json.loads(body)
+    if not isinstance(result, dict):
+        raise ValueError("sticker_metadata_invalid")
+    return result
+
+
+def _sticker_extension_from_pack(payload: Any, sticker_id: str) -> str | None:
+    target = str(sticker_id).strip()
+
+    def same_id(value: Any) -> bool:
+        candidate = str(value).strip()
+        if candidate == target:
+            return True
+        return candidate.isdigit() and target.isdigit() and int(candidate) == int(target)
+
+    def extension(value: Any) -> str | None:
+        if not isinstance(value, dict):
+            return None
+        for key in ("ext", "extension"):
+            candidate = str(value.get(key) or "").strip().lower().lstrip(".")
+            if candidate in {"png", "jpg", "jpeg", "webp", "gif"}:
+                return candidate
+        return None
+
+    def visit(value: Any, depth: int = 0) -> str | None:
+        if depth > 12:
+            return None
+        if isinstance(value, dict):
+            ids = [value.get(key) for key in ("sid", "sticker_id", "stickerId", "id")]
+            if any(identifier is not None and same_id(identifier) for identifier in ids):
+                found = extension(value)
+                if found:
+                    return found
+            # Some pack versions key the sticker records by sid instead of storing it in each record.
+            keyed = value.get(target)
+            found = extension(keyed)
+            if found:
+                return found
+            for child in value.values():
+                found = visit(child, depth + 1)
+                if found:
+                    return found
+        elif isinstance(value, list):
+            for child in value[:500]:
+                found = visit(child, depth + 1)
+                if found:
+                    return found
+        return None
+
+    return visit(payload)
+
+
+def _resolve_shopee_sticker_extension(package_id: str, sticker_id: str, region: str) -> str | None:
+    package = str(package_id or "").strip()
+    sticker = str(sticker_id or "").strip()
+    region_key = str(region or "").strip().lower()
+    if (not re.fullmatch(r"[a-zA-Z0-9_-]{1,100}", package)
+            or not re.fullmatch(r"[a-zA-Z0-9_-]{1,100}", sticker)
+            or not re.fullmatch(r"[a-z]{2}", region_key)):
+        return None
+    base = f"https://deo.shopeemobile.com/shopee/shopee-sticker-live-{region_key}"
+    try:
+        manifest = _fetch_shopee_sticker_json(f"{base}/manifest.json")
+        packs = manifest.get("packs")
+        if not isinstance(packs, list) or not any(
+                isinstance(pack, dict)
+                and str(pack.get("pid") or "") == package
+                and isinstance(pack.get("reg"), list)
+                and region_key.upper() in {str(item).upper() for item in pack["reg"]}
+                for pack in packs):
+            return None
+        pack_data = _fetch_shopee_sticker_json(f"{base}/packs/{package}/{package}.json")
+        return _sticker_extension_from_pack(pack_data, sticker)
+    except Exception as exc:
+        logger.debug("shopee_sticker_metadata_unavailable type=%s", type(exc).__name__)
+        return None
+
+
 def _message_event(raw_payload: Any, fallback_text: str) -> tuple[Any, dict[str, Any]]:
     payload = raw_payload if isinstance(raw_payload, dict) else {}
     outer = payload.get("data") if isinstance(payload.get("data"), dict) else {}
     inner = outer.get("content") if isinstance(outer.get("content"), dict) else payload
     content = inner.get("content") if isinstance(inner.get("content"), dict) else {}
-    source = (inner.get("source_content") if isinstance(inner.get("source_content"), dict)
-              else outer.get("source_content") if isinstance(outer.get("source_content"), dict)
-              else payload.get("source_content") if isinstance(payload.get("source_content"), dict) else {})
-    normalized = normalize_chat_input({
-        "message_type": inner.get("message_type") or payload.get("message_type") or payload.get("msg_type"),
-        "text": content.get("text") or fallback_text,
-        "content": {**content, "source_content": source,
-                    "item_id": content.get("item_id") or content.get("product_id")},
-        "item_id": inner.get("item_id"), "item_ids": inner.get("item_ids"),
-        "order_sn": inner.get("order_sn"),
-    }, fallback_text)
+    normalized = normalize_chat_input(payload, fallback_text)
     if normalized.message_type == "bundle_message":
-        sub_ids = [str(value) for value in content.get("messages", [])[:20]
-                   if isinstance(value, (str, int))] if isinstance(content.get("messages"), list) else []
+        sub_ids = normalized.metadata.get("bundle_message_ids")
+        if not isinstance(sub_ids, list):
+            sub_ids = [str(value) for value in content.get("messages", [])[:20]
+                       if isinstance(value, (str, int)) and not isinstance(value, bool)] \
+                if isinstance(content.get("messages"), list) else []
         normalized = replace(normalized, metadata={**normalized.metadata, "bundle_message_ids": sub_ids})
     media: list[dict[str, str]] = []
     seen: set[str] = set()
+    thumbnail_urls: set[str] = set()
+    sticker_thumbnail_media: list[dict[str, str]] = []
     image_keys = {"url", "image_url", "thumb_url", "thumbnail_url", "image", "pic", "file_url",
                   "sticker_url", "sticker_image_url", "sticker_thumb_url",
                   "video_url", "video_download_url", "download_url", "original_url"}
+    thumbnail_keys = {"thumb_url", "thumbnail_url", "sticker_thumb_url"}
 
     def walk(value: Any, depth: int = 0) -> None:
         if depth > 8:
@@ -264,8 +298,11 @@ def _message_event(raw_payload: Any, fallback_text: str) -> tuple[Any, dict[str,
                     if url and not url.startswith(("http://", "https://")) and lowered in image_keys:
                         url = "https://img.sp.mms.shopee.sg/" + url.lstrip("/")
                     if _trusted_media_url(url) and url not in seen:
-                        media.append({"url": url[:2048], "kind": "video" if "video" in lowered or msg_type == "video" and lowered == "url" else "image"})
+                        kind = "video" if "video" in lowered or (msg_type == "video" and lowered == "url") else "image"
+                        media.append({"url": url[:2048], "kind": kind})
                         seen.add(url)
+                        if lowered in thumbnail_keys:
+                            thumbnail_urls.add(url)
                 elif isinstance(child, (dict, list)):
                     walk(child, depth + 1)
         elif isinstance(value, list):
@@ -273,13 +310,32 @@ def _message_event(raw_payload: Any, fallback_text: str) -> tuple[Any, dict[str,
                 walk(child, depth + 1)
 
     msg_type = normalized.message_type
-    if msg_type in {"image", "image_with_text", "video", "sticker", "bundle_message"}:
+    if msg_type in {"image", "image_with_text", "video", "sticker"}:
         walk(inner)
+    if msg_type in {"image", "image_with_text", "sticker"}:
+        full_size_media = [item for item in media if item["url"] not in thumbnail_urls]
+        if full_size_media:
+            media = full_size_media
+        elif msg_type == "sticker":
+            sticker_thumbnail_media = media
+            media = []
     if msg_type == "sticker" and not media:
-        package = content.get("sticker_package_id")
-        sticker = content.get("sticker_id")
-        if isinstance(package, str) and isinstance(sticker, str) and re.fullmatch(r"[a-zA-Z0-9_-]{1,100}", package) and re.fullmatch(r"[a-zA-Z0-9_-]{1,100}", sticker):
-            media.append({"url": f"https://deo.shopeemobile.com/shopee/shopee-sticker-live-th/packs/{package}/{sticker}@1x.png", "kind": "image"})
+        package = str(normalized.metadata.get("sticker_package_id") or "")
+        sticker = str(normalized.metadata.get("sticker_id") or "")
+        region = str(normalized.metadata.get("sticker_region") or os.getenv("SHOPEE_STICKER_REGION", "th"))
+        extension = str(normalized.metadata.get("sticker_extension") or "").lower().lstrip(".")
+        if extension not in {"png", "jpg", "jpeg", "webp", "gif"}:
+            extension = _resolve_shopee_sticker_extension(package, sticker, region) or "png"
+        if (re.fullmatch(r"[a-zA-Z0-9_-]{1,100}", package)
+                and re.fullmatch(r"[a-zA-Z0-9_-]{1,100}", sticker)
+                and re.fullmatch(r"[a-zA-Z]{2}", region)
+                and extension in {"png", "jpg", "jpeg", "webp", "gif"}):
+            url = (f"https://deo.shopeemobile.com/shopee/shopee-sticker-live-{region.lower()}"
+                   f"/packs/{package}/{sticker}@1x.{extension}")
+            media.append({"url": url,
+                          "kind": "image"})
+        if not media:
+            media = sticker_thumbnail_media
     return normalized, {"media": media[:10]}
 
 
@@ -304,47 +360,23 @@ def _expand_bundle(event: Any, media: list[dict[str, str]], conversation_id: str
                    children=tuple(child for child, _ in children)), deduped
 
 
-def _products_by_ids(item_ids: list[str], shop_name: str) -> dict[str, dict[str, Any]]:
-    ids = list(dict.fromkeys(item_ids))[:20]
-    if not ids:
+def product_identities_by_ids(item_ids: list[str], shop_name: str) -> dict[str, dict[str, str]]:
+    """Resolve card IDs to listing names only; product facts remain in the shop KB."""
+    ids = list(dict.fromkeys(str(value).strip() for value in item_ids if str(value).strip()))[:20]
+    if not ids or not shop_name.strip():
         return {}
-    collection = _products_collection()
-    query: dict[str, Any] = {"item_id": {"$in": _item_id_values(ids)}}
-    if not shop_name.strip():
-        return {}
-    query["shopname"] = shop_name.strip()
-    projection = {"_id": 0, "item_id": 1, "item_name": 1, "name": 1, "description": 1,
-                 "shopname": 1, "brand": 1, "image": 1, "images": 1, "image_url": 1,
-                 "item_status": 1, "model": 1, "tier_variation": 1}
-    rows = collection.find(query, projection).limit(20)
-    result: dict[str, dict[str, Any]] = {}
+    query = {"item_id": {"$in": _item_id_values(ids)}, "shopname": shop_name.strip()}
+    projection = {"_id": 0, "item_id": 1, "item_name": 1, "name": 1}
+    rows = _products_collection().find(query, projection).limit(20)
+    result: dict[str, dict[str, str]] = {}
     for doc in rows:
         stored_id = doc.get("item_id")
+        if stored_id is None:
+            continue
         canonical = str(int(stored_id)) if isinstance(stored_id, float) and stored_id.is_integer() else str(stored_id)
-        image = doc.get("image_url")
-        images = doc.get("images")
-        if isinstance(images, dict):
-            images = images.get("image_url_list") or images.get("image_id_list") or []
-        if not image and isinstance(images, list) and images:
-            image = images[0]
-        if not image:
-            item_image = doc.get("image") or {}
-            image_ids = item_image.get("image_url_list") or item_image.get("image_id_list") or [] if isinstance(item_image, dict) else []
-            image = image_ids[0] if image_ids else ""
-        if image and not str(image).startswith("http"):
-            image = "https://cf.shopee.co.th/file/" + str(image).lstrip("/")
-        if image and not _trusted_media_url(str(image)):
-            image = ""
-        models = [_model_summary(model) for model in doc.get("model", []) if isinstance(model, dict)][:100]
-        item_status = str(doc.get("item_status") or "")
         result[canonical] = {
             "item_id": canonical,
             "name": str(doc.get("item_name") or doc.get("name") or "")[:300],
-            "description": str(doc.get("description") or "")[:8000],
-            "image_url": str(image or "")[:2048],
-            "shopname": str(doc.get("shopname") or ""),
-            "item_status": item_status, "availability": _item_availability(item_status, models),
-            "models": models, "tier_variation": _tier_variation_summary(doc.get("tier_variation")),
         }
     return result
 
@@ -451,7 +483,7 @@ def _format_message(row: dict[str, Any], shop_name: str, products: dict[str, dic
     image_descriptions = list(dict.fromkeys(
         str(item.get("bot_image_desc") or "").strip() for item in shadow_rows if item.get("bot_image_desc")))
     if is_user:
-        content = str(event.text or row.get("text") or "").strip()
+        content = str(event.text or event.metadata.get("notification_text") or row.get("text") or "").strip()
         message_role = "user"
         label = "ลูกค้า"
     else:
@@ -491,7 +523,7 @@ def list_messages(conversation_id: str, shop_id: str, platform: str,
     if platform.casefold() == "shopee" and item_ids:
         try:
             if shop_alias_is_unique(platform, shop_id, legacy_name):
-                products = _products_by_ids(item_ids, legacy_name)
+                products = product_identities_by_ids(item_ids, legacy_name)
         except Exception as exc:
             logger.warning("ticket_card_lookup_failed type=%s", type(exc).__name__)
     shadows = _shadow_rows(conversation_id, shop_id, platform,
@@ -554,14 +586,14 @@ def history_for_conversation(conversation_id: str, shop_id: str, platform: str,
                 event, media = _message_event(row.get("raw_payload"), str(row.get("text") or ""))
                 event, _ = _expand_bundle(event, media["media"], conversation_id, shop_id, platform)
                 item_ids.extend(event.item_ids)
-            products_by_id = _products_by_ids(item_ids, shop_name) if shop_alias_is_unique(platform, shop_id, shop_name) else {}
+            products_by_id = product_identities_by_ids(item_ids, shop_name) if shop_alias_is_unique(platform, shop_id, shop_name) else {}
         except Exception as exc:
             logger.warning("ticket_history_card_lookup_failed type=%s", type(exc).__name__)
     shadows = _shadow_rows(conversation_id, shop_id, platform, ids, limit=500)
     shadow_by_id: dict[str, dict[str, Any]] = {}
     for shadow in shadows:
         inbound_id = str(shadow.get("inbound_message_id") or "")
-        # Prefer the newest Black Shark generated reply; otherwise keep the newest available shadow answer.
+        # Prefer the newest reply generated by this engine; otherwise use the newest shadow answer.
         old = shadow_by_id.get(inbound_id)
         score = (shadow.get("origin") in {"chatblackshark", "chatblackshark_ticket", "worker", "workflow"},
                  _dt(shadow.get("created_at")) or datetime.min.replace(tzinfo=timezone.utc))
@@ -579,7 +611,10 @@ def history_for_conversation(conversation_id: str, shop_id: str, platform: str,
             event, media["media"] = _expand_bundle(event, media["media"], conversation_id, shop_id, platform)
             item_ids = list(event.item_ids)
             cards = [products_by_id[item_id] for item_id in item_ids if item_id in products_by_id]
-            group_inputs.append({"role": "user", "content": str(event.text or row.get("text") or "").strip(),
+            user_content = str(event.text or event.metadata.get("notification_text") or row.get("text") or "").strip()
+            if event.message_type == "order" and event.order_sn and not user_content:
+                user_content = f"[การ์ดคำสั่งซื้อ เลข {event.order_sn}]"
+            group_inputs.append({"role": "user", "content": user_content,
                                  "created_at": _dt(row.get("created_timestamp")), "message_id": str(row.get("message_id") or ""),
                                  "product_name": cards[0]["name"] if len(cards) == 1 else None,
                                  "product_names": [card["name"] for card in cards],
@@ -715,167 +750,6 @@ def find_customer_order(customer_id: str, shop_name: str, order_sn: str = "") ->
     docs = list(_orders_collection().find(query, projection).sort("create_time", DESCENDING)
                 .limit(1).max_time_ms(5000))
     return _order_summary(docs[0]) if docs else None
-
-
-def products_for_catalog_names(names: list[str], catalog: list[dict[str, Any]],
-                               shop_name: str) -> list[dict[str, Any]]:
-    """Match KB model labels to listings and units, rejecting ambiguous category matches."""
-    if not names or not shop_name:
-        return []
-    labels = [str(item.get("name") or "") for item in catalog if item.get("name")]
-    requested = set(names) & set(labels)
-    if not requested:
-        return []
-
-    def words(value: str) -> tuple[str, ...]:
-        return tuple(re.findall(r"[a-z0-9]+", value.casefold().replace("black shark", "")))
-
-    aliases = {label: words(label) for label in labels}
-
-    def matches(value: str) -> list[str]:
-        tokens = words(value)
-        found = []
-        for label, alias in aliases.items():
-            if alias and any(tokens[index:index + len(alias)] == alias
-                             for index in range(len(tokens) - len(alias) + 1)):
-                found.append(label)
-        return found
-
-    def best_matches(value: str) -> list[str]:
-        found = matches(value)
-        longest = max((len(aliases[label]) for label in found), default=0)
-        return [label for label in found if len(aliases[label]) == longest]
-
-    projection = {"_id": 0, "item_id": 1, "item_name": 1, "shopname": 1,
-                  "item_status": 1, "description": 1, "image": 1, "images": 1,
-                  "category_id": 1, "model": 1}
-    docs = list(_products_collection().find({"shopname": shop_name.strip()}, projection)
-                .limit(1000).max_time_ms(5000))
-    per_label: dict[str, list[tuple[dict[str, Any], list[dict[str, Any]]]]] = {name: [] for name in requested}
-    for doc in docs:
-        title_matches = matches(str(doc.get("item_name") or ""))
-        if not title_matches:
-            continue
-        title_models = best_matches(str(doc.get("item_name") or ""))
-        all_units = [unit for unit in doc.get("model") or [] if isinstance(unit, dict)]
-        unit_models = {label for unit in all_units for label in best_matches(str(unit.get("model_name") or ""))}
-        has_distinct_models = len(unit_models) > 1
-        # A title may explicitly list multiple models; unit labels then decide which unit belongs to which model.
-        for label in requested:
-            relevant = (label in unit_models if has_distinct_models else label in title_models)
-            if not relevant:
-                continue
-            units = ([unit for unit in all_units if label in best_matches(str(unit.get("model_name") or ""))]
-                     if has_distinct_models else all_units)
-            if not units:
-                continue
-            per_label[label].append((doc, units))
-
-    result: list[dict[str, Any]] = []
-    for label, entries in per_label.items():
-        categories = Counter(str(doc.get("category_id") or "") for doc, _ in entries if doc.get("category_id"))
-        best_category = categories.most_common(1)[0][0] if categories else ""
-        if len(categories) > 1 and categories[best_category] == categories.most_common(2)[1][1]:
-            continue
-        for doc, units in entries:
-            if best_category and str(doc.get("category_id") or "") != best_category:
-                continue
-            item_id = str(doc.get("item_id") or "").removesuffix(".0")
-            item = _products_by_ids([item_id], shop_name).get(item_id)
-            if not item:
-                continue
-            unit_ids = {str(unit.get("model_id") or "").removesuffix(".0") for unit in units}
-            item["models"] = [unit for unit in item["models"] if unit["model_id"] in unit_ids]
-            item["availability"] = _item_availability(item["item_status"], item["models"])
-            def normalized_option(value: str) -> str:
-                return re.sub(r"[^a-z0-9ก-๙]", "", value.casefold())
-            selected_unit_names = [normalized_option(unit["model_name"]) for unit in item["models"]
-                                   if unit.get("model_name")]
-            scoped_variations = []
-            for variation in item["tier_variation"]:
-                options = [option for option in variation["options"]
-                           if any(normalized_option(option) in unit_name or unit_name in normalized_option(option)
-                                  for unit_name in selected_unit_names)]
-                if options:
-                    scoped_variations.append({**variation, "options": options})
-            item["tier_variation"] = scoped_variations
-            item["product_name"] = label
-            result.append(item)
-            if len(result) >= 10:
-                return result
-    return result
-
-
-def products_for_product_mentions(mentions: list[str], shop_name: str) -> list[dict[str, Any]]:
-    """Find explicitly mentioned, non-KB editions in this one shop's Shopee listings."""
-    if not mentions or not shop_name.strip():
-        return []
-
-    patterns: list[str] = []
-    for mention in mentions[:5]:
-        tokens = re.findall(r"[a-z0-9]+|[\u0e00-\u0e7f]+", str(mention).casefold(), re.I)
-        if not tokens:
-            continue
-        pattern = r"(?<!\w)" + r"[\W_]*".join(re.escape(token) for token in tokens) + r"(?!\w)"
-        if pattern not in patterns:
-            patterns.append(pattern)
-    if not patterns:
-        return []
-
-    alternatives = [{field: {"$regex": pattern, "$options": "i"}}
-                    for pattern in patterns for field in ("item_name", "name")]
-    query = {"shopname": shop_name.strip(), "$or": alternatives}
-    projection = {"_id": 0, "item_id": 1, "item_name": 1, "name": 1}
-    docs = list(_products_collection().find(query, projection).limit(50).max_time_ms(5000))
-    item_ids: list[str] = []
-    for doc in docs:
-        title = str(doc.get("item_name") or doc.get("name") or "")
-        if not any(re.search(pattern, title, re.I) for pattern in patterns):
-            continue
-        item_id = doc.get("item_id")
-        if item_id is None:
-            continue
-        canonical = str(int(item_id)) if isinstance(item_id, float) and item_id.is_integer() else str(item_id)
-        if canonical not in item_ids:
-            item_ids.append(canonical)
-        if len(item_ids) >= 10:
-            break
-    return list(_products_by_ids(item_ids, shop_name).values()) if item_ids else []
-
-
-def chat_commerce_lookup(intent: str, product_names: list[str], card_context: list[dict[str, Any]], *,
-                         platform: str, shop_id: str, shop_name: str,
-                         allowed_shops: list[dict[str, Any]], catalog: list[dict[str, Any]],
-                         product_mentions: list[str] | None = None) -> dict[str, Any]:
-    """Resolve public chat stock questions using only the configured Shopee shop."""
-    if intent not in {"stock_availability", "product_info", "product_search", "comparison", "compatibility"}:
-        return {}
-    scope = _scope_by_key(allowed_shops, platform, shop_id)
-    same_name_scopes = [candidate for candidate in allowed_shops
-                        if str(candidate.get("platform") or "").casefold() == platform.casefold()
-                        and str(candidate.get("shop_name") or "").casefold() == shop_name.casefold()]
-    if (not scope or platform.casefold() != "shopee" or not shop_name.strip()
-            or len(same_name_scopes) != 1):
-        return {"unavailable": True}
-    try:
-        mongo_shop_name = resolve_legacy_shop_name(platform, shop_id)
-        if not mongo_shop_name:
-            return {"unavailable": True}
-        item_ids = list(dict.fromkeys(str(card.get("item_id") or "").strip()
-                                      for card in card_context if card.get("item_id")))[:20]
-        if item_ids:
-            products = list(_products_by_ids(item_ids, mongo_shop_name).values())
-        else:
-            products = products_for_catalog_names(product_names[:10], catalog, mongo_shop_name)
-            from .product_identity import match_catalog_product
-            unknown_mentions = [mention for mention in (product_mentions or [])
-                                if not match_catalog_product(mention, catalog)]
-            products.extend(products_for_product_mentions(unknown_mentions, mongo_shop_name))
-        unique = {str(item.get("item_id") or ""): item for item in products if item.get("item_id")}
-        return {"products": list(unique.values())[:10]}
-    except Exception as exc:
-        logger.warning("public_chat_commerce_lookup_failed type=%s", type(exc).__name__)
-        return {"unavailable": True}
 
 
 def get_customer_summary(customer_id: str, platform: str = "shopee") -> dict[str, Any] | None:

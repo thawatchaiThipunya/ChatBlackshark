@@ -1,0 +1,40 @@
+{
+  "run_id": "b1851281-cc25-4023-b09b-ae78887749d8",
+  "api": "https://chat-blackshark-api.vercel.app",
+  "deployment": "production",
+  "started_at": "2026-11-23T09:52:41.179670+00:00",
+  "question_count": 111,
+  "baseline_question_count": 100,
+  "provider_calls": null,
+  "cost_usd": null,
+  "actual_provider_routed_via": "AI Usage Hub configured by production API",
+  "completed_at": "2026-11-23T10:09:29.259074+00:00",
+  "completed_questions": 111,
+  "mean_latency_seconds": 9.046,
+  "median_latency_seconds": 7.985,
+  "http_failures": 0,
+  "source_scope_failures": 0,
+  "commerce_scope_failures": 0,
+  "provider_usage_window": {
+    "provider": "openrouter",
+    "model": "google/gemini-3.5-flash-lite",
+    "start": "2026-11-23T09:52:41.179670+00:00",
+    "end": "2026-11-23T10:09:29.259074+00:00",
+    "calls": 356,
+    "failed": 0,
+    "cost_usd": 0.4537465,
+    "prompt_tokens": 1150455,
+    "completion_tokens": 43444,
+    "test_endpoint_requests": 111,
+    "attribution": "aggregate_only",
+    "note": "มี /api/chat requests อื่นในช่วงเดียวกัน จึงไม่ใช่ต้นทุนเฉพาะชุด 111 คำถามและห้ามแจกแจงต้นทุนต่อข้อ"
+  },
+  "quality_judge_usage": {
+    "provider": "openrouter",
+    "model": "google/gemini-3.5-flash-lite",
+    "calls": 25,
+    "cost_usd": 0.1196904,
+    "hub_accepted": 25,
+    "environment": "development"
+  }
+}

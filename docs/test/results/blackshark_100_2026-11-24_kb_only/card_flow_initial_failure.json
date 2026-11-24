@@ -1,0 +1,11 @@
+{
+  "item_id": "56067346193",
+  "question": "รุ่นนี้มี GPS ในตัวสำหรับวิ่งไหมครับ",
+  "result_status": "handoff_required",
+  "bot_status": "handoff_mock",
+  "reason": "card_not_in_shop_kb",
+  "answer": "ผมยังยืนยันข้อมูลสินค้าจากรายการที่ส่งมาใน KB ของร้านนี้ไม่ได้ครับ ขอให้เจ้าหน้าที่ช่วยตรวจสอบก่อน",
+  "provider_calls": 0,
+  "provider_cost_usd": 0,
+  "root_cause": "Marketplace listing contains 150+ feature-count notation; prior matcher treated any plus sign as a composite bundle separator."
+}

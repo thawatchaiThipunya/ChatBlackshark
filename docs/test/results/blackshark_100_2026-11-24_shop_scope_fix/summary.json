@@ -1,0 +1,69 @@
+{
+  "question_count": 100,
+  "completed_questions": 100,
+  "result_status_counts": {
+    "answered": 54,
+    "temporarily_unavailable": 46
+  },
+  "group_counts": {
+    "conversation": 24,
+    "catalog": 25,
+    "spec": 20,
+    "faq": 15,
+    "shop_boundary": 10,
+    "inventory_compare": 6
+  },
+  "scope_ok_count": 54,
+  "shop_scope_failures": 0,
+  "provider": "openrouter",
+  "model": "google/gemini-3.5-flash-lite",
+  "provider_calls": 209,
+  "provider_cost_usd": 0.2149617,
+  "ai_usage_hub_accepted": 209,
+  "ai_usage_hub_rejected": 0,
+  "median_elapsed_seconds": 4.39,
+  "p95_elapsed_seconds": 5.93,
+  "shop_name": "Black Shark Thailand",
+  "shop_id": "1191420560",
+  "platform": "shopee",
+  "baseline_provider": "openrouter",
+  "baseline_model": "google/gemini-3.5-flash-lite",
+  "baseline_provider_cost_usd": 0.3982544,
+  "manual_findings": [
+    {
+      "id": "Q002",
+      "severity": "improved",
+      "type": "direct_answer",
+      "note": "The answer now starts with a direct verdict: รองรับครับ, then grounds it in the KB's 5ATM/IP69K and swim-tracking facts."
+    },
+    {
+      "id": "Q092",
+      "severity": "not_evaluated",
+      "type": "other_shop_scope",
+      "note": "This is the key cross-shop case, but OpenRouter rejected it with HTTP 403 before intent was returned. The shop_id-anchored behavior is covered by regression tests, not confirmed by this live case."
+    },
+    {
+      "id": "Q055–Q100",
+      "severity": "blocked",
+      "type": "provider_limit",
+      "note": "46 questions received no model answer after OpenRouter returned HTTP 403. The provider reported its weekly key limit was $4.01 of $4.00 and resets 2026-11-30 00:00 UTC. These cases are not answer-quality results."
+    }
+  ],
+  "answer_quality_grade": "not_independently_scored",
+  "quality_grading_note": "Answers are compared with the saved provider run and shop-scoped KB sources; no second provider judge was called.",
+  "created_at": "2026-11-24T05:28:04.351827+00:00",
+  "provider_completed_answers": 54,
+  "provider_blocked_questions": 46,
+  "scope_verified_answer_count": 54,
+  "scope_not_evaluated_count": 46,
+  "provider_http_status_counts": {
+    "200": 163,
+    "403": 46
+  },
+  "full_quality_comparison_complete": false,
+  "provider_block_reason": "OpenRouter API key weekly budget exceeded: $4.01 of $4.00 used; resets 2026-11-30T00:00:00Z.",
+  "comparison_note": "The live comparison covers 54 completed answers. The other 46 requests failed before inference; these are marked as provider-blocked and are not counted as answer or scope regressions.",
+  "scope_checked_count": 54,
+  "answer_changed_count": 54,
+  "status_regression_count": 0
+}

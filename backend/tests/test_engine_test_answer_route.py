@@ -56,8 +56,9 @@ class EngineTestAnswerRouteTests(unittest.TestCase):
         with patch.dict(os.environ, {"LEGACY_ENGINE_TOKEN": token}), \
              patch.object(main, "_shop_context", return_value=(scope, knowledge)), \
              patch.object(main, "_describe_legacy_media", return_value=["ภาพนาฬิกาสีดำ"]), \
+             patch.object(main.legacy_data, "resolve_legacy_shop_name", return_value="BlackShark"), \
              patch.object(main.legacy_data, "shop_alias_is_unique", return_value=True), \
-             patch.object(main.legacy_data, "_products_by_ids", return_value={card["item_id"]: card}), \
+             patch.object(main.legacy_data, "product_identities_by_ids", return_value={card["item_id"]: card}), \
              patch.object(main, "ProductChatEngine", FakeEngine):
             response = self.client.post("/api/engine/test-answer", json=payload,
                                         headers={"Authorization": f"Bearer {token}"})
@@ -71,7 +72,8 @@ class EngineTestAnswerRouteTests(unittest.TestCase):
         self.assertEqual(captured["question"], payload["question"])
         self.assertEqual(captured["kwargs"]["history"][0]["content"], "ก่อนหน้านี้คุยเรื่อง GS3")
         self.assertEqual(captured["kwargs"]["vision_evidence"], ["ภาพนาฬิกาสีดำ"])
-        self.assertEqual(captured["kwargs"]["card_context"][0]["product_name"], "Black Shark GS3")
+        self.assertEqual(captured["kwargs"]["card_context"], [{"item_id": "56067346193",
+            "name": "Black Shark GS3", "product_name": "Black Shark GS3"}])
         self.assertEqual(captured["store"].persona()["bot_name"], "น้องร้านเรา")
         self.assertEqual(captured["store"].persona()["voice"], "female")
 

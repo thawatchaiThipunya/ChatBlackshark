@@ -1,0 +1,52 @@
+{
+  "item_id": "56067346193",
+  "question": "รุ่นนี้ซิงก์กับ Strava ได้ไหมครับ",
+  "provider_result_status": "answered",
+  "bot_status": "answered",
+  "reason": "source_match",
+  "handoff_required": false,
+  "answer": "รุ่นนี้สามารถซิงค์ข้อมูลผ่านแอปฯ Strava ได้ครับ",
+  "product_name": "BLACK SHARK RUN",
+  "intent": "compatibility",
+  "sources": [
+    {
+      "row": 14,
+      "cell": "B14",
+      "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+      "sheet": "ข้อมูลสินค้า"
+    }
+  ],
+  "provider_calls": [
+    {
+      "provider": "openrouter",
+      "model": "google/gemini-3.5-flash-lite",
+      "source": "chat.intent",
+      "status": "success",
+      "cost_usd": 0.0006064,
+      "prompt_tokens": 1113,
+      "completion_tokens": 109,
+      "hub_accepted": true
+    },
+    {
+      "provider": "openrouter",
+      "model": "google/gemini-3.5-flash-lite",
+      "source": "chat.answer",
+      "status": "success",
+      "cost_usd": 0.0014142,
+      "prompt_tokens": 4364,
+      "completion_tokens": 42,
+      "hub_accepted": true
+    },
+    {
+      "provider": "openrouter",
+      "model": "google/gemini-3.5-flash-lite",
+      "source": "chat.answer_review",
+      "status": "success",
+      "cost_usd": 0.0009934,
+      "prompt_tokens": 3103,
+      "completion_tokens": 25,
+      "hub_accepted": true
+    }
+  ],
+  "provider_cost_usd": 0.003014
+}

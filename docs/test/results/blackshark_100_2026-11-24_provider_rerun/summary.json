@@ -1,0 +1,61 @@
+{
+  "question_count": 100,
+  "completed_questions": 100,
+  "result_status_counts": {
+    "answered": 97,
+    "need_model": 3
+  },
+  "group_counts": {
+    "conversation": 24,
+    "catalog": 25,
+    "spec": 20,
+    "faq": 15,
+    "shop_boundary": 10,
+    "inventory_compare": 6
+  },
+  "scope_ok_count": 100,
+  "shop_scope_failures": 0,
+  "provider": "openrouter",
+  "model": "google/gemini-3.5-flash-lite",
+  "provider_calls": 306,
+  "provider_cost_usd": 0.4077444,
+  "ai_usage_hub_accepted": 306,
+  "ai_usage_hub_rejected": 0,
+  "median_elapsed_seconds": 5.1,
+  "p95_elapsed_seconds": 7.24,
+  "shop_name": "Black Shark Thailand",
+  "shop_id": "1191420560",
+  "platform": "shopee",
+  "baseline_provider": "openrouter",
+  "baseline_model": "google/gemini-3.5-flash-lite",
+  "baseline_provider_cost_usd": 0.3982544,
+  "answer_quality_grade": "not_independently_scored",
+  "quality_grading_note": "Answers are compared with the saved provider run and shop-scoped KB sources; no second provider judge was called.",
+  "created_at": "2026-11-24T04:55:18.599250+00:00",
+  "manual_findings": [
+    {
+      "id": "Q002",
+      "severity": "medium",
+      "type": "incomplete_answer",
+      "note": "The customer asks whether GS3 Ultra can be worn for swimming. The answer cites 5ATM and swim tracking, which are present in KB B5, but never gives a clear recommendation or caveat."
+    },
+    {
+      "id": "Q089",
+      "severity": "medium",
+      "type": "knowledge_base_duplicate",
+      "note": "The watch list includes both Black Shark PureLoop and z Black Shark PureLoop. Both map to the same KB row B16, so the 15-model count is inflated by a duplicate source record; this issue also exists in the baseline."
+    },
+    {
+      "id": "Q092",
+      "severity": "high",
+      "type": "cross_shop_attribution",
+      "note": "The question asks for Youpin Online Store products, but the answer lists three products from this Black Shark shop's KB while attributing them to Youpin. Source-file isolation passed, but the answer crosses the requested shop boundary. Baseline handed off; the new answered status is not a quality improvement."
+    },
+    {
+      "id": "Q100",
+      "severity": "medium",
+      "type": "incomplete_comparison",
+      "note": "The comparison correctly gives S3 at 5ATM and S3 Classic at 3ATM and avoids asserting unverified swimming support, but it does not say which model is the more suitable choice based on the available evidence."
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "run_id": "b1851281-cc25-4023-b09b-ae78887749d8",
+  "api": "https://chat-blackshark-api.vercel.app",
+  "deployment": "Vercel production",
+  "start": "2026-11-23T09:52:41.179670+00:00",
+  "end": "2026-11-23T10:09:29.259074+00:00",
+  "total": 111,
+  "baseline_count": 100,
+  "extra_count": 11,
+  "http_failures": 0,
+  "source_scope_failures": 0,
+  "commerce_scope_failures": 0,
+  "status": {
+    "answered": 98,
+    "need_model": 8,
+    "handoff_required": 5
+  },
+  "auto_current": {
+    "correct": 59,
+    "needs_review": 27,
+    "incorrect": 10,
+    "partial": 2,
+    "unsupported": 2
+  },
+  "auto_baseline": {
+    "correct": 64,
+    "needs_review": 25,
+    "incorrect": 10,
+    "partial": 1
+  },
+  "machine_shift": {
+    "same": 74,
+    "worsened": 14,
+    "improved": 12,
+    "not_compared": 11
+  },
+  "latency": {
+    "mean": 9.05,
+    "median": 7.99,
+    "p95": 19.635,
+    "max": 26.326
+  },
+  "manual_spot_checks": 28,
+  "groups": {
+    "catalog": {
+      "count": 25,
+      "answered": 25,
+      "need_model": 0,
+      "handoff": 0,
+      "mean_seconds": 9.0
+    },
+    "conversation": {
+      "count": 24,
+      "answered": 24,
+      "need_model": 0,
+      "handoff": 0,
+      "mean_seconds": 11.17
+    },
+    "cross_shop": {
+      "count": 4,
+      "answered": 0,
+      "need_model": 4,
+      "handoff": 0,
+      "mean_seconds": 4.81
+    },
+    "cuktech_compat": {
+      "count": 6,
+      "answered": 2,
+      "need_model": 1,
+      "handoff": 3,
+      "mean_seconds": 4.11
+    },
+    "cuktech_stock": {
+      "count": 1,
+      "answered": 0,
+      "need_model": 0,
+      "handoff": 1,
+      "mean_seconds": 1.29
+    },
+    "faq": {
+      "count": 15,
+      "answered": 15,
+      "need_model": 0,
+      "handoff": 0,
+      "mean_seconds": 13.13
+    },
+    "inventory_compare": {
+      "count": 6,
+      "answered": 6,
+      "need_model": 0,
+      "handoff": 0,
+      "mean_seconds": 8.41
+    },
+    "shop_boundary": {
+      "count": 10,
+      "answered": 6,
+      "need_model": 3,
+      "handoff": 1,
+      "mean_seconds": 5.46
+    },
+    "spec": {
+      "count": 20,
+      "answered": 20,
+      "need_model": 0,
+      "handoff": 0,
+      "mean_seconds": 8.2
+    }
+  },
+  "usage": {
+    "production_window": {
+      "provider": "openrouter",
+      "model": "google/gemini-3.5-flash-lite",
+      "start": "2026-11-23T09:52:41.179670+00:00",
+      "end": "2026-11-23T10:09:29.259074+00:00",
+      "calls": 356,
+      "failed": 0,
+      "cost_usd": 0.4537465,
+      "prompt_tokens": 1150455,
+      "completion_tokens": 43444,
+      "test_endpoint_requests": 111,
+      "attribution": "aggregate_only",
+      "note": "มี /api/chat requests อื่นในช่วงเดียวกัน จึงไม่ใช่ต้นทุนเฉพาะชุด 111 คำถามและห้ามแจกแจงต้นทุนต่อข้อ"
+    },
+    "quality_judge": {
+      "provider": "openrouter",
+      "model": "google/gemini-3.5-flash-lite",
+      "calls": 25,
+      "cost_usd": 0.1196904,
+      "hub_accepted": 25,
+      "environment": "development"
+    }
+  },
+  "caveats": [
+    "Judge เป็นการประเมินอัตโนมัติ ไม่ได้ตรวจมือครบ 100 ข้อ; ดู manual_review แยกจาก verdict ดิบ",
+    "AI Usage Hub production เป็นยอดรวมตามช่วงเวลา มี /api/chat อื่นวิ่งพร้อมกัน ไม่สามารถระบุ cost ต่อคำถาม",
+    "scope ผ่านหมายถึงไม่พบข้อมูล source/commerce ข้ามร้านในผลทั้ง 111 ข้อ ไม่ได้รับรองความถูกต้องของคำตอบทุกข้อ"
+  ]
+}

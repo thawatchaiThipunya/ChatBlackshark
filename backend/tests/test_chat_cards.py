@@ -202,7 +202,8 @@ class CardChatFlowTests(unittest.TestCase):
             reply = main.chat(request, chat_guest="g" * 40)
 
         self.assertEqual(engine_spy.call[1]["product_name"], "Black Shark GS3")
-        self.assertEqual(engine_spy.call[1]["card_context"][0]["description"], listing["description"])
+        self.assertEqual(engine_spy.call[1]["card_context"], [{"item_id": "123456789",
+            "name": "Black Shark GS3", "product_name": "Black Shark GS3"}])
         self.assertEqual(reply["product_cards"][0]["product_name"], "Black Shark GS3")
         self.assertEqual(reply["source_type"], "shopee_exact_item")
         saved_messages = [payload for action, payload in fake_store.saved if action == "save_message"]
@@ -246,9 +247,8 @@ class CardChatFlowTests(unittest.TestCase):
         self.assertEqual(engine_spy.call[1]["history"][0]["product_scope"]["product_names"],
                          ["Black Shark GS3", "Black Shark GS3 Ultra"])
 
-    def test_public_chat_passes_scoped_commerce_lookup_for_stock_followup(self):
+    def test_public_chat_does_not_read_mongo_for_stock_or_product_questions(self):
         listing = {"item_id": "123456789", "name": "Black Shark GS3", "description": "", "image_url": ""}
-        product = {"item_id": "123456789", "name": "Black Shark GS3", "models": []}
         products = [{"name": "Black Shark GS3", "description": "ประเภทสินค้า: smart watch", "source": {}}]
         scope = {"platform": "shopee", "shop_id": "1191420560", "shop_name": "Black Shark Thailand",
                  "files": ["kb.xlsx"]}
@@ -286,13 +286,14 @@ class CardChatFlowTests(unittest.TestCase):
              patch.object(main, "ProductChatEngine", return_value=engine_spy), \
              patch.object(main, "lookup_shopee_item", return_value=listing), \
              patch.object(main.legacy_data, "resolve_legacy_shop_name", return_value="BlackShark"), \
-             patch.object(main.legacy_data, "_products_by_ids", return_value={"123456789": product}):
+             patch.object(main.legacy_data, "_products_collection") as products_collection:
             main.chat(request, chat_guest="g" * 40)
             self.assertTrue(callable(engine_spy.call["commerce_lookup"]))
             resolved = engine_spy.call["commerce_lookup"](
                 "stock_availability", ["Black Shark GS3"], [{"item_id": "123456789"}])
 
-        self.assertEqual(resolved["products"], [product])
+        self.assertEqual(resolved, {"unavailable": True})
+        products_collection.assert_not_called()
 
 
 if __name__ == "__main__":

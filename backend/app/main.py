@@ -42,7 +42,7 @@ from . import legacy_data
 app = FastAPI(
     title="Black Shark Product Chat API",
     version="1.0.0",
-    description="Answers only from the two supplied Black Shark workbooks.",
+    description="Answers from the Supabase knowledge base selected by platform and shop.",
 )
 
 logger = logging.getLogger("blackshark.api")
@@ -553,6 +553,7 @@ def _trusted_media_url(value: str) -> bool:
         trusted = host.endswith(".supabase.co") or host.endswith(".susercontent.com") or host in {
             "cf.shopee.co.th", "img.sp.mms.shopee.sg", "down-th.img.susercontent.com",
             "down-vn.img.susercontent.com", "down-sg.img.susercontent.com",
+            "deo.shopeemobile.com",
         }
         return parsed.scheme == "https" and trusted and not parsed.username and not parsed.password and parsed.port in (None, 443)
     except ValueError:
@@ -652,9 +653,17 @@ def _answer_legacy_message(request: TicketAnswerRequest) -> dict[str, Any]:
                 "handoff_required": True, "handoff_reason": "customer_requested_agent",
                 "conversation_id": request.conversation_id, "message_id": request.message_id,
                 "history_pair_count": 0, "image_description": "", "product_cards": [], "sources": []}
-    if event.message_type == "sticker" and not question:
-        return {"status": "answered", "bot_status": "answered", "intent": "smalltalk", "reason": "sticker_received",
-                "answer": "ได้รับสติกเกอร์แล้วครับ มีอะไรให้ช่วยดูต่อได้เลยครับ",
+    if event.message_type == "order" and not event.order_sn and not event.text:
+        return {"status": "need_model", "bot_status": "need_model", "intent": "order_status",
+                "reason": "order_reference_missing", "answer": "ผมยังอ่านเลขจากการ์ดคำสั่งซื้อนี้ไม่ได้ครับ รบกวนส่งเลขคำสั่งซื้อมาอีกครั้งได้ไหมครับ",
+                "handoff_required": False, "conversation_id": request.conversation_id,
+                "message_id": request.message_id, "history_pair_count": 0,
+                "image_description": "", "product_cards": [], "sources": []}
+    if event.message_type in {"sticker", "notification", "rating_card"} and not question:
+        received_reason = {"sticker": "sticker_received", "notification": "notification_received",
+                           "rating_card": "rating_card_received"}[event.message_type]
+        return {"status": "answered", "bot_status": "answered", "intent": "platform_event", "reason": received_reason,
+                "answer": "ได้รับข้อมูลแล้วครับ มีอะไรให้ช่วยดูต่อได้เลยครับ",
                 "handoff_required": False, "conversation_id": request.conversation_id,
                 "message_id": request.message_id, "history_pair_count": 0,
                 "image_description": "", "product_cards": [], "sources": []}
@@ -666,34 +675,53 @@ def _answer_legacy_message(request: TicketAnswerRequest) -> dict[str, Any]:
                 "history_pair_count": 0, "image_description": "", "product_cards": [], "sources": []}
 
     try:
-        shop_scopes = store.shop_scopes()
-        same_name_scopes = [candidate for candidate in shop_scopes
-                            if candidate["platform"] == scope["platform"]
-                            and candidate["shop_name"].casefold() == scope["shop_name"].casefold()]
         try:
-            alias_is_unique = legacy_data.shop_alias_is_unique(scope["platform"], request.shop_id, legacy_shop_name)
+            alias_is_unique = (legacy_data.shop_alias_is_unique(scope["platform"], request.shop_id,
+                                                                 legacy_shop_name)
+                               if scope["platform"] == "shopee" else False)
         except Exception as exc:
             logger.warning("ticket_shop_alias_check_failed type=%s", type(exc).__name__)
             alias_is_unique = False
-        legacy_commerce_is_scoped = scope["platform"] == "shopee" and len(same_name_scopes) == 1 and alias_is_unique
+        legacy_commerce_is_scoped = scope["platform"] == "shopee" and alias_is_unique
         history = legacy_data.history_for_conversation(request.conversation_id, request.shop_id,
             scope["platform"], legacy_shop_name, before=message.get("created_timestamp"), max_pairs=5)
+        catalog_products = knowledge["products"]
+        for turn in history:
+            if turn.get("role") != "user":
+                continue
+            names = turn.get("card_product_names") or turn.get("product_names") or []
+            kb_names = list(dict.fromkeys(
+                name for raw_name in names
+                if isinstance(raw_name, str)
+                if (name := match_catalog_product(raw_name, catalog_products))
+            ))
+            turn["product_name"] = kb_names[0] if len(kb_names) == 1 else None
+            turn["product_names"] = kb_names
+            turn["card_product_names"] = kb_names
+            turn["card_title"] = kb_names[0] if len(kb_names) == 1 else ""
+            if isinstance(turn.get("product_scope"), dict):
+                turn["product_scope"]["product_names"] = kb_names
         prior_users = [turn for turn in history if turn.get("role") == "user"]
         for turn in prior_users[-2:]:
             names = turn.get("card_product_names") or turn.get("product_names") or []
             turn["product_scope"] = {"question": turn.get("content", ""), "product_names": names[:10]}
         card_lookup_unavailable = False
         try:
-            card_map = (legacy_data._products_by_ids(list(event.item_ids), legacy_shop_name)
+            card_map = (legacy_data.product_identities_by_ids(list(event.item_ids), legacy_shop_name)
                         if legacy_commerce_is_scoped else {})
         except Exception as exc:
             logger.warning("ticket_current_card_lookup_failed type=%s", type(exc).__name__)
             card_map = {}
             card_lookup_unavailable = True
-        listings = list(card_map.values())
-        catalog = {item["name"]: item for item in knowledge["products"]}
-        for listing in listings:
-            listing["product_name"] = match_catalog_product(listing["name"], list(catalog.values()))
+        identity_rows = list(card_map.values())
+        for listing in identity_rows:
+            listing["product_name"] = match_catalog_product(listing["name"], catalog_products)
+        missing_item_ids = [item_id for item_id in event.item_ids if item_id not in card_map]
+        unmatched_item_ids = [item_id for item_id in event.item_ids
+                              if item_id in card_map and not card_map[item_id].get("product_name")]
+        listings = [{"item_id": item_id, "name": card_map[item_id]["product_name"],
+                     "product_name": card_map[item_id]["product_name"]}
+                    for item_id in event.item_ids if item_id in card_map and card_map[item_id].get("product_name")]
         vision_descriptions = _describe_legacy_media(message.get("media") or [], question)
     except HTTPException:
         raise
@@ -701,50 +729,80 @@ def _answer_legacy_message(request: TicketAnswerRequest) -> dict[str, Any]:
         logger.warning("ticket_context_read_failed type=%s", type(exc).__name__)
         raise HTTPException(status_code=503, detail="legacy_context_unavailable")
 
-    if event.item_ids and not listings:
-        unavailable = card_lookup_unavailable or not legacy_commerce_is_scoped
-        return {"status": "handoff_required" if unavailable else "need_model",
-                "bot_status": "temporarily_unavailable" if unavailable else "need_model",
-                "intent": "product_info", "reason": "card_lookup_unavailable" if unavailable else "item_id_not_found",
-                "answer": ("ตอนนี้ค้นข้อมูลการ์ดสินค้าจากระบบร้านไม่ได้ครับ ขอให้เจ้าหน้าที่ช่วยตรวจสอบก่อน" if unavailable
-                           else "ผมหาสินค้าจาก item_id ที่ส่งมาในรายการร้านไม่พบครับ ลองตรวจเลขอีกครั้งได้ไหมครับ"),
-                "handoff_required": unavailable, "handoff_reason": "card_lookup_unavailable" if unavailable else None,
+    if event.item_ids and (missing_item_ids or unmatched_item_ids or card_lookup_unavailable):
+        reason = ("card_lookup_unavailable" if card_lookup_unavailable or not legacy_commerce_is_scoped
+                  else "item_id_not_found" if missing_item_ids else "card_not_in_shop_kb")
+        return {"status": "handoff_required", "bot_status": "handoff_mock",
+                "intent": "product_info", "reason": reason,
+                "answer": ("ตอนนี้ค้นข้อมูลการ์ดสินค้าจากระบบร้านไม่ได้ครับ ขอให้เจ้าหน้าที่ช่วยตรวจสอบก่อน"
+                           if reason == "card_lookup_unavailable" else
+                           "ผมยังยืนยันข้อมูลสินค้าจากรายการที่ส่งมาใน KB ของร้านนี้ไม่ได้ครับ ขอให้เจ้าหน้าที่ช่วยตรวจสอบก่อน"),
+                "handoff_required": True, "handoff_reason": reason,
                 "conversation_id": request.conversation_id, "message_id": request.message_id,
                 "history_pair_count": min(5, (len(history) + 1) // 2), "image_description": "\n".join(
                     value for value in vision_descriptions if value), "image_descriptions": vision_descriptions,
-                "unresolved_item_ids": list(event.item_ids), "product_cards": [], "sources": []}
+                "unresolved_item_ids": list(dict.fromkeys(missing_item_ids + unmatched_item_ids)),
+                "product_cards": [], "sources": []}
 
     scoped_store = _ShopKnowledgeStore(
         store, knowledge, scope,
         request.persona.model_dump() if request.persona is not None else None,
     )
     shop_engine = ProductChatEngine(store=scoped_store)
-    order_sn = event.order_sn or _extract_order_number(question)
+    customer_id = str(conversation.get("customer_id") or "").strip()
+
     def commerce_lookup(intent: str, product_names: list[str], card_context: list[dict[str, Any]],
                         product_mentions: list[str] | None = None) -> dict[str, Any]:
-        if not legacy_commerce_is_scoped:
-            return {"unavailable": True} if intent in {"order_status", "stock_availability"} else {}
-        if intent == "order_status":
-            order = legacy_data.find_customer_order(str(conversation.get("customer_id") or ""),
-                                                    legacy_shop_name, order_sn)
-            return {"orders": [order] if order else []}
-        product_rows: list[dict[str, Any]] = []
-        item_ids = [str(card.get("item_id") or "") for card in card_context if card.get("item_id")]
-        if item_ids:
-            product_rows.extend(legacy_data._products_by_ids(item_ids, legacy_shop_name).values())
-        if product_names:
-            product_rows.extend(legacy_data.products_for_catalog_names(
-                product_names[:10], knowledge["products"], legacy_shop_name))
-        if product_mentions:
-            from .product_identity import match_catalog_product
-            unknown_mentions = [mention for mention in product_mentions
-                                if not match_catalog_product(mention, knowledge["products"])]
-            product_rows.extend(legacy_data.products_for_product_mentions(unknown_mentions, legacy_shop_name))
-        unique: dict[str, dict[str, Any]] = {}
-        for item in product_rows:
-            if item.get("item_id"):
-                unique[str(item["item_id"])] = item
-        return {"products": list(unique.values())[:10]}
+        if intent == "stock_availability":
+            return {"unavailable": True}
+        if intent not in {"order_status", "troubleshooting"}:
+            return {}
+        if not legacy_commerce_is_scoped or not customer_id:
+            return {"unavailable": True}
+        try:
+            if intent == "troubleshooting":
+                # Orders provide identity/context only. Product troubleshooting facts still come from this shop's KB/FAQ.
+                if product_names or card_context:
+                    return {}
+                return {"orders": legacy_data.list_customer_orders(customer_id, legacy_shop_name, 20)}
+
+            order_sn = event.order_sn or _extract_order_number(question)
+            if not order_sn:
+                for turn in reversed(history):
+                    if turn.get("role") != "user":
+                        continue
+                    order_sn = _extract_order_number(str(turn.get("content") or ""))
+                    if order_sn:
+                        break
+            if order_sn:
+                order = legacy_data.find_customer_order(customer_id, legacy_shop_name, order_sn)
+                return {"orders": [order] if order else []}
+
+            orders = legacy_data.list_customer_orders(customer_id, legacy_shop_name, 20)
+            if not orders:
+                return {"orders": []}
+            requested = set(product_names)
+            requested.update(name for mention in (product_mentions or [])
+                             if isinstance(mention, str)
+                             if (name := match_catalog_product(mention, catalog_products)))
+            if requested:
+                matched_orders = []
+                for order in orders:
+                    item_names = {
+                        name for item in order.get("items", []) if isinstance(item, dict)
+                        for raw_name in (item.get("model_name"), item.get("name"))
+                        if isinstance(raw_name, str)
+                        if (name := match_catalog_product(raw_name, catalog_products))
+                    }
+                    if requested & item_names:
+                        matched_orders.append(order)
+                orders = matched_orders
+            if len(orders) == 1:
+                return {"orders": orders}
+            return {"orders": [], "needs_clarification": len(orders) > 1}
+        except Exception as exc:
+            logger.warning("legacy customer order lookup failed type=%s", type(exc).__name__)
+            return {"unavailable": True}
 
     if not question:
         question = "ช่วยอ่านข้อความที่ส่งมาและตอบในขอบเขตข้อมูลร้านนี้"
@@ -921,18 +979,21 @@ def legacy_engine_test_answer(request: LegacyEngineTestAnswerRequest,
         [{"url": url, "type": "image"} for url in request.images if url], question
     ) if request.images else []
     catalog = knowledge.get("products", [])
-    alias = request.shop_name or str(scope.get("shop_name") or "")
+    alias = ""
     commerce_is_scoped = False
-    try:
-        commerce_is_scoped = (scope["platform"] == "shopee" and bool(alias) and
-            legacy_data.shop_alias_is_unique(scope["platform"], request.shop_id, alias))
-    except Exception as exc:
-        logger.warning("engine_test_shop_alias_check_failed type=%s", type(exc).__name__)
+    if request.item_ids:
+        try:
+            alias = legacy_data.resolve_legacy_shop_name(scope["platform"], request.shop_id) or ""
+            commerce_is_scoped = (scope["platform"] == "shopee" and bool(alias) and
+                legacy_data.shop_alias_is_unique(scope["platform"], request.shop_id, alias))
+        except Exception as exc:
+            logger.warning("engine_test_shop_alias_check_failed type=%s", type(exc).__name__)
 
     card_rows: list[dict[str, Any]] = []
     if request.item_ids and commerce_is_scoped:
         try:
-            card_rows = list(legacy_data._products_by_ids(request.item_ids, alias).values())
+            card_map = legacy_data.product_identities_by_ids(request.item_ids, alias)
+            card_rows = [card_map[item_id] for item_id in request.item_ids if item_id in card_map]
         except Exception as exc:
             logger.warning("engine_test_card_lookup_failed type=%s", type(exc).__name__)
     if request.item_ids and not commerce_is_scoped:
@@ -942,32 +1003,30 @@ def legacy_engine_test_answer(request: LegacyEngineTestAnswerRequest,
             "handoff_required": True, "handoff_reason": "card_lookup_unavailable",
             "product_cards": [], "products": [], "sources": []}
     if request.item_ids and not card_rows:
-        return {"status": "need_model", "bot_status": "need_model", "intent": "product_info",
+        return {"status": "handoff_required", "bot_status": "handoff_mock", "intent": "product_info",
             "reason": "item_id_not_found",
-            "answer": "ผมหาสินค้าจาก item_id ที่ส่งมาในรายการร้านไม่พบครับ ลองตรวจเลขอีกครั้งได้ไหมครับ",
-            "handoff_required": False, "product_cards": [], "products": [], "sources": [],
-            "unresolved_item_ids": request.item_ids}
+            "answer": "ผมหาสินค้าจาก item_id ที่ส่งมาในรายการร้านไม่พบครับ ขอให้เจ้าหน้าที่ช่วยตรวจสอบก่อน",
+            "handoff_required": True, "handoff_reason": "item_id_not_found",
+            "product_cards": [], "products": [], "sources": [], "unresolved_item_ids": request.item_ids}
     for card in card_rows:
         card["product_name"] = match_catalog_product(str(card.get("name") or ""), catalog)
+    unmatched_ids = [item_id for item_id in request.item_ids
+                     if not next((row.get("product_name") for row in card_rows
+                                  if row.get("item_id") == item_id), None)]
+    if unmatched_ids:
+        return {"status": "handoff_required", "bot_status": "handoff_mock", "intent": "product_info",
+            "reason": "card_not_in_shop_kb",
+            "answer": "ผมยังยืนยันข้อมูลสินค้าจากรายการที่ส่งมาใน KB ของร้านนี้ไม่ได้ครับ ขอให้เจ้าหน้าที่ช่วยตรวจสอบก่อน",
+            "handoff_required": True, "handoff_reason": "card_not_in_shop_kb",
+            "product_cards": [], "products": [], "sources": [], "unresolved_item_ids": unmatched_ids}
+    kb_card_rows = [{"item_id": row["item_id"], "name": row["product_name"],
+                     "product_name": row["product_name"]} for row in card_rows]
 
     def commerce_lookup(intent: str, product_names: list[str], card_context: list[dict[str, Any]],
                         product_mentions: list[str] | None = None) -> dict[str, Any]:
-        if intent == "order_status":
+        if intent in {"order_status", "stock_availability"}:
             return {"unavailable": True}
-        if intent not in {"stock_availability", "product_info", "compatibility", "comparison"}:
-            return {}
-        if not commerce_is_scoped:
-            return {"unavailable": True} if intent == "stock_availability" else {}
-        rows: list[dict[str, Any]] = list(card_rows)
-        if product_names:
-            rows.extend(legacy_data.products_for_catalog_names(product_names[:10], catalog, alias))
-        if product_mentions:
-            from .product_identity import match_catalog_product
-            unknown_mentions = [mention for mention in product_mentions
-                                if not match_catalog_product(mention, catalog)]
-            rows.extend(legacy_data.products_for_product_mentions(unknown_mentions, alias))
-        unique = {str(row.get("item_id") or index): row for index, row in enumerate(rows)}
-        return {"products": list(unique.values())[:10]}
+        return {}
 
     try:
         scoped_store = _ShopKnowledgeStore(
@@ -976,7 +1035,8 @@ def legacy_engine_test_answer(request: LegacyEngineTestAnswerRequest,
         )
         scoped_engine = ProductChatEngine(store=scoped_store)
         reply = scoped_engine.answer(
-            question, history=history, card_context=card_rows, vision_evidence=vision_descriptions,
+            question, history=history, product_name=kb_card_rows[0]["product_name"] if len(kb_card_rows) == 1 else None,
+            card_context=kb_card_rows, vision_evidence=vision_descriptions,
             commerce_lookup=commerce_lookup, store_label=str(scope.get("shop_name") or "ร้านนี้"),
         )
     except Exception as exc:
@@ -1044,7 +1104,8 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
     plain_item_ids = event.metadata.get("plain_item_ids") is True
     question = ("ช่วยแนะนำสินค้าจากรหัสที่ส่งมา" if plain_item_ids else
                 event.text or ("ช่วยดูสินค้าจากการ์ดนี้" if event.item_ids else ""))
-    if not question and not request.attachment_ids and event.message_type not in ("faq_liveagent", "sticker", "notification", "order", "unknown"):
+    if not question and not request.attachment_ids and event.message_type not in (
+            "faq_liveagent", "sticker", "notification", "order", "rating_card", "unknown"):
         raise HTTPException(status_code=422, detail="question must not be blank")
 
     if request.product_name and request.model_name:
@@ -1103,14 +1164,23 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
     catalog_products = scoped_knowledge.get("products", [])
     for listing in listings:
         listing["product_name"] = match_catalog_product(listing["name"], catalog_products)
-    prior_card_context = [{
-        "item_id": str(card.get("item_id") or "")[:100],
-        "name": str(card.get("name") or "")[:300],
-        "description": str(card.get("description") or "")[:5000],
-        "image_url": str(card.get("image_url") or "")[:2048],
-        "product_name": match_catalog_product(str(card.get("name") or ""), catalog_products),
-    } for card in stored_cards]
-    current_card_context = listings if is_item_event and listings else prior_card_context
+    prior_card_context = []
+    for card in stored_cards:
+        prior_name = str(card.get("name") or card.get("product_name") or "")
+        product_name = match_catalog_product(prior_name, catalog_products)
+        if not product_name and str(card.get("product_name") or "") in {row["name"] for row in catalog_products}:
+            product_name = str(card["product_name"])
+        if product_name:
+            prior_card_context.append({"item_id": str(card.get("item_id") or "")[:100],
+                                       "name": product_name, "product_name": product_name})
+    found_item_ids = {str(row.get("item_id") or "") for row in listings}
+    unresolved_card_ids = [item_id for item_id in event.item_ids
+                           if item_id not in found_item_ids or not next(
+                               (row.get("product_name") for row in listings if str(row.get("item_id")) == item_id), None)]
+    current_card_context = ([{"item_id": str(row["item_id"]), "name": row["product_name"],
+                              "product_name": row["product_name"]}
+                             for row in listings if row.get("product_name")]
+                            if is_item_event else prior_card_context)
     card_models = list(dict.fromkeys(card["product_name"] for card in current_card_context if card.get("product_name")))
     product_anchor = None
     if not is_item_event:
@@ -1164,28 +1234,14 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
                 store.chat_action(guest, "update_vision", session_id,
                     {"id": attachment_id, "status": "failed", "description": ""})
                 descriptions[index] = "[ไม่สามารถอ่านภาพหรือวิดีโอได้]"
-    product_cards = [{"item_id": item["item_id"], "name": item["name"], "image_url": item["image_url"],
-                      "product_name": item.get("product_name"), "description": item["description"][:5000],
-                      "availability": item.get("availability"), "tier_variation": item.get("tier_variation", []),
-                      "models": item.get("models", [])}
-                     for item in listings]
+    product_cards = [{"item_id": item["item_id"], "name": item["product_name"],
+                      "product_name": item["product_name"]}
+                     for item in listings if item.get("product_name")]
 
     def public_chat_commerce_lookup(intent: str, product_names: list[str],
                                     card_context: list[dict[str, Any]],
                                     product_mentions: list[str] | None = None) -> dict[str, Any]:
-        if intent not in {"stock_availability", "product_info", "product_search", "comparison", "compatibility"}:
-            return {}
-        try:
-            return legacy_data.chat_commerce_lookup(
-                intent, product_names, card_context, platform=scope["platform"],
-                shop_id=scope["shop_id"], shop_name=scope["shop_name"],
-                allowed_shops=store.shop_scopes(), catalog=scoped_knowledge["products"],
-                product_mentions=product_mentions)
-        except HTTPException:
-            return {"unavailable": True}
-        except Exception as exc:
-            logger.warning("public_chat_commerce_scope_failed type=%s", type(exc).__name__)
-            return {"unavailable": True}
+        return {"unavailable": True} if intent in {"order_status", "stock_availability"} else {}
 
     user_content = request.question if plain_item_ids and request.question.strip() else question
     try:
@@ -1197,30 +1253,28 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
                         "product_cards": product_cards,
                         "product_name": product_cards[0].get("product_name") if len(product_cards) == 1 else None,
                         "card_title": product_cards[0]["name"] if len(product_cards) == 1 else None,
-                        "image_url": product_cards[0]["image_url"] if len(product_cards) == 1 else None}})
+                        "image_url": product_cards[0].get("image_url") if len(product_cards) == 1 else None}})
     except Exception:
         raise HTTPException(status_code=503, detail="chat_save_failed")
     if is_item_event:
-        if listings:
+        if unresolved_card_ids:
+            reply = {"status": "handoff_required", "intent": "product_info",
+                     "reason": "card_not_in_shop_kb", "answer": "ผมยังยืนยันข้อมูลสินค้าจากรายการที่ส่งมาใน KB ของร้านนี้ไม่ได้ครับ ขอให้เจ้าหน้าที่ช่วยตรวจสอบก่อน",
+                     "handoff_required": True, "handoff_reason": "card_not_in_shop_kb",
+                     "unresolved_item_ids": unresolved_card_ids, "product_cards": []}
+        elif listings:
             unique_models = list(dict.fromkeys(item.get("product_name") for item in listings if item.get("product_name")))
             for listing in listings:
                 store.chat_action(guest, "save_product", session_id, {"item_id": listing["item_id"],
                     "product_name": listing.get("product_name"), "source": "customer_card",
                     "is_anchor": len(listings) == 1 or len(unique_models) == 1,
-                    "card_snapshot": {"name": listing["name"], "description": listing["description"][:5000],
-                                      "image_url": listing["image_url"]}})
+                    "card_snapshot": {"name": listing["product_name"]}})
             if plain_item_ids:
                 question = "ช่วยสรุปชื่อสินค้าและจุดเด่นจากรายการสินค้าที่ส่งมา"
             reply = shop_engine.answer(question, product_name=unique_models[0] if len(unique_models) == 1 else None,
                                   history=history, session_id=session_id,
-                                  vision_evidence=descriptions, card_context=listings,
+                                  vision_evidence=descriptions, card_context=current_card_context,
                                   commerce_lookup=public_chat_commerce_lookup)
-            found_ids = {listing["item_id"] for listing in listings}
-            missing_ids = [item_id for item_id in event.item_ids if item_id not in found_ids]
-            if missing_ids:
-                reply["answer"] = (reply.get("answer", "") +
-                    f"\n\nส่วนรหัส {' และ '.join(missing_ids)} ยังไม่พบในรายการร้านครับ").strip()
-                reply["unresolved_item_ids"] = missing_ids
             reply.update({"product_name": unique_models[0] if len(unique_models) == 1 else reply.get("product_name"),
                           "item_id": listings[0]["item_id"] if len(listings) == 1 else None,
                           "source_type": "shopee_exact_item", "product_cards": product_cards})
@@ -1236,7 +1290,7 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
             reply = {"status": "escalated" if record else "handoff_mock",
                      "answer": "บันทึกคำขอให้เจ้าหน้าที่ตรวจสอบแล้วครับ" if record else "ยังบันทึกคำขอไม่ได้ครับ กรุณาลองอีกครั้ง",
                      "case_id": record.get("id") if record else None, "handoff_sent": False}
-    elif event.message_type in ("sticker", "notification", "order") and not question:
+    elif event.message_type in ("sticker", "notification", "order", "rating_card") and not question:
         reply = {"status": "answered", "answer": "ได้รับข้อมูลแล้วครับ พิมพ์สิ่งที่อยากให้ช่วยดูต่อได้เลยครับ"}
     elif event.message_type == "unknown":
         reply = {"status": "need_model", "answer": "ผมยังอ่านข้อมูลที่ส่งมาไม่ครบครับ ช่วยพิมพ์สิ่งที่อยากให้ดูอีกนิดได้ไหมครับ"}

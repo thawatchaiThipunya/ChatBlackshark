@@ -1,0 +1,26 @@
+[
+  {
+    "id": "Q002",
+    "severity": "medium",
+    "type": "incomplete_answer",
+    "note": "The customer asks whether GS3 Ultra can be worn for swimming. The answer cites 5ATM and swim tracking, which are present in KB B5, but never gives a clear recommendation or caveat."
+  },
+  {
+    "id": "Q089",
+    "severity": "medium",
+    "type": "knowledge_base_duplicate",
+    "note": "The watch list includes both Black Shark PureLoop and z Black Shark PureLoop. Both map to the same KB row B16, so the 15-model count is inflated by a duplicate source record; this issue also exists in the baseline."
+  },
+  {
+    "id": "Q092",
+    "severity": "high",
+    "type": "cross_shop_attribution",
+    "note": "The question asks for Youpin Online Store products, but the answer lists three products from this Black Shark shop's KB while attributing them to Youpin. Source-file isolation passed, but the answer crosses the requested shop boundary. Baseline handed off; the new answered status is not a quality improvement."
+  },
+  {
+    "id": "Q100",
+    "severity": "medium",
+    "type": "incomplete_comparison",
+    "note": "The comparison correctly gives S3 at 5ATM and S3 Classic at 3ATM and avoids asserting unverified swimming support, but it does not say which model is the more suitable choice based on the available evidence."
+  }
+]
