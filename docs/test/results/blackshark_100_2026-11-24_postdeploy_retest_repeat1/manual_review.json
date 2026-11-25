@@ -1,0 +1,68 @@
+[
+  {
+    "id": "Q002",
+    "severity": "pass",
+    "type": "direct_answer_with_kb_support",
+    "note": "ตอบได้ตรงว่าใส่ว่ายน้ำได้ โดยอ้าง 5ATM/IP69K และฟังก์ชันติดตามว่ายน้ำจาก KB B5"
+  },
+  {
+    "id": "Q005-Q009",
+    "severity": "pass",
+    "type": "comparison_and_followup",
+    "note": "ตอบเทียบ GS3/Ultra และ S3/S3 Classic เป็นตาราง; คำถามต่อเนื่องเรื่องแบตและของในกล่องยังรักษารุ่นที่เกี่ยวข้อง และ Q008 ระบุจอ Ultra 60Hz"
+  },
+  {
+    "id": "Q021-Q022",
+    "severity": "review",
+    "type": "run_line_calling",
+    "note": "ผลตอบว่า RUN รับสาย LINE บน iOS ได้ และ Android ยังไม่รองรับ; ควรตรวจความสอดคล้องกับ KB ปัจจุบัน เพราะประเด็นนี้เคยมีข้อมูลขัดกัน"
+  },
+  {
+    "id": "Q085-Q088",
+    "severity": "partial",
+    "type": "other_brand_request",
+    "note": "ไม่พบข้อมูลแบรนด์อื่นและไม่มีข้อมูลข้ามร้านหรือ handoff แต่ตอบเป็นข้อความ no_catalog_match แบบทั่วไป ยังไม่อธิบายให้ชัดว่าร้านนี้จำหน่าย Black Shark"
+  },
+  {
+    "id": "Q090-Q092",
+    "severity": "pass",
+    "type": "explicit_other_shop_boundary",
+    "note": "ระบุว่า Luckyitmall, Thaisuperphone และ Youpin Online เป็นคนละร้าน ไม่แสดงสินค้าของร้านอื่น และไม่ส่ง handoff"
+  },
+  {
+    "id": "Q093",
+    "severity": "high",
+    "type": "unsupported_stock_claim",
+    "note": "ตอบว่ามีสินค้าในสต็อก 3 รุ่น แต่ source ที่แสดงคือ KB product rows B2-B4 ซึ่งเป็นข้อมูลสินค้า ไม่ใช่หลักฐาน stock; ห้ามถือจำนวนนี้เป็นสต็อกจริง"
+  },
+  {
+    "id": "Q094",
+    "severity": "acceptable_clarification",
+    "type": "ambiguous_reference",
+    "note": "ถามกลับให้ระบุรุ่น เพราะบริบทก่อนหน้ามีสินค้าเสนอหลายรุ่น จึงไม่ควรเดาว่าหมายถึงตัวใด"
+  },
+  {
+    "id": "Q095-Q097",
+    "severity": "review",
+    "type": "category_listing",
+    "note": "ลิสต์สมาร์ทวอทช์ 14 รุ่น, หูฟัง 7 รุ่น และคูลเลอร์ 11 รุ่นจากรายการใน KB; จำนวนตรงกับชุดสินค้าที่จับได้ใน snapshot แต่ยังไม่ใช่การตรวจ inventory/stock"
+  },
+  {
+    "id": "Q099",
+    "severity": "pass",
+    "type": "comparison_table",
+    "note": "ตาราง T24/T18 มีค่าที่อ้างจาก product rows B41/B38 และมีคำแนะนำตาม ANC, แบตเตอรี่, IP54"
+  },
+  {
+    "id": "Q100",
+    "severity": "review",
+    "type": "swimming_recommendation",
+    "note": "แนะนำ S3 เหนือ S3 Classic โดยเทียบ 5ATM กับ 3ATM; ควรตรวจถ้อยคำว่า 5ATM เป็นหลักฐานพอให้ยืนยันการว่ายน้ำได้หรือไม่ตาม KB"
+  },
+  {
+    "id": "Q012",
+    "severity": "telemetry_gap",
+    "type": "no_provider_event",
+    "note": "มีคำตอบและ source แต่ไม่มี usage event ใน AI Usage Hub สำหรับข้อนี้; ผลคำตอบใช้ได้แต่ยืนยันการเรียก Gemini/การคิดค่าใช้จ่ายของข้อนี้ไม่ได้"
+  }
+]

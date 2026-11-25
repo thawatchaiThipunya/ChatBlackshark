@@ -1,0 +1,121 @@
+{
+  "question_count": 100,
+  "completed_questions": 100,
+  "result_status_counts": {
+    "answered": 14,
+    "temporarily_unavailable": 86
+  },
+  "group_counts": {
+    "conversation": 24,
+    "catalog": 25,
+    "spec": 20,
+    "faq": 15,
+    "shop_boundary": 10,
+    "inventory_compare": 6
+  },
+  "scope_checked_count": 14,
+  "scope_ok_count": 14,
+  "shop_scope_failures": 0,
+  "scope_not_evaluated_count": 86,
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "provider_calls": 922,
+  "provider_cost_usd": null,
+  "ai_usage_hub_accepted": 922,
+  "ai_usage_hub_rejected": 0,
+  "median_elapsed_seconds": 5.38,
+  "p95_elapsed_seconds": 40.75,
+  "shop_name": "Black Shark Thailand",
+  "shop_id": "1191420560",
+  "platform": "shopee",
+  "baseline_provider": "openrouter",
+  "baseline_model": "google/gemini-3.5-flash-lite",
+  "baseline_provider_cost_usd": 0.3982544,
+  "manual_findings": [
+    {
+      "id": "Q002",
+      "severity": "pass",
+      "type": "direct_compatibility_verdict",
+      "note": "Answered directly with “รองรับครับ”; cites 5ATM and swim-tracking evidence from the exact Black Shark KB row B5."
+    },
+    {
+      "id": "Q005",
+      "severity": "pass_format",
+      "type": "comparison_table",
+      "note": "Returned a Markdown table with GS3 and GS3 Ultra as columns, followed by a model recommendation; sources are the exact shop KB rows B3 and B5."
+    },
+    {
+      "id": "Q006",
+      "severity": "pass",
+      "type": "follow_up_context",
+      "note": "Remembered both GS3 models from the preceding comparison and correctly said GS3 lasts up to 21 days vs Ultra up to 18 days, with a short recommendation."
+    },
+    {
+      "id": "Q007",
+      "severity": "pass",
+      "type": "package_contents",
+      "note": "Distinguished the box contents: GS3 lists the woven strap; Ultra lists watch, charging cable, and manual. Sources B3 and B5."
+    },
+    {
+      "id": "Q010",
+      "severity": "pass",
+      "type": "faq_source",
+      "note": "Answered the strap-size question and returned the tutorial link from KB B9."
+    },
+    {
+      "id": "Q012",
+      "severity": "error",
+      "type": "incorrect_compatibility_verdict",
+      "note": "The question asks whether both S3 Classic and S3 are suitable for swimming. The answer starts “รองรับทั้งคู่ครับ” although B9 lists S3 Classic as 3ATM and only rain/splash resistance; this verdict is misleading. S3 (B8) is 5ATM. This is a confirmed answer-quality issue."
+    },
+    {
+      "id": "Q085–Q094",
+      "severity": "not_evaluated",
+      "type": "shop_boundary_provider_blocked",
+      "note": "All 10 other-store boundary questions, including the Youpin question Q092, were blocked by Gemini HTTP 429 before an answer was produced. Cross-shop behavior is not verified in this run."
+    },
+    {
+      "id": "Q100",
+      "severity": "not_evaluated",
+      "type": "provider_blocked",
+      "note": "This comparison/suitability question was blocked by provider rate limits; no answer-quality judgment is possible."
+    },
+    {
+      "id": "RUN",
+      "severity": "blocked",
+      "type": "provider_rate_limit",
+      "note": "Only 14/100 questions produced answers. 86 returned temporarily_unavailable after key rotation; usage events show 861 HTTP 429 and 18 HTTP 503 attempts. The 14 completed answers had no source-scope violation."
+    },
+    {
+      "id": "COST",
+      "severity": "not_reported",
+      "type": "gemini_cost",
+      "note": "All usage events were accepted by AI Usage Hub. Gemini events in this app do not carry explicit cost_usd; the Hub estimates cost from model and token counts. This HTML report does not claim the run was free."
+    }
+  ],
+  "answer_quality_grade": "not_independently_scored",
+  "quality_grading_note": "Answers are compared with the saved provider run and shop-scoped KB sources; no second provider judge was called.",
+  "created_at": "2026-11-24T07:41:28.937038+00:00",
+  "provider_cost_reporting_note": "Gemini events omit explicit cost_usd. AI Usage Hub accepted all events and estimates Gemini cost from model and token counts; this report does not have the Hub-returned per-event estimate, so null means unreported here, not free.",
+  "provider_http_status_counts": {
+    "503": 18,
+    "None": 43,
+    "429": 861
+  },
+  "provider_event_status_counts": {
+    "error": 879,
+    "success": 43
+  },
+  "provider_success_calls": 43,
+  "provider_error_calls": 879,
+  "provider_prompt_tokens": 183698,
+  "provider_completion_tokens": 5477,
+  "provider_blocked_questions": 86,
+  "provider_completed_answers": 14,
+  "scope_evaluated_answers": 14,
+  "shop_boundary_questions": 10,
+  "shop_boundary_evaluated_questions": 0,
+  "answer_changed_count": 14,
+  "status_regression_count": 0,
+  "full_quality_comparison_complete": false
+}

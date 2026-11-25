@@ -1,0 +1,62 @@
+[
+  {
+    "id": "Q002",
+    "severity": "pass",
+    "type": "direct_compatibility_verdict",
+    "note": "Answered directly with “รองรับครับ”; cites 5ATM and swim-tracking evidence from the exact Black Shark KB row B5."
+  },
+  {
+    "id": "Q005",
+    "severity": "pass_format",
+    "type": "comparison_table",
+    "note": "Returned a Markdown table with GS3 and GS3 Ultra as columns, followed by a model recommendation; sources are the exact shop KB rows B3 and B5."
+  },
+  {
+    "id": "Q006",
+    "severity": "pass",
+    "type": "follow_up_context",
+    "note": "Remembered both GS3 models from the preceding comparison and correctly said GS3 lasts up to 21 days vs Ultra up to 18 days, with a short recommendation."
+  },
+  {
+    "id": "Q007",
+    "severity": "pass",
+    "type": "package_contents",
+    "note": "Distinguished the box contents: GS3 lists the woven strap; Ultra lists watch, charging cable, and manual. Sources B3 and B5."
+  },
+  {
+    "id": "Q010",
+    "severity": "pass",
+    "type": "faq_source",
+    "note": "Answered the strap-size question and returned the tutorial link from KB B9."
+  },
+  {
+    "id": "Q012",
+    "severity": "error",
+    "type": "incorrect_compatibility_verdict",
+    "note": "The question asks whether both S3 Classic and S3 are suitable for swimming. The answer starts “รองรับทั้งคู่ครับ” although B9 lists S3 Classic as 3ATM and only rain/splash resistance; this verdict is misleading. S3 (B8) is 5ATM. This is a confirmed answer-quality issue."
+  },
+  {
+    "id": "Q085–Q094",
+    "severity": "not_evaluated",
+    "type": "shop_boundary_provider_blocked",
+    "note": "All 10 other-store boundary questions, including the Youpin question Q092, were blocked by Gemini HTTP 429 before an answer was produced. Cross-shop behavior is not verified in this run."
+  },
+  {
+    "id": "Q100",
+    "severity": "not_evaluated",
+    "type": "provider_blocked",
+    "note": "This comparison/suitability question was blocked by provider rate limits; no answer-quality judgment is possible."
+  },
+  {
+    "id": "RUN",
+    "severity": "blocked",
+    "type": "provider_rate_limit",
+    "note": "Only 14/100 questions produced answers. 86 returned temporarily_unavailable after key rotation; usage events show 861 HTTP 429 and 18 HTTP 503 attempts. The 14 completed answers had no source-scope violation."
+  },
+  {
+    "id": "COST",
+    "severity": "not_reported",
+    "type": "gemini_cost",
+    "note": "All usage events were accepted by AI Usage Hub. Gemini events in this app do not carry explicit cost_usd; the Hub estimates cost from model and token counts. This HTML report does not claim the run was free."
+  }
+]
