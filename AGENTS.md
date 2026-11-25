@@ -1,3 +1,7 @@
+## Local branch requirement
+
+Every agent working in this repository, including delegated agents, must inspect the Git branch and working-tree status before editing. When starting from `main`, create a task-specific local branch from `main` in this checkout before making changes. Do all task work on that local branch; never edit project files directly on `main` or run the task in Codex Cloud. If already on a local task branch for the same task, continue on it. If branch creation is blocked, stop before editing and report the reason.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 ## This is NOT the Next.js you know
