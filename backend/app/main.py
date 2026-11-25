@@ -21,7 +21,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, ConfigDict, Field
 
-from .engine_v2 import ProductChatEngine, get_catalog
+from .engine_v2 import ProductChatEngine, describe_handoff_reason, get_catalog
 from .store import SupabaseStore
 from .chat_inputs import normalize_chat_input
 from .shopee_products import lookup_shopee_item
@@ -44,6 +44,27 @@ app = FastAPI(
     version="1.0.0",
     description="Answers from the Supabase knowledge base selected by platform and shop.",
 )
+
+
+def _finalize_handoff_reply(reply: dict[str, Any]) -> dict[str, Any]:
+    """Keep the handoff flag and its reason consistent on every API response path."""
+    status = str(reply.get("bot_status") or reply.get("status") or "")
+    reason = reply.get("handoff_reason") or reply.get("reason")
+    required = (reply.get("handoff_required") is True
+                or status in {"handoff_required", "handoff_mock", "escalated", "temporarily_unavailable", "key_required"}
+                or (status == "need_model" and reason == "vision_unavailable")
+                or reply.get("handoff_sent") is True)
+    if required:
+        if not reason and reply.get("intent") == "store_support":
+            reason = "customer_requested_agent"
+        reason = str(reason or "answer_unavailable")
+        reply.update({"handoff_required": True, "handoff_reason": reason,
+                      "handoff_explanation": str(reply.get("handoff_explanation") or
+                                                   describe_handoff_reason(reason))})
+    else:
+        reply.update({"handoff_required": False, "handoff_reason": None,
+                      "handoff_explanation": None})
+    return reply
 
 logger = logging.getLogger("blackshark.api")
 
@@ -648,11 +669,11 @@ def _answer_legacy_message(request: TicketAnswerRequest) -> dict[str, Any]:
                  "ช่วยดูภาพหรือวิดีโอที่ส่งมา" if message.get("media") else
                  f"ช่วยเช็กสถานะคำสั่งซื้อ {event.order_sn}" if event.message_type == "order" and event.order_sn else ""))
     if event.message_type == "faq_liveagent":
-        return {"status": "handoff_required", "bot_status": "handoff_mock", "intent": "store_support",
+        return _finalize_handoff_reply({"status": "handoff_required", "bot_status": "handoff_mock", "intent": "store_support",
                 "reason": "customer_requested_agent", "answer": "ลูกค้าขอคุยกับเจ้าหน้าที่ครับ",
                 "handoff_required": True, "handoff_reason": "customer_requested_agent",
                 "conversation_id": request.conversation_id, "message_id": request.message_id,
-                "history_pair_count": 0, "image_description": "", "product_cards": [], "sources": []}
+                "history_pair_count": 0, "image_description": "", "product_cards": [], "sources": []})
     if event.message_type == "order" and not event.order_sn and not event.text:
         return {"status": "need_model", "bot_status": "need_model", "intent": "order_status",
                 "reason": "order_reference_missing", "answer": "ผมยังอ่านเลขจากการ์ดคำสั่งซื้อนี้ไม่ได้ครับ รบกวนส่งเลขคำสั่งซื้อมาอีกครั้งได้ไหมครับ",
@@ -668,11 +689,11 @@ def _answer_legacy_message(request: TicketAnswerRequest) -> dict[str, Any]:
                 "message_id": request.message_id, "history_pair_count": 0,
                 "image_description": "", "product_cards": [], "sources": []}
     if event.message_type == "unknown":
-        return {"status": "handoff_required", "bot_status": "need_model", "intent": "unknown",
+        return _finalize_handoff_reply({"status": "handoff_required", "bot_status": "need_model", "intent": "unknown",
                 "reason": "unsupported_input_type", "answer": "รูปแบบข้อความนี้ยังอ่านไม่ครบครับ ขอให้เจ้าหน้าที่ช่วยดูต่อ",
                 "handoff_required": True, "handoff_reason": "unsupported_input_type",
                 "conversation_id": request.conversation_id, "message_id": request.message_id,
-                "history_pair_count": 0, "image_description": "", "product_cards": [], "sources": []}
+                "history_pair_count": 0, "image_description": "", "product_cards": [], "sources": []})
 
     try:
         try:
@@ -732,7 +753,7 @@ def _answer_legacy_message(request: TicketAnswerRequest) -> dict[str, Any]:
     if event.item_ids and (missing_item_ids or unmatched_item_ids or card_lookup_unavailable):
         reason = ("card_lookup_unavailable" if card_lookup_unavailable or not legacy_commerce_is_scoped
                   else "item_id_not_found" if missing_item_ids else "card_not_in_shop_kb")
-        return {"status": "handoff_required", "bot_status": "handoff_mock",
+        return _finalize_handoff_reply({"status": "handoff_required", "bot_status": "handoff_mock",
                 "intent": "product_info", "reason": reason,
                 "answer": ("ตอนนี้ค้นข้อมูลการ์ดสินค้าจากระบบร้านไม่ได้ครับ ขอให้เจ้าหน้าที่ช่วยตรวจสอบก่อน"
                            if reason == "card_lookup_unavailable" else
@@ -742,7 +763,7 @@ def _answer_legacy_message(request: TicketAnswerRequest) -> dict[str, Any]:
                 "history_pair_count": min(5, (len(history) + 1) // 2), "image_description": "\n".join(
                     value for value in vision_descriptions if value), "image_descriptions": vision_descriptions,
                 "unresolved_item_ids": list(dict.fromkeys(missing_item_ids + unmatched_item_ids)),
-                "product_cards": [], "sources": []}
+                "product_cards": [], "sources": []})
 
     scoped_store = _ShopKnowledgeStore(
         store, knowledge, scope,
@@ -820,13 +841,13 @@ def _answer_legacy_message(request: TicketAnswerRequest) -> dict[str, Any]:
                         or reply.get("handoff_sent") is True)
     reply.update({"bot_status": bot_status, "status": "handoff_required" if handoff_required else bot_status,
                   "handoff_required": handoff_required,
-                  "handoff_reason": reply.get("reason") if handoff_required else None,
+                  "handoff_reason": (reply.get("handoff_reason") or reply.get("reason")) if handoff_required else None,
                   "conversation_id": request.conversation_id, "message_id": request.message_id,
                   "history_pair_count": min(5, (len(history) + 1) // 2),
                   "image_description": "\n".join(value for value in vision_descriptions if value),
                   "image_descriptions": vision_descriptions,
                   "unresolved_item_ids": [item_id for item_id in event.item_ids if item_id not in card_map]})
-    return reply
+    return _finalize_handoff_reply(reply)
 
 
 @app.get("/api/tickets/shops")
@@ -997,28 +1018,28 @@ def legacy_engine_test_answer(request: LegacyEngineTestAnswerRequest,
         except Exception as exc:
             logger.warning("engine_test_card_lookup_failed type=%s", type(exc).__name__)
     if request.item_ids and not commerce_is_scoped:
-        return {"status": "handoff_required", "bot_status": "temporarily_unavailable",
+        return _finalize_handoff_reply({"status": "handoff_required", "bot_status": "temporarily_unavailable",
             "intent": "product_info", "reason": "card_lookup_unavailable",
             "answer": "ตอนนี้ค้นข้อมูลการ์ดสินค้าจากระบบร้านไม่ได้ครับ ขอให้เจ้าหน้าที่ช่วยตรวจสอบก่อน",
             "handoff_required": True, "handoff_reason": "card_lookup_unavailable",
-            "product_cards": [], "products": [], "sources": []}
+            "product_cards": [], "products": [], "sources": []})
     if request.item_ids and not card_rows:
-        return {"status": "handoff_required", "bot_status": "handoff_mock", "intent": "product_info",
+        return _finalize_handoff_reply({"status": "handoff_required", "bot_status": "handoff_mock", "intent": "product_info",
             "reason": "item_id_not_found",
             "answer": "ผมหาสินค้าจาก item_id ที่ส่งมาในรายการร้านไม่พบครับ ขอให้เจ้าหน้าที่ช่วยตรวจสอบก่อน",
             "handoff_required": True, "handoff_reason": "item_id_not_found",
-            "product_cards": [], "products": [], "sources": [], "unresolved_item_ids": request.item_ids}
+            "product_cards": [], "products": [], "sources": [], "unresolved_item_ids": request.item_ids})
     for card in card_rows:
         card["product_name"] = match_catalog_product(str(card.get("name") or ""), catalog)
     unmatched_ids = [item_id for item_id in request.item_ids
                      if not next((row.get("product_name") for row in card_rows
                                   if row.get("item_id") == item_id), None)]
     if unmatched_ids:
-        return {"status": "handoff_required", "bot_status": "handoff_mock", "intent": "product_info",
+        return _finalize_handoff_reply({"status": "handoff_required", "bot_status": "handoff_mock", "intent": "product_info",
             "reason": "card_not_in_shop_kb",
             "answer": "ผมยังยืนยันข้อมูลสินค้าจากรายการที่ส่งมาใน KB ของร้านนี้ไม่ได้ครับ ขอให้เจ้าหน้าที่ช่วยตรวจสอบก่อน",
             "handoff_required": True, "handoff_reason": "card_not_in_shop_kb",
-            "product_cards": [], "products": [], "sources": [], "unresolved_item_ids": unmatched_ids}
+            "product_cards": [], "products": [], "sources": [], "unresolved_item_ids": unmatched_ids})
     kb_card_rows = [{"item_id": row["item_id"], "name": row["product_name"],
                      "product_name": row["product_name"]} for row in card_rows]
 
@@ -1048,13 +1069,13 @@ def legacy_engine_test_answer(request: LegacyEngineTestAnswerRequest,
         or (bot_status == "need_model" and reply.get("reason") == "vision_unavailable")
         or reply.get("handoff_sent") is True)
     cards = reply.get("products") if isinstance(reply.get("products"), list) else []
-    return {**reply, "source": "chatblackshark", "products": cards, "product_cards": cards,
+    return _finalize_handoff_reply({**reply, "source": "chatblackshark", "products": cards, "product_cards": cards,
         "bot_status": bot_status, "status": "handoff_required" if handoff_required else bot_status,
         "handoff_required": handoff_required,
-        "handoff_reason": reply.get("reason") if handoff_required else None,
+        "handoff_reason": (reply.get("handoff_reason") or reply.get("reason")) if handoff_required else None,
         "image_description": "\n".join(value for value in vision_descriptions if value),
         "image_descriptions": vision_descriptions,
-        "image_desc": "\n".join(value for value in vision_descriptions if value)}
+        "image_desc": "\n".join(value for value in vision_descriptions if value)})
 
 
 class PreferencesRequest(BaseModel):
@@ -1279,7 +1300,10 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
                           "item_id": listings[0]["item_id"] if len(listings) == 1 else None,
                           "source_type": "shopee_exact_item", "product_cards": product_cards})
         else:
-            reply = {"status": "need_model", "answer": "ผมหาสินค้าจาก item_id ที่ส่งมาในรายการร้านไม่พบครับ ลองตรวจเลขอีกครั้งได้ไหมครับ",
+            reply = {"status": "handoff_required", "intent": "product_info",
+                     "reason": "item_id_not_found",
+                     "answer": "ผมหาสินค้าจาก item_id ที่ส่งมาในรายการร้านไม่พบครับ ขอให้เจ้าหน้าที่ช่วยตรวจสอบก่อน",
+                     "handoff_required": True, "handoff_reason": "item_id_not_found",
                      "unresolved_item_ids": list(event.item_ids)}
     elif event.message_type == "faq_liveagent":
         settings = store.chat_action(guest, "live_agent_settings", session_id)
@@ -1288,12 +1312,16 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
         else:
             record = store.escalate(session_id, "", question or "ลูกค้าขอคุยกับเจ้าหน้าที่", history)
             reply = {"status": "escalated" if record else "handoff_mock",
+                     "reason": "customer_requested_agent",
                      "answer": "บันทึกคำขอให้เจ้าหน้าที่ตรวจสอบแล้วครับ" if record else "ยังบันทึกคำขอไม่ได้ครับ กรุณาลองอีกครั้ง",
                      "case_id": record.get("id") if record else None, "handoff_sent": False}
     elif event.message_type in ("sticker", "notification", "order", "rating_card") and not question:
         reply = {"status": "answered", "answer": "ได้รับข้อมูลแล้วครับ พิมพ์สิ่งที่อยากให้ช่วยดูต่อได้เลยครับ"}
     elif event.message_type == "unknown":
-        reply = {"status": "need_model", "answer": "ผมยังอ่านข้อมูลที่ส่งมาไม่ครบครับ ช่วยพิมพ์สิ่งที่อยากให้ดูอีกนิดได้ไหมครับ"}
+        reply = {"status": "handoff_required", "bot_status": "need_model", "intent": "unknown",
+                 "reason": "unsupported_input_type",
+                 "answer": "ผมยังอ่านรูปแบบข้อความนี้ไม่ครบครับ ขอให้เจ้าหน้าที่ช่วยดูต่อ",
+                 "handoff_required": True, "handoff_reason": "unsupported_input_type"}
     else:
         if product_scopes and product_scopes[-1].get("category"):
             anchored_name = None
@@ -1301,6 +1329,7 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
                               model_name=request.model_name, history=history, session_id=session_id,
                               vision_evidence=descriptions, card_context=current_card_context,
                               commerce_lookup=public_chat_commerce_lookup)
+    _finalize_handoff_reply(reply)
     try:
         reply["request_id"] = turn_id
         store.chat_action(guest, "save_message", session_id, {"role": "assistant",
