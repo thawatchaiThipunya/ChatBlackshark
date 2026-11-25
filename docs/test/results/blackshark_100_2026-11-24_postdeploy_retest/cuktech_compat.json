@@ -1,0 +1,148 @@
+[
+  {
+    "created_at": "2026-11-24T07:48:03.405271+00:00",
+    "api_host": "chat-blackshark-api.vercel.app",
+    "question": "มีหัวชาร์จ CUKTECH ตัวไหนใช้กับ Xiaomi Mi 17 Ultra ได้บ้างครับ",
+    "shop_id": "987863120",
+    "shop_name": "CUKTECH Thailand",
+    "platform": "shopee",
+    "response": {
+      "status": "need_model",
+      "intent": "compatibility",
+      "reason": "product_reference_missing",
+      "answer": "ขอชื่อรุ่นที่หมายถึงอีกนิดครับ จะได้เช็กข้อมูลให้ตรงตัว",
+      "sources": [],
+      "session_id": null,
+      "handoff_mock": false,
+      "handoff_sent": false,
+      "intent_analysis": {
+        "intent": "compatibility",
+        "topic": "compatibility of CUKTECH chargers with Xiaomi Mi 17 Ultra",
+        "needs": [
+          "identify CUKTECH chargers compatible with Xiaomi Mi 17 Ultra"
+        ],
+        "product_names": [],
+        "category": "หัวชาร์จ",
+        "list_all": false,
+        "unresolved": false,
+        "shop_scope": "current_store"
+      },
+      "source": "chatblackshark",
+      "products": [],
+      "product_cards": [],
+      "bot_status": "need_model",
+      "handoff_required": false,
+      "handoff_reason": null,
+      "image_description": "",
+      "image_descriptions": [],
+      "image_desc": ""
+    },
+    "server_request_id": "codex-cuktech-charger-20261124"
+  },
+  {
+    "created_at": "2026-11-24T07:48:57.053802+00:00",
+    "question": "CUKTECH AD902S 90W Gan Air Charger ใช้กับ Xiaomi Mi 17 Ultra ได้ไหมครับ",
+    "shop_id": "987863120",
+    "shop_name": "CUKTECH Thailand",
+    "platform": "shopee",
+    "response": {
+      "status": "answered",
+      "intent": "compatibility",
+      "reason": "source_match",
+      "answer": "ยังยืนยันไม่ได้ครับ เนื่องจากในข้อมูลของ CUKTECH AD902S 90W GaN Air Charger ระบุไว้เพียงว่ารองรับการชาร์จเร็วเต็มสปีดสำหรับอุปกรณ์สมาร์ทโฟน Xiaomi และระบุรุ่นอย่าง Xiaomi 17 Pro ไว้ แต่ยังไม่มีข้อมูลระบุเจาะจงถึงรุ่น Xiaomi Mi 17 Ultra ครับ ผู้ช่วยร้านจึงยังไม่สามารถยืนยันความเข้ากันได้ในส่วนนี้ครับผม",
+      "sources": [
+        {
+          "row": 2,
+          "cell": "B2",
+          "file": "สินค้า - ZMI l CUKTECH (sellcenter).xlsx",
+          "sheet": "ข้อมูลสินค้า",
+          "url_source": {
+            "row": 2,
+            "cell": "D2",
+            "file": "สินค้า - ZMI l CUKTECH (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          },
+          "name_source": {
+            "row": 2,
+            "cell": "A2",
+            "file": "สินค้า - ZMI l CUKTECH (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          },
+          "product_url": "ค้นหาคำว่า \"CUKTECH AD902S\" ในช่องค้นหาของร้าน",
+          "raw_row_index": 1176
+        }
+      ],
+      "product_name": "CUKTECH AD902S 90W Gan Air Charger",
+      "matched_question": null,
+      "session_id": null,
+      "handoff_mock": false,
+      "handoff_sent": false,
+      "intent_analysis": {
+        "intent": "compatibility",
+        "topic": "compatibility of CUKTECH AD902S 90W Gan Air Charger with Xiaomi Mi 17 Ultra",
+        "needs": [
+          "check if CUKTECH AD902S 90W Gan Air Charger can be used with Xiaomi Mi 17 Ultra"
+        ],
+        "product_names": [
+          "CUKTECH AD902S 90W Gan Air Charger"
+        ],
+        "category": null,
+        "list_all": false,
+        "unresolved": false,
+        "shop_scope": "current_store"
+      },
+      "source": "chatblackshark",
+      "products": [],
+      "product_cards": [],
+      "bot_status": "answered",
+      "handoff_required": false,
+      "handoff_reason": null,
+      "image_description": "",
+      "image_descriptions": [],
+      "image_desc": ""
+    },
+    "server_request_id": "codex-cuktech-ad902s-20261124"
+  },
+  {
+    "created_at": "2026-11-24T07:49:49.339060+00:00",
+    "question": "สาย CUKTECH CTC620P ใช้ชาร์จ Xiaomi Mi 17 Ultra ได้ไหมครับ",
+    "shop_id": "987863120",
+    "shop_name": "CUKTECH Thailand",
+    "platform": "shopee",
+    "response": {
+      "status": "handoff_required",
+      "intent": "compatibility",
+      "reason": "llm_unsupported_number",
+      "answer": "เรื่องนี้ต้องให้เจ้าหน้าที่ช่วยตรวจสอบครับ",
+      "handoff_mock": true,
+      "handoff_sent": false,
+      "sources": [],
+      "product_name": "CUKTECH CTC620P (สายชาร์จ)",
+      "session_id": null,
+      "intent_analysis": {
+        "intent": "compatibility",
+        "topic": "compatibility of CUKTECH CTC620P with Xiaomi Mi 17 Ultra",
+        "needs": [
+          "check if CUKTECH CTC620P can charge Xiaomi Mi 17 Ultra"
+        ],
+        "product_names": [
+          "CUKTECH CTC620P (สายชาร์จ)"
+        ],
+        "category": null,
+        "list_all": false,
+        "unresolved": false,
+        "shop_scope": "current_store"
+      },
+      "source": "chatblackshark",
+      "products": [],
+      "product_cards": [],
+      "bot_status": "handoff_mock",
+      "handoff_required": true,
+      "handoff_reason": "llm_unsupported_number",
+      "image_description": "",
+      "image_descriptions": [],
+      "image_desc": ""
+    },
+    "server_request_id": "codex-cuktech-cable-20261124"
+  }
+]

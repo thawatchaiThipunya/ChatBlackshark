@@ -703,6 +703,102 @@ class IntentFlowTests(unittest.TestCase):
         self.assertEqual(result["sources"], [{"cell": "B3"}, {"cell": "F4"}])
         self.assertTrue(any("FAQ_EVIDENCE" in prompt for prompt in prompts))
 
+    def test_tax_invoice_without_relevant_faq_handoffs_with_explanation(self):
+        def generate(key, prompt):
+            if "Return ONLY JSON with keys: intent" in prompt:
+                return json.dumps({"intent": "store_support", "topic": "tax invoice",
+                                   "needs": ["tax invoice"], "product_names": [], "unresolved": False})
+            return '{"indices": []}'
+
+        engine = self.engine([], generate)
+        result = engine.answer("ขอใบกำกับภาษีได้ไหม")
+
+        self.assertEqual(result["status"], "handoff_mock")
+        self.assertEqual(result["reason"], "sensitive_topic")
+        self.assertEqual(result["handoff_reason"], "sensitive_topic")
+        self.assertIn("ข้อมูล", result["handoff_explanation"])
+
+    def test_missing_requested_fact_in_kb_returns_handoff_reason(self):
+        def generate(key, prompt):
+            if "Return ONLY JSON with keys: intent" in prompt:
+                return json.dumps({"intent": "product_info", "topic": "display refresh rate",
+                    "needs": ["refresh rate"], "product_names": ["Model A"], "unresolved": False})
+            if "HANDOFF_REASON" in prompt:
+                return json.dumps({"answer": "ยังไม่พบข้อมูลรีเฟรชเรตในเอกสารร้านครับ",
+                                   "handoff_reason": "insufficient_shop_evidence"}, ensure_ascii=False)
+            return json.dumps({"answer": "ยังไม่พบข้อมูลรีเฟรชเรตในเอกสารร้านครับ",
+                               "handoff_reason": "insufficient_shop_evidence"}, ensure_ascii=False)
+
+        result = self.engine([{"name": "Model A", "description": "หน้าจอ AMOLED", "source": {}}], generate).answer(
+            "จอ Model A รีเฟรชเรตกี่ Hz")
+
+        self.assertEqual(result["status"], "handoff_mock")
+        self.assertEqual(result["reason"], "insufficient_shop_evidence")
+        self.assertEqual(result["handoff_reason"], "insufficient_shop_evidence")
+        self.assertIn("หลักฐาน", result["handoff_explanation"])
+
+    def test_answer_review_can_escalate_when_draft_cannot_cover_every_need(self):
+        def generate(key, prompt):
+            if "Return ONLY JSON with keys: intent" in prompt:
+                return json.dumps({"intent": "product_info", "topic": "battery and GPS", "needs": ["GPS battery life"],
+                                   "product_names": ["Model A"], "unresolved": False})
+            if "ANSWER REVIEW" in prompt:
+                return json.dumps({"answer": "รุ่นนี้มี GPS ครับ แต่ยังไม่พบเวลาการใช้งาน GPS ในข้อมูลร้าน",
+                                   "handoff_reason": "insufficient_shop_evidence"}, ensure_ascii=False)
+            return json.dumps({"answer": "รุ่นนี้มี GPS ครับ แต่ไม่พบข้อมูลเวลาใช้งาน",
+                               "handoff_reason": "none"}, ensure_ascii=False)
+
+        store = FakeStore([{"name": "Model A", "description": "มี GPS ในตัว", "source": {}}])
+        store.runtime_config = lambda: {}
+        result = ProductChatEngine(store=store, answerer=GeminiAnswerer(store, generate)).answer(
+            "เปิด GPS ใช้ได้นานกี่ชั่วโมง")
+
+        self.assertEqual(result["status"], "handoff_mock")
+        self.assertEqual(result["handoff_reason"], "insufficient_shop_evidence")
+        self.assertIn("หลักฐาน", result["handoff_explanation"])
+
+    def test_legal_or_platform_dispute_intent_handoffs_before_faq_or_answer(self):
+        prompts = []
+
+        def generate(key, prompt):
+            prompts.append(prompt)
+            if "Return ONLY JSON with keys: intent" in prompt:
+                return json.dumps({"intent": "store_support", "topic": "formal platform dispute",
+                    "needs": ["staff review"], "product_names": [], "unresolved": False,
+                    "admin_handoff_reason": "legal_or_platform_dispute"})
+            raise AssertionError("risky disputes must hand off before FAQ selection or answer generation")
+
+        result = self.engine([], generate).answer("ต้องการยื่นเรื่องข้อพิพาทกับแพลตฟอร์ม")
+
+        self.assertEqual(result["status"], "handoff_mock")
+        self.assertEqual(result["reason"], "legal_or_platform_dispute")
+        self.assertEqual(result["handoff_reason"], "legal_or_platform_dispute")
+        self.assertIn("ข้อพิพาท", result["handoff_explanation"])
+        self.assertEqual(len(prompts), 1)
+
+    def test_followup_still_missing_requested_product_identity_handoffs(self):
+        prompts = []
+
+        def generate(key, prompt):
+            prompts.append(prompt)
+            if "Return ONLY JSON with keys: intent" in prompt:
+                return json.dumps({"intent": "troubleshooting", "topic": "device problem",
+                    "needs": ["identify affected model"], "product_names": [], "unresolved": False,
+                    "admin_handoff_reason": "clarification_unresolved"})
+            raise AssertionError("repeat unresolved clarification must hand off before answer generation")
+
+        history = [
+            {"role": "user", "content": "นาฬิกาที่ซื้อไปชาร์จไม่เข้า"},
+            {"role": "assistant", "content": "ช่วยบอกรุ่นนาฬิกาหรือเลขคำสั่งซื้ออีกนิดครับ"},
+        ]
+        result = self.engine([], generate).answer("ตัวที่ซื้อไปนั่นแหละครับ", history=history)
+
+        self.assertEqual(result["status"], "handoff_mock")
+        self.assertEqual(result["reason"], "clarification_unresolved")
+        self.assertEqual(result["handoff_reason"], "clarification_unresolved")
+        self.assertIn("รุ่น", result["handoff_explanation"])
+        self.assertEqual(len(prompts), 1)
+
     def test_store_support_handoff_keeps_canonical_intent_and_records_case(self):
         def generate(key, prompt):
             if "Return ONLY JSON with keys: intent" in prompt:

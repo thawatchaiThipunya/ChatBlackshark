@@ -1,0 +1,1800 @@
+[
+  {
+    "id": "Q001",
+    "question": "gs3 ultra กันน้ำระดับไหนครับ",
+    "group": "conversation",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 13.32,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "รุ่นนี้มาพร้อมมาตรฐานกันน้ำ 5ATM และ IP69K ครับ โดยระดับ 5ATM ทนแรงดันน้ำเทียบเท่าความลึก 50 เมตร และ IP69K ช่วยกันฝุ่นสมบูรณ์รวมถึงทนน้ำร้อนสูงถึง 80°C ครับผม",
+    "current_answer": "รองรับครับ รุ่นนี้มาพร้อมมาตรฐานกันน้ำ 5ATM และ IP69K โดยระดับ 5ATM ทนแรงดันน้ำเทียบเท่าความลึก 50 เมตร และมาตรฐาน IP69K กันฝุ่นสมบูรณ์และทนน้ำร้อนสูงถึง 80°C ครับ"
+  },
+  {
+    "id": "Q002",
+    "question": "ใส่ว่ายน้ำได้มั้ย",
+    "group": "conversation",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 80.8,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "รุ่นนี้ใส่ว่ายน้ำได้ครับ เพราะมาพร้อมมาตรฐานกันน้ำ 5ATM และมีฟังก์ชันติดตามท่าว่ายน้ำ รวมถึงช่วยพัฒนาการว่ายน้ำให้แม่นยำขึ้นด้วยครับผม",
+    "current_answer": "รองรับครับ รุ่นนี้มาพร้อมมาตรฐานกันน้ำ 5ATM และ IP69K รวมถึงมีฟังก์ชันติดตามท่าว่ายน้ำและช่วยพัฒนาการว่ายน้ำให้แม่นยำขึ้นด้วยครับ"
+  },
+  {
+    "id": "Q003",
+    "question": "อาบน้ำอุ่น เข้าซาวน่าได้ไหม",
+    "group": "conversation",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 4.44,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สำหรับ Black Shark GS3 Ultra แม้ตัวนาฬิกาจะออกแบบมาให้ทนต่ออุณหภูมิสูงได้ถึง 80°C แต่ทางเราไม่แนะนำให้ใช้งานในสภาพแวดล้อมที่ร้อนจัด เช่น ห้องซาวน่า หรือใส่อาบน้ำร้อน รวมถึงสภาพแวดล้อมที่มีความร้อนสะสมเป็นเวลานาน เพราะอาจทำให้ชิ้นส่วนภายในของนาฬิกาเสียหายได้ครับผม",
+    "current_answer": "ไม่ได้ครับ แม้ตัวเรือนจะออกแบบให้ทนต่ออุณหภูมิสูงถึง 80°C แต่ทางแบรนด์ไม่แนะนำให้ใช้นาฬิกาในสภาพแวดล้อมที่ร้อนจัด เช่น ห้องซาวน่า ใช้อาบน้ำร้อน หรือสภาพแวดล้อมอื่นๆ ที่มีความร้อนสะสมเป็นเวลานาน เพราะอาจทำให้ชิ้นส่วนภายในของนาฬิกาเสียหายได้ครับ"
+  },
+  {
+    "id": "Q004",
+    "question": "แบตอยู่ได้กี่วัน",
+    "group": "conversation",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 13.66,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สำหรับ Black Shark GS3 Ultra ระยะเวลาการใช้งานแบตเตอรี่จะแตกต่างกันไปตามโหมดการใช้งานครับ โดยในโหมดการใช้งานทั่วไปจะอยู่ได้นานสูงสุดประมาณ 18 วัน ส่วนถ้าใช้งานหนักจะอยู่ได้ประมาณ 9 วัน หรือหากเปิดโหมดสแตนด์บายยาวนานพิเศษจะอยู่ได้นานสุดถึง 45 วันครับผม",
+    "current_answer": "ระยะเวลาการใช้งานแบตเตอรี่จะขึ้นอยู่กับรูปแบบการใช้งานครับ โดยในโหมดการใช้งานทั่วไปจะอยู่ได้นานสูงสุดประมาณ 18 วัน ส่วนถ้าใช้งานหนักจะอยู่ได้ประมาณ 9 วันครับ หรือถ้าเปิดใช้งานเฉพาะโหมดสแตนด์บายยาวนานพิเศษจะอยู่ได้นานถึง 45 วันครับ"
+  },
+  {
+    "id": "Q005",
+    "question": "GS3 กับ GS3 Ultra ต่างกันยังไงคะ",
+    "group": "conversation",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 7,
+    "elapsed_seconds": 18.56,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สำหรับ Black Shark GS3 และ Black Shark GS3 Ultra ทั้งสองรุ่นมีความแตกต่างกันหลัก ๆ ดังนี้ครับ\n\n- วัสดุตัวเรือน: รุ่น GS3 ใช้ Corning® Gorilla® Glass 3 + Fiberglass ส่วนรุ่น GS3 Ultra ใช้ Corning® Gorilla® Glass 3 + Zinc Alloy\n- ความสว่างหน้าจอ: รุ่น GS3 มีความสว่าง 600Nit ส่วนรุ่น GS3 Ultra มีความสว่าง 1000Nits\n- เครือข่ายดาวเทียม GPS: รุ่น GS3 รองรับ 5 เครือข่าย (GPS, BeiDou, GLONASS, GALILEO, QZSS) ส่วนรุ่น GS3 Ultra รองรับ Dual-Band 6 เครือข่าย (GPS, BeiDou, GLONASS, GALILEO, NAVIC, QZSS)\n- โหมดกีฬา: รุ่น GS3 รองรับมากกว่า 100 ชนิด ส่วนรุ่น GS3 Ultra รองรับ 160 ชนิด\n- แอปพลิเคชันที่รองรับ: รุ่น GS3 รองรับแอป Shark Wearable สำหรับ iOS และ Shark Sport สำหรับ Android ส่วนรุ่น GS3 Ultra รองรับแอป Shark Track ทั้ง iOS และ Android\n- ระยะเวลาใช้งานทั่วไป: รุ่น GS3 นานสุด 21 วัน ส่วนรุ่น GS3 Ultra นานสุด 18 วัน\n- น้ำหนัก (ไม่รวมสาย): รุ่น GS3 หนัก 44.9 กรัม ส่วนรุ่น GS3 Ultra หนัก 56.3 กรัม",
+    "current_answer": "สำหรับสองรุ่นนี้มีความแตกต่างกันหลักๆ ที่วัสดุ ดีไซน์ และฟังก์ชันการใช้งานด้านในครับ น้อง Black Shark ขอสรุปข้อมูลเปรียบเทียบจุดเด่นของทั้งสองรุ่นให้ดูกันง่ายๆ ตามตารางนี้เลยนะครับ\n\n| คุณสมบัติ | Black Shark GS3 | Black Shark GS3 Ultra |\n| :--- | :--- | :--- |\n| วัสดุตัวเรือน | Corning® Gorilla® Glass 3 + Fiberglass | Corning® Gorilla® Glass 3 + Zinc Alloy |\n| ความสว่างหน้าจอ | 600 Nits | 1000 Nits |\n| เครือข่าย GPS | 5 เครือข่าย | Dual-Band 6 เครือข่าย |\n| โหมดกีฬา | มากกว่า 100 ชนิด | 160 ชนิด |\n| ฟังก์ชันสุขภาพเพิ่มเติม | ตรวจวัดหัวใจ, ออกซิเจน, ความเครียด, การนอนหลับ | เพิ่มฟังก์ชันตรวจวัดอารมณ์ และสุขภาพผู้หญิง |\n| แอปพลิเคชันที่ใช้งาน | Shark Sport (Android) / Shark Wearable (iOS) | Shark Track |\n| แบตเตอรี่ (ใช้งานทั่วไป) | นานสุด 21 วัน | นานสุด 18 วัน |\n| น้ำหนัก (ไม่รวมสาย) | 44.9 กรัม | 56.3 กรัม |\n\nถ้าคุณลูกค้าเน้นความเบาสบายและชอบหน้าจอที่ให้แบตเตอรี่อึดใช้งานได้ยาวนานกว่า รุ่นมาตรฐานจะตอบโจทย์ได้ดีครับ แต่ถ้าต้องการความพรีเมียมจากวัสดุ Zinc Alloy หน้าจอสว่างสู้แสงได้ดีเยี่ยม GPS แบบ Dual-Band ที่แม่นยำขึ้น พร้อมโหมดกีฬาและฟังก์ชันสุขภาพที่ครบถ้วนกว่า รุ่น Ultra จะเป็นตัวเลือกที่เหมาะสมครับ"
+  },
+  {
+    "id": "Q006",
+    "question": "ตัวไหนแบตอึดกว่าคะ",
+    "group": "conversation",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 5.23,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สำหรับเรื่องแบตเตอรี่ รุ่น Black Shark GS3 จะใช้งานทั่วไปได้นานสุด 21 วัน และสแตนด์บายได้นานสุด 45 วัน ส่วนรุ่น Black Shark GS3 Ultra จะใช้งานทั่วไปได้นานสุด 18 วัน และสแตนด์บายนานสุด 45 วันครับ โดยรุ่น Black Shark GS3 จะรองรับการใช้งานทั่วไปได้นานกว่าครับ",
+    "current_answer": "รุ่น Black Shark GS3 จะมีแบตเตอรี่ที่ใช้งานได้อึดกว่าครับ โดยขอสรุปข้อมูลเปรียบเทียบระยะเวลาการใช้งานแบตเตอรี่ของทั้งสองรุ่นตามตารางด้านล่างนี้ครับ\n\n| คุณสมบัติ | Black Shark GS3 | Black Shark GS3 Ultra |\n| :--- | :--- | :--- |\n| ความจุแบตเตอรี่ | 470mAh | 440mAh |\n| ใช้งานทั่วไป (Daily Use) | นานสุด 21 วัน | นานสุด 18 วัน |\n| โหมดสแตนด์บาย (Standby) | นานสุด 45 วัน | นานสุด 45 วัน |\n\nหากคุณลูกค้าเน้นเรื่องการใช้งานทั่วไปที่ยาวนานกว่าโดยไม่ต้องชาร์จบ่อย รุ่น GS3 จะตอบโจทย์เรื่องความอึดของแบตเตอรี่ได้ดีกว่าครับผม"
+  },
+  {
+    "id": "Q007",
+    "question": "ในกล่องแถมสายมาด้วยมั้ยคะ",
+    "group": "conversation",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 9.74,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สำหรับรุ่น Black Shark GS3 ในกล่องจะมีตัวเรือน, สายผ้า (Woven Strap), สายชาร์จ และคู่มือการใช้งานครับ ส่วนรุ่น Black Shark GS3 Ultra ในกล่องจะมีตัวเรือน, สายชาร์จ และคู่มือการใช้งานครับผม",
+    "current_answer": "มีแถมครับ สำหรับรุ่น Black Shark GS3 ในกล่องจะได้รับตัวเครื่อง สายผ้า Woven Strap สายชาร์จ และคู่มือการใช้งานครับ \n\nส่วนรุ่น Black Shark GS3 Ultra ในกล่องจะได้รับตัวเครื่อง สายชาร์จ และคู่มือการใช้งานครับ"
+  },
+  {
+    "id": "Q008",
+    "question": "จอ Ultra กี่ Hz คะ",
+    "group": "conversation",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 4,
+    "elapsed_seconds": 13.7,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สำหรับ Black Shark GS3 Ultra หน้าจอมีความลื่นไหลอยู่ที่ 60Hz ครับ ช่วยให้การแสดงผลบนหน้าจอ AMOLED ขนาด 1.43 นิ้วมีความราบรื่นดีครับผม",
+    "current_answer": "รองรับ 60Hz ครับ โดยหน้าจอของรุ่นนี้อัตรารีเฟรชเรตอยู่ที่ 60 Hz ครับ"
+  },
+  {
+    "id": "Q009",
+    "question": "S3 Classic กับ S3 เฉย ๆ ต่างกันยังไงคะ",
+    "group": "conversation",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 6,
+    "elapsed_seconds": 11.77,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สวัสดีครับ น้อง Black Shark ยินดีช่วยเปรียบเทียบข้อมูลให้ฟังครับ ระหว่างรุ่น Black Shark S3 Classic และรุ่น Black Shark S3 มีรายละเอียดสเปกที่แตกต่างกันดังนี้ครับ\n\n- บลูทูธ: รุ่น S3 Classic รองรับเวอร์ชัน 5.4 ส่วนรุ่น S3 รองรับเวอร์ชัน 5.3\n- วัสดุสาย: รุ่น S3 Classic เป็นสายซิลิโคน ส่วนรุ่น S3 เป็นสายซิลิโคนแม่เหล็ก\n- ความจุแบตเตอรี่: รุ่น S3 Classic 350mAh ส่วนรุ่น S3 500mAh\n- ขนาดตัวเรือน: รุ่น S3 Classic ขนาด 46.5 x 49.5 x 13.3 มิลลิเมตร ส่วนรุ่น S3 ขนาด 45.2 x 45.2 x 12.2 มิลลิเมตร\n- น้ำหนักสินค้า: รุ่น S3 Classic หนัก 38 กรัม (ไม่รวมสาย) ส่วนรุ่น S3 หนัก 44.3 กรัม\n- มาตรฐานการกันน้ำ: รุ่น S3 Classic รองรับ 3ATM ส่วนรุ่น S3 รองรับ 5ATM\n- Strava: รุ่น S3 Classic ไม่รองรับ ส่วนรุ่น S3 รองรับ\n- ไฟฉาย: รุ่น S3 Classic ไม่พบข้อมูล ส่วนรุ่น S3 มี\n\nหากต้องการสอบถามข้อมูลเพิ่มเติมส่วนไหน สามารถแจ้งได้เลยนะครับ",
+    "current_answer": "น้อง Black Shark ขอสรุปข้อแตกต่างระหว่างสองรุ่นนี้ให้เข้าใจง่ายๆ เลยนะครับ ทั้งสองรุ่นเป็นสมาร์ทวอทช์ที่ดีไซน์สวยงามและหน้าจอ AMOLED ขนาด 1.43 นิ้วเหมือนกัน แต่จะมีจุดเด่นในเรื่องวัสดุ สาย และฟังก์ชันบางตัวที่ไม่เหมือนกันครับ\n\n| รายการเปรียบเทียบ | Black Shark S3 Classic | Black Shark S3 |\n|---|---|---|\n| บลูทูธ | 5.4 | 5.3 |\n| วัสดุสาย | สายซิลิโคน | สายซิลิโคนแม่เหล็ก |\n| GPS ในตัว | ไม่พบข้อมูล | รองรับ 5 เครือข่าย |\n| มาตรฐานการกันน้ำ | 3ATM | 5ATM |\n| การรองรับ Strava | ไม่รองรับ | รองรับ |\n| ความจุแบตเตอรี่ | 350mAh | 500mAh |\n| น้ำหนัก (ไม่รวมสาย) | 38 กรัม | 44.3 กรัม |\n\nหากเน้นเรื่องการใช้งานกีฬากลางแจ้งที่ต้องการ GPS ในตัวและรองรับ Strava รุ่น S3 จะตอบโจทย์ได้ดีกว่าครับ แต่ถ้าชอบความเบาสบายและดีไซน์คลาสสิก รุ่น S3 Classic ก็ใช้งานทั่วไปได้คุ้มค่าเช่นกันครับ"
+  },
+  {
+    "id": "Q010",
+    "question": "S3 Classic เปลี่ยนสายได้มั้ยคะ",
+    "group": "conversation",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 4,
+    "elapsed_seconds": 8.87,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สามารถดูวิธีการใส่สายนาฬิกาได้ที่ youtu.be/Oen126kBRzI ครับผม",
+    "current_answer": "รองรับครับ ลูกค้าสามารถเปลี่ยนสายนาฬิกาได้ โดยรุ่นนี้ใช้ขนาดสายนาฬิกา 22 มิลลิเมตร และสามารถดูวิดีโอแนะนำวิธีการใส่สายนาฬิกาได้ที่ youtu.be/Oen126kBRzI ครับ"
+  },
+  {
+    "id": "Q011",
+    "question": "แล้ว S3 ตอบข้อความไลน์จากนาฬิกาได้มั้ย",
+    "group": "conversation",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 1,
+    "elapsed_seconds": 265.41,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สำหรับรุ่น Black Shark S3 จะยังไม่สามารถพิมพ์ข้อความตอบกลับได้ครับ โดยตัวนาฬิกาสามารถรองรับการแจ้งเตือนจากแอปพลิเคชันโซเชียลมีเดียเพื่อให้แสดงผลบนหน้าจอได้เท่านั้นครับผม",
+    "current_answer": "ยังไม่รองรับครับ รุ่นนี้สามารถแสดงการแจ้งเตือนจากแอปพลิเคชันโซเชียลมีเดียบนหน้าจอนาฬิกาได้ แต่ฟังก์ชันนี้จะไม่รองรับการพิมพ์ข้อความตอบกลับครับผม"
+  },
+  {
+    "id": "Q012",
+    "question": "ว่ายน้ำได้ทั้งคู่ไหมคะ",
+    "group": "conversation",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 0,
+    "elapsed_seconds": 34.08,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สำหรับรุ่น Black Shark S3 มาพร้อมมาตรฐานการกันน้ำระดับ 5ATM และสามารถทนต่อแรงดันน้ำได้เทียบเท่าความลึกถึง 50 เมตร ส่วนรุ่น Black Shark S3 Classic มีมาตรฐานการกันน้ำ 3ATM ที่สามารถกันน้ำ ทนฝน และละอองน้ำได้ครับ ทั้งนี้ สำหรับการใส่ว่ายน้ำ แหล่งข้อมูลไม่ได้ระบุยืนยันไว้โดยตรงครับ นอกจากนี้ ทั้งสองรุ่นมีข้อควรระวังคือไม่แนะนำให้ใช้งานในสภาพแวดล้อมที่ร้อนจัด เช่น ห้องซาวน่า หรือใช้อาบน้ำร้อนครับผม",
+    "current_answer": "ยังยืนยันไม่ได้ครับ เนื่องจากสำหรับรุ่น Black Shark S3 มีมาตรฐานการกันน้ำระดับ 5ATM ที่ช่วยให้หมดกังวลเรื่องกิจกรรมทางน้ำและทนแรงดันน้ำได้เทียบเท่าความลึกถึง 50 เมตร แต่สำหรับรุ่น S3 Classic มีมาตรฐานการกันน้ำที่ 3ATM ซึ่งระบุไว้ว่าสามารถกันน้ำ ทนฝน และละอองน้ำได้ครับ ทางร้านจึงยังไม่สามารถยืนยันได้ว่าสามารถนำไปใช้งานว่ายน้ำได้ทั้งคู่ครับผม"
+  },
+  {
+    "id": "Q013",
+    "question": "อยากได้นาฬิกาไว้วิ่ง มี GPS ในตัว และใช้กับ Strava ได้ แนะนำรุ่นไหนครับ",
+    "group": "conversation",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 4,
+    "elapsed_seconds": 24.1,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "น้อง Black Shark ขอแนะนำรุ่น BLACK SHARK RUN เลยครับ ตอบโจทย์ความต้องการของคุณได้อย่างครบถ้วน เพราะรุ่นนี้มี GPS ในตัวสำหรับการติดตามเส้นทางการวิ่งอย่างแม่นยำ พร้อมทั้งรองรับการซิงค์ข้อมูลผ่านแอปฯ Strava ครับผม",
+    "current_answer": "รองรับครับ รุ่น Black Shark Run มีระบบ Built-in GPS ในตัวสำหรับติดตามเส้นทางการวิ่งอย่างแม่นยำ และสามารถซิงค์ข้อมูลผ่านแอปฯ Strava ได้ครับ"
+  },
+  {
+    "id": "Q014",
+    "question": "ใช้กับ iPhone ได้ไหม",
+    "group": "conversation",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 5.54,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "ใช้งานกับ iPhone ได้ครับ โดยสามารถเชื่อมต่อผ่านแอปพลิเคชัน Shark Wearable สำหรับระบบ iOS ครับผม",
+    "current_answer": "รองรับครับ รุ่น Black Shark Run สามารถใช้งานร่วมกับ iPhone ได้โดยเชื่อมต่อผ่านแอปพลิเคชัน Shark Wearable ครับ"
+  },
+  {
+    "id": "Q015",
+    "question": "ถ้าเอา Ultra เปิด GPS วิ่ง แบตได้กี่ชั่วโมง",
+    "group": "conversation",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 5.81,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สำหรับรุ่น Ultra เมื่อเปิดใช้งานโหมด GPS จะสามารถใช้งานแบตเตอรี่ต่อเนื่องได้ประมาณ 25 ชั่วโมงครับ โดยทดสอบจากการชาร์จเต็มและใช้งานติดตามตำแหน่งด้วย GPS แบบปิดหน้าจอต่อเนื่องจนแบตหมดครับผม",
+    "current_answer": "เมื่อเปิดใช้งานโหมด GPS จะสามารถใช้งานได้ประมาณ 25 ชั่วโมงครับ โดยมีเงื่อนไขคือชาร์จเต็ม และใช้งานติดตามตำแหน่งด้วย GPS (ปิดหน้าจอ) ใช้งานต่อเนื่องจนแบตหมดครับ"
+  },
+  {
+    "id": "Q016",
+    "question": "Ultra วัดความดันได้ไหม",
+    "group": "conversation",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 28.86,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สำหรับรุ่น Ultra จะไม่รองรับฟังก์ชันการวัดความดันโลหิตครับผม",
+    "current_answer": "ไม่ได้ครับ รุ่น Black Shark GS3 Ultra ไม่รองรับการวัดความดันโลหิตครับ แต่จะมีฟังก์ชันดูแลสุขภาพด้านการตรวจวัดอัตราการเต้นของหัวใจ ออกซิเจนในเลือด ความเครียด อารมณ์ และการนอนหลับตลอด 24 ชั่วโมงครับ"
+  },
+  {
+    "id": "Q017",
+    "question": "A3 ใส่อาบน้ำได้ไหมครับ",
+    "group": "conversation",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 16.68,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "ไม่แนะนำให้สวมใส่ขณะอาบน้ำครับ \n\nแม้ว่า Black Shark A3 จะมีมาตรฐานการกันน้ำ 3ATM ที่สามารถใส่ลุยฝนหรือล้างมือได้ แต่ไม่แนะนำให้สวมใส่อาบน้ำครับ นอกจากนี้ไม่แนะนำให้ใช้นาฬิกาในสภาพแวดล้อมที่มีอุณหภูมิสูง เช่น ห้องซาวน่า อาบน้ำอุ่น หรืออาบน้ำร้อน เนื่องจากหากมีความร้อนสะสมเป็นเวลานาน อาจทำให้ชิ้นส่วนภายในของนาฬิกาเสียหายได้ครับ",
+    "current_answer": "ไม่ได้ครับ ทางแบรนด์ระบุไว้ชัดเจนว่าไม่แนะนำให้สวมใส่อาบน้ำครับ เนื่องจากตัวนาฬิกามีมาตรฐานการกันน้ำ 3ATM ที่ใส่ลุยฝนหรือล้างมือได้เท่านั้น แต่ไม่แนะนำให้ใส่อาบน้ำ อาบน้ำอุ่น หรือใช้งานในสภาพแวดล้อมที่มีอุณหภูมิสูงหรือมีความร้อนสะสมเป็นเวลานานครับ เพราะอาจทำให้ชิ้นส่วนภายในของนาฬิกาเสียหายได้ครับผม"
+  },
+  {
+    "id": "Q018",
+    "question": "จอเป็นแบบไหน กี่นิ้วครับ",
+    "group": "conversation",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 10.74,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สำหรับ Black Shark A3 จะมาพร้อมหน้าจอแสดงผลแบบ TFT ขนาด 1.53 นิ้วครับ",
+    "current_answer": "หน้าจอเป็นแบบ TFT ขนาด 1.53 นิ้วครับ"
+  },
+  {
+    "id": "Q019",
+    "question": "รับสายไลน์ผ่านนาฬิกาได้มั้ย",
+    "group": "conversation",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 10.71,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สำหรับ Black Shark A3 ฟังก์ชันบลูทูธโทรเข้า-ออกจะไม่รองรับการโทรผ่านแอปพลิเคชันโซเชียลมีเดีย เช่น LINE แต่จะรองรับการรับการแจ้งเตือนข้อความจากแอปพลิเคชัน LINE บนหน้าปัดนาฬิกาครับ",
+    "current_answer": "ยังไม่รองรับครับ ฟังก์ชัน Bluetooth Calling ของรุ่นนี้รองรับเฉพาะการโทรผ่านระบบปกติเท่านั้น แต่ยังไม่รองรับการโทรผ่านแอปพลิเคชันโซเชียลมีเดียอย่าง LINE ครับ โดยจะทำได้เพียงรับการแจ้งเตือนข้อความจากแอปเท่านั้นครับผม"
+  },
+  {
+    "id": "Q020",
+    "question": "ต้องโหลดแอปอะไรครับ",
+    "group": "conversation",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 5,
+    "elapsed_seconds": 30.02,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สำหรับ Black Shark A3 จะใช้งานร่วมกับแอปพลิเคชัน Shark Fitlife ครับ โดยรองรับการเชื่อมต่อได้ทั้งระบบ iOS และ Android ครับผม",
+    "current_answer": "รองรับการใช้งานร่วมกับแอปพลิเคชัน Shark Fitlife ครับ โดยสามารถใช้ได้ทั้งระบบ iOS และ Android ครับผม"
+  },
+  {
+    "id": "Q021",
+    "question": "Black Shark RUN รับสายไลน์ได้ไหมคะ ใช้ไอโฟน",
+    "group": "conversation",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 21.99,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สวัสดีครับ Black Shark Run รองรับฟีเจอร์ ENC Bluetooth Calling ซึ่งสามารถรองรับการรับสายโทรเข้าของแอปพลิเคชันยอดนิยมอย่าง Line ผ่านนาฬิกาได้โดยตรงสำหรับระบบปฏิบัติการ iOS ครับผม",
+    "current_answer": "รองรับครับ สำหรับการใช้งานร่วมกับ iPhone ฟีเจอร์ ENC Bluetooth Calling ของนาฬิการุ่นนี้รองรับการรับสายโทรเข้าของแอปพลิเคชันยอดนิยมอย่าง Line ผ่านนาฬิกาได้โดยตรงสำหรับระบบปฏิบัติการ iOS ครับผม"
+  },
+  {
+    "id": "Q022",
+    "question": "แล้วถ้าใช้ Android ล่ะคะ",
+    "group": "conversation",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 8.25,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สำหรับระบบปฏิบัติการ Android ในตอนนี้ ฟีเจอร์ ENC Bluetooth Calling สำหรับการรับสายผ่านแอปพลิเคชันจะยังอยู่ในระหว่างการพัฒนาครับผม",
+    "current_answer": "ยังยืนยันไม่ได้ครับ สำหรับการใช้งานระบบ Android ฟีเจอร์ ENC Bluetooth Calling ที่รองรับการรับสายจากแอปพลิเคชันผ่านนาฬิกาโดยตรง ปัจจุบันรองรับเฉพาะบน iOS เท่านั้น ส่วนระบบ Android ยังอยู่ในระหว่างการพัฒนาครับผม"
+  },
+  {
+    "id": "Q023",
+    "question": "ในกล่องมีอะไรบ้างคะ",
+    "group": "conversation",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 4,
+    "elapsed_seconds": 22.21,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "ภายในกล่องจะได้รับตัวเรือน Black Shark Run, สายนาฬิกาซิลิโคน, สายนาฬิกาผ้า, สายชาร์จ และคู่มือการใช้งานครับ",
+    "current_answer": "ในกล่องจะมี Black Shark Run สายนาฬิกาซิลิโคน สายนาฬิกาผ้า สายชาร์จ และคู่มือการใช้งานครับผม"
+  },
+  {
+    "id": "Q024",
+    "question": "จอกี่นิ้วคะ",
+    "group": "conversation",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 37.56,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "Black Shark Run มาพร้อมหน้าจอ AMOLED ขนาด 1.43 นิ้วครับ",
+    "current_answer": "รองรับครับ หน้าจอของสมาร์ทวอทช์รุ่นนี้จะเป็นหน้าจอ AMOLED ขนาด 1.43 นิ้ว ความละเอียด 454×454p พร้อมความสว่างสูงสุด 1000 Nits ที่ช่วยให้มองเห็นได้อย่างชัดเจนแม้ใช้งานกลางแจ้งครับผม"
+  },
+  {
+    "id": "Q025",
+    "question": "Black Shark Pad 7Pro UE มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "group": "catalog",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 7.29,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สวัสดีครับ Black Shark Pad 7Pro UE โดดเด่นด้วยดีไซน์ตัวเรือนอลูมิเนียมเกรดอุตสาหกรรมการบินที่บางเพียง 7.5 มม. น้ำหนัก 513 กรัม และหน้าจอ IPS LCD ขนาด 11 นิ้ว ความละเอียด FHD+ (1200×1900 พิกเซล) อัตรารีเฟรช 120Hz ความสว่างสูงสุด 450 Nits แสดงผลสีสัน 16.7 ล้านสี \n\nด้านประสิทธิภาพ ขับเคลื่อนด้วยชิปประมวลผล Unisoc 7300 Octa-Core หน่วยความจำ 256GB รองรับ MicroSD Card สูงสุด 2TB และทำงานบนระบบปฏิบัติการ Android 16 ที่มี Gemini AI และ Google Lens ในตัว ช่วยยกระดับการทำงาน ค้นหาข้อมูล แปลภาษา และสแกนผ่านภาพ นอกจากนี้ยังรองรับการแบ่งหน้าจอเพื่อทำงาน แชท หรือดูวิดีโอพร้อมกันในหน้าเดียว\n\nสำหรับความบันเทิง มาพร้อมลำโพง K9 Smart Amplifier 4 ตัว รองรับ Widevine L1 สำหรับรับชมสตรีมมิ่งความละเอียดสูง Full HD 1080P บนแพลตฟอร์มอย่าง Netflix, Prime Video และ Disney+ Hotstar และมีแบตเตอรี่ขนาดใหญ่ 8800mAh รองรับการเชื่อมต่อทั้ง Wi-Fi และ 4G LTE ครับ",
+    "current_answer": "สวัสดีครับ Black Shark ยินดีให้บริการครับ สำหรับ Black Shark Pad 7Pro UE รุ่นนี้มีความโดดเด่นในเรื่องดีไซน์บางเบา 7.5 มม. ทำจากอลูมิเนียมเกรดอุตสาหกรรมการบิน พกพาสะดวก และมาพร้อมหน้าจอขนาด 11 นิ้ว ความละเอียดระดับ FHD+ ที่มีอัตรารีเฟรช 120Hz แสดงผลได้อย่างลื่นไหล รวมถึงรองรับ Widevine L1 รับชมสตรีมมิ่งความละเอียดสูง Full HD บน Netflix, Prime Video และ Disney+ Hotstar ได้อย่างเต็มอารมณ์ครับ\n\nด้านความเหมาะสมในการใช้งาน รุ่นนี้รองรับการทำงานและความบันเทิงรอบด้านครับ ด้วยชิปประมวลผล Unisoc 7300 Octa-Core ร่วมกับระบบปฏิบัติการ Android 16 ที่มี Gemini AI และ Google Lens ในตัว ช่วยยกระดับการทำงานให้รวดเร็วและง่ายขึ้น พร้อมรองรับการแบ่งหน้าจอเพื่อทำงาน แชท หรือดูวิดีโอพร้อมกันในหน้าเดียว และยังมีลำโพง K9 Smart Amplifier ถึง 4 ตัวให้เสียงสมจริง แบตเตอรี่ขนาดใหญ่ 8800mAh ใช้งานได้ยาวนาน เหมาะกับการพกพา ดูหนัง ฟังเพลง เล่นเกม หรือใช้งานทั่วไปในชีวิตประจำวันครับ"
+  },
+  {
+    "id": "Q026",
+    "question": "Black Shark GS3 มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "group": "catalog",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 6.11,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "Black Shark GS3 โดดเด่นด้วยดีไซน์สปอร์ตดุดัน แข็งแกร่งทนทานผ่านมาตรฐานทหาร MIL-STD 810H ทนทานต่อแรงดันน้ำถึง 5 ATM และกันน้ำกันฝุ่นระดับ IP69K ตัวหน้าจอเป็น AMOLED ขนาด 1.43 นิ้ว ความละเอียด 466x466p ความสว่าง 600Nit มี Built-in GPS ในตัว 5 เครือข่าย และแบตเตอรี่อึดใช้งานแบบ Daily Use ได้นานสูงสุด 21 วัน พร้อมฟังก์ชัน AI Shark GPT และรองรับ ENC Bluetooth Calling ครับ\n\nสำหรับการใช้งานนั้นเหมาะกับสายสปอร์ตและผู้ที่ชื่นชอบการออกกำลังกายครับ เนื่องจากรองรับโหมดกีฬามากกว่า 100 ชนิด มีฟังก์ชันตรวจวัดสุขภาพครบถ้วนทั้งอัตราการเต้นของหัวใจ ออกซิเจนในเลือด ความเครียด และการนอนหลับ พร้อมสายนาฬิกา 2 เส้นให้เลือกเปลี่ยนใช้งานได้ตามกิจกรรมครับ",
+    "current_answer": "รองรับค่ะ Black Shark GS3 มีความโดดเด่นและเหมาะกับการใช้งานดังนี้ค่ะ\n\n- ดีไซน์และการใช้งาน: แข็งแกร่งทนทานด้วยมาตรฐาน MIL-STD 810H และกันน้ำลึก 5 ATM หรือประมาณ 50 เมตร พร้อมหน้าจอ AMOLED ขนาด 1.43 นิ้ว ความละเอียด 466x466p ค่า Refresh Rate 60Hz\n- การออกกำลังกาย: ครอบคลุมการออกกำลังกายด้วยโหมดกีฬามากกว่า 100 ชนิด และมี Built-in GPS ในตัวถึง 5 เครือข่าย (GPS, BeiDou, GLONASS, GALILEO, QZSS)\n- การดูแลสุขภาพ: มีฟังก์ชันตรวจวัดอัตราการเต้นของหัวใจ, ออกซิเจนในเลือด, ความเครียด และการนอนหลับ\n- การโทร: รองรับการคุยโทรศัพท์ผ่านบลูทูธ (ENC Bluetooth Calling) ครับ"
+  },
+  {
+    "id": "Q027",
+    "question": "Black Shark GS3 Sport มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "group": "catalog",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 11.61,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สำหรับ Black Shark GS3 Sport มีจุดเด่นด้วยหน้าจอ AMOLED ขนาด 1.43 นิ้ว ความละเอียด 466x466 พิกเซล พร้อมตัวเรือนน้ำหนักเบาเพียง 31 กรัม และผ่านมาตรฐานความทนทาน MIL-STD 810H รวมถึงมี Built-in GPS 5 เครือข่าย และแบตเตอรี่ที่ใช้งานโหมดปกติได้นานสูงสุด 18 วันครับ\n\nส่วนด้านการใช้งาน สมาร์ทวอทช์รุ่นนี้ตอบโจทย์การออกกำลังกายด้วยโหมดกีฬามากกว่า 120 ชนิด มีฟังก์ชันติดตามและวิเคราะห์สุขภาพตลอด 24 ชั่วโมง ทั้งอัตราการเต้นของหัวใจ ออกซิเจนในเลือด ความเครียด และการนอนหลับ พร้อมรองรับมาตรฐานการกันน้ำ 5 ATM ครับ",
+    "current_answer": "สำหรับ Black Shark GS3 Sport มีจุดเด่นคือตัวเรือนน้ำหนักเบาเพียง 31 กรัม สวมใส่สบายไม่หนักข้อมือ พร้อมความทนทานตามมาตรฐาน MIL-STD 810H และกันน้ำลึก 5 ATM ครับ \n\nหน้าจอเป็น AMOLED ขนาด 1.43 นิ้ว มี GPS ในตัวถึง 5 เครือข่าย แบตเตอรี่อึดใช้งานโหมดปกติได้นานสุด 18 วัน ส่วนการใช้งานเหมาะกับการออกกำลังกายด้วยโหมดกีฬามากกว่า 120 ชนิด มีฟังก์ชันตรวจวัดสุขภาพตลอด 24 ชั่วโมง ทั้งอัตราการเต้นของหัวใจ ออกซิเจนในเลือด ความเครียด การนอนหลับ รวมถึงรองรับการโทรผ่านบลูทูธและมีไฟฉาย LED ในตัวครับผม"
+  },
+  {
+    "id": "Q028",
+    "question": "Black Shark GS3 Ultra มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "group": "catalog",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 4,
+    "elapsed_seconds": 12.89,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สวัสดีครับ Black Shark ยินดีให้บริการครับ สำหรับ Black Shark GS3 Ultra โดดเด่นด้วยตัวเรือนวัสดุ Zinc Alloy และหน้าจอกระจก Corning Gorilla Glass 3 พร้อมผ่านมาตรฐานความทนทาน MIL-STD 810G และ MIL-STD 810H รวมถึงกันน้ำมาตรฐาน 5ATM และ IP69K ครับ\n\nด้านการใช้งาน ตัวเรือนรองรับโหมดออกกำลังกาย 160 ชนิด มี GPS แบบ Dual-Band รองรับการโทรผ่านบลูทูธ (Bluetooth Calling) และมีฟังก์ชันดูแลสุขภาพตลอด 24 ชั่วโมง เช่น ตรวจวัดอัตราการเต้นของหัวใจ ออกซิเจนในเลือด ความเครียด อารมณ์ และติดตามการนอนหลับครบทุกระยะครับผม",
+    "current_answer": "รองรับครับ Black Shark GS3 Ultra มีความโดดเด่นในเรื่องความแข็งแกร่งทนทานด้วยตัวเรือนวัสดุ Zinc Alloy หน้าจอแข็งแกร่งด้วยกระจก Corning® Gorilla® Glass 3 พร้อมผ่านมาตรฐานความทนทาน MIL-STD 810G และ MIL-STD 810H และมาตรฐานกันน้ำ 5ATM และ IP69K ครับ\n\nสำหรับการใช้งาน เหมาะสำหรับสายลุยและผู้ที่ชอบออกกำลังกายเพราะรองรับกีฬาถึง 160 ชนิด มี GPS Dual-Band 6 เครือข่ายที่ช่วยเพิ่มความแม่นยำ รวมถึงมีฟังก์ชันดูแลสุขภาพตลอด 24 ชั่วโมง และรองรับฟังก์ชัน Bluetooth Calling (โทรผ่านเบอร์) ครับ"
+  },
+  {
+    "id": "Q029",
+    "question": "Black Shark GS3 Ultra (REFINED EDITION) มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "group": "catalog",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 4.9,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "น้อง Black Shark ยินดีให้บริการครับ สำหรับ Black Shark GS3 Ultra (REFINED EDITION) รุ่นนี้โดดเด่นด้วยความแข็งแกร่งทนทาน ตัวเรือนใช้วัสดุ Zinc Alloy พร้อมหน้าจอกระจก Corning Gorilla Glass 3 ผ่านมาตรฐานความทนทาน MIL-STD 810G และ MIL-STD 810H รวมถึงกันน้ำมาตรฐาน 5ATM และ IP69K จึงพร้อมลุยในทุกพื้นที่ครับ นอกจากนี้ยังมาพร้อมหน้าจอ AMOLED ขนาด 1.43 นิ้ว ความสว่าง 1000 Nits รองรับ GPS แบบ Dual-Band 6 เครือข่ายเพื่อความแม่นยำ มีฟังก์ชัน Bluetooth Calling ให้โทรเข้าโทรออกผ่านเบอร์ได้ และแบตเตอรี่ที่ใช้งานทั่วไปได้นานสูงสุดถึง 18 วันครับ\n\nในส่วนของการใช้งาน สมาร์ทวอทช์รุ่นนี้เหมาะกับการใช้งานในชีวิตประจำวันและการออกกำลังกายครับ โดยรองรับโหมดกีฬาถึง 160 ชนิด ทั้งแบบ Indoor และ Outdoor พร้อมระบบตรวจจับการออกกำลังกายและติดตามท่าว่ายน้ำ นอกจากนี้ยังดูแลสุขภาพตลอด 24 ชั่วโมง ทั้งการวัดอัตราการเต้นของหัวใจ ออกซิเจนในเลือด ความเครียด อารมณ์ และติดตามการนอนหลับครบทุกระยะครับ",
+    "current_answer": "รองรับ Black Shark GS3 Ultra (REFINED EDITION) โดดเด่นด้วยตัวเรือนวัสดุ Zinc Alloy และกระจก Corning Gorilla Glass 3 พร้อมผ่านมาตรฐานความทนทาน MIL-STD 810G และ MIL-STD 810H รวมถึงกันน้ำมาตรฐาน 5ATM และ IP69K \n\nด้านการใช้งานครอบคลุมการรองรับโหมดออกกำลังกายถึง 160 ชนิด มีระบบ GPS Dual-Band 6 เครือข่าย ฟังก์ชัน Bluetooth Calling สำหรับโทรเข้า-โทรออกผ่านเบอร์ และระบบติดตามสุขภาพตลอด 24 ชั่วโมง เช่น วัดอัตราการเต้นของหัวใจ ออกซิเจนในเลือด ความเครียด อารมณ์ และตรวจวัดการนอนหลับครับ"
+  },
+  {
+    "id": "Q030",
+    "question": "Black Shark A3 มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "group": "catalog",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 37.33,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สวัสดีครับ Black Shark A3 โดดเด่นด้วยหน้าจอขนาดใหญ่ 1.53 นิ้ว ความละเอียด 360x360 พิกเซล ความสว่าง 600 nits และอัตรารีเฟรช 60 Hz ตัวเรือนโลหะดีไซน์สวยงามทนทาน ใช้งานได้นานสูงสุดถึง 14 วันต่อการชาร์จครับ\n\nในด้านการใช้งาน รุ่นนี้รองรับการติดตามและวิเคราะห์ข้อมูลด้านสุขภาพตลอด 24 ชั่วโมง เช่น การตรวจวัดอัตราการเต้นของหัวใจ ออกซิเจนในเลือด ความเครียด การนอนหลับ และรอบเดือน พร้อมทั้งรองรับโหมดกีฬามากกว่า 120 ชนิด นอกจากนี้ยังมีฟีเจอร์ ENC Bluetooth Calling สำหรับการรับสาย วางสาย และโทรออกได้จากข้อมือ รวมถึงมีมาตรฐานการกันน้ำ 3ATM ที่สามารถสวมใส่ลุยฝนหรือล้างมือได้ครับ",
+    "current_answer": "รองรับ Black Shark A3 มีจุดเด่นคือหน้าจอ TFT ขนาดใหญ่ 1.53 นิ้ว ความละเอียด 360x360p (240ppi) ความสว่าง 600nits และมีความลื่นไหลสูงถึง 60Hz ตัวเรือนและขอบหน้าจอผลิตจากโลหะขึ้นรูปด้วยวิธี CNC เคลือบพื้นผิว 5 ชั้น หน้าปัดปรับเปลี่ยนได้หลากหลายถึง 240 รูปแบบและอัปโหลดรูปภาพได้ แบตเตอรี่ใช้งานทั่วไปได้นานสูงสุด 14 วัน รองรับการโทรผ่านบลูทูธ (ENC Bluetooth Calling) พร้อมฟังก์ชันตรวจเช็กค่าสุขภาพตลอด 24 ชั่วโมง เช่น อัตราการเต้นของหัวใจ ออกซิเจนในเลือด (SpO2) ความเครียด การนอนหลับ และรอบเดือน รวมถึงรองรับโหมดออกกำลังกายมากกว่า 120 ชนิด มีมาตรฐานการกันน้ำ 3ATM \n\nสำหรับการใช้งานที่เหมาะสม รุ่นนี้เหมาะกับการสวมใส่ในชีวิตประจำวัน ออกกำลังกายทั่วไป และดูแลสุขภาพเบื้องต้น โดยสามารถใส่ลุยฝนหรือล้างมือได้ แต่มีข้อแนะนำคือ ไม่แนะนำให้สวมใส่ว่ายน้ำ อาบน้ำ หรือใช้งานในสภาพแวดล้อมที่มีอุณหภูมิสูง เช่น ห้องซาวน่า อาบน้ำอุ่น หรืออาบน้ำร้อนครับ"
+  },
+  {
+    "id": "Q031",
+    "question": "Black Shark S3 มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "group": "catalog",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 7.59,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สวัสดีครับ Black Shark S3 รุ่นนี้โดดเด่นด้วยหน้าจอ AMOLED ขนาด 1.43 นิ้ว ความละเอียด 466 x 466 พิกเซล ด้วยความสว่างหน้าจอสูงถึง 600 nits ทำให้ใช้งานกลางแจ้งได้ดี ดีไซน์ตัวเรือนผลิตจากโลหะทั้งชิ้นเสริมความคลาสสิกด้วยเม็ดมะยม ด้านการใช้งานมาพร้อม GPS ในตัวถึง 5 เครือข่าย (GPS, BeiDou, GLONASS, GALILEO, QZSS) รองรับมาตรฐานการกันน้ำระดับ 5ATM มีโหมดกีฬาถึง 150 โหมด และรองรับ ENC Bluetooth Calling สำหรับการสนทนา พร้อมทั้งฟังก์ชันการตรวจวัดสุขภาพทั้งอัตราการเต้นของหัวใจ ออกซิเจนในเลือด (SpO2) ประสิทธิภาพการนอน และความเครียดครับ เหมาะสำหรับผู้ที่มองหาสมาร์ทวอทช์ดีไซน์พรีเมี่ยมที่ตอบโจทย์การออกกำลังกายและการใช้งานในชีวิตประจำวันครับ",
+    "current_answer": "รองรับ Black Shark S3 โดดเด่นด้วยหน้าจอ AMOLED ขนาด 1.43 นิ้ว ความละเอียด 466 x 466 Pixels พร้อมความสว่าง 600 nits ทำให้ใช้งานกลางแจ้งได้ ตัวเรือนผลิตจากโลหะทั้งชิ้นพร้อมเม็ดมะยมดีไซน์ประณีต เหมาะสำหรับการใช้งานทั่วไปและการออกกำลังกาย โดยมีโหมดกีฬา 150 โหมด, Built-in GPS ถึง 5 เครือข่ายเพื่อติดตามเส้นทางการวิ่ง, มาตรฐานการกันน้ำ 5ATM ทนแรงดันน้ำเทียบเท่าความลึก 50 เมตร, รองรับการคุยโทรศัพท์ผ่านบลูทูธ (ENC Bluetooth Calling) พร้อมทั้งรองรับการตรวจวัดสุขภาพ เช่น อัตราการเต้นของหัวใจ, ออกซิเจนในเลือด (SpO2), ประสิทธิภาพการนอน และความเครียดครับ"
+  },
+  {
+    "id": "Q032",
+    "question": "Black Shark S3 Classic มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "group": "catalog",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 6,
+    "elapsed_seconds": 30.95,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "Black Shark S3 Classic โดดเด่นด้วยตัวเรือน Zinc Alloy พร้อมการออกแบบเส้นสายที่เรียบเนียนลงตัวกับทุกสไตล์ หน้าจอ AMOLED ขนาด 1.43 นิ้ว ความละเอียด 466 x 466p ความสว่าง 600nits และ 326ppi พร้อมหน้าปัดให้เลือกใช้งานกว่า 150 รูปแบบ มีมาตรฐานการกันน้ำ 3ATM สามารถกันน้ำ ทนฝน และละอองน้ำได้ แบตเตอรี่ใช้งานได้ยาวนานสุดถึง 15 วัน หรือสแตนด์บายได้นานสุดถึง 30 วัน รองรับโหมดกีฬามากกว่า 120 ชนิด ติดตามสุขภาพตลอด 24 ชั่วโมง รวมถึงรองรับการแจ้งเตือนต่างๆ และการรับสายโทรศัพท์ผ่านระบบ Bluetooth Calling ครับ",
+    "current_answer": "สำหรับจุดเด่นของ Black Shark S3 Classic โดดเด่นด้วยดีไซน์ตัวเรือน Zinc Alloy ที่เรียบเนียนเข้ากับทุกสไตล์ พร้อมหน้าจอ AMOLED ขนาด 1.43 นิ้ว ความละเอียด 466 x 466p ความสว่าง 600nits และมีหน้าปัดให้เลือกกว่า 150 รูปแบบครับ\n\nนอกจากนี้ยังมีแบตเตอรี่อึดใช้งานได้ยาวนานสูงสุดถึง 15 วัน (สแตนด์บายได้นานสุด 30 วัน) มีมาตรฐานการกันน้ำ 3ATM รองรับโหมดกีฬามากกว่า 120 ชนิด ติดตามสุขภาพตลอด 24 ชั่วโมง และรองรับการรับสายโทรศัพท์ผ่านระบบ Bluetooth Calling ครับ"
+  },
+  {
+    "id": "Q033",
+    "question": "Black Shark S1 Pro มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "group": "catalog",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 29.9,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "Black Shark S1 Pro มีจุดเด่นดังนี้ครับ\n\n- มี AI Chat GPT ในตัวนาฬิกาสำหรับช่วยตอบคำถาม\n- หน้าจอ AMOLED ขนาด 1.43 นิ้ว ความละเอียด 466 x 466 Pixel (326PPI) สว่าง 600nit และมีรีเฟรชเรท 60Hz\n- ดีไซน์สปอร์ตพรีเมียม ตัวเรือนใช้วัสดุซิงค์อัลลอย ขอบ Bezel ขัดเงาด้วยเครื่อง CNC และสายซิลิโคนเกรดสูง\n- รองรับ Bluetooth Calling สามารถโทรเข้า โทรออก และบันทึกรายชื่อ (รองรับการโทรผ่านเบอร์โทรศัพท์ Cellular)\n- มี Gaming Health Monitoring Mode และ Game Mode สำหรับวัดอัตราการเต้นของหัวใจและความเครียดขณะเล่นเกม\n- รองรับการแจ้งเตือนจากแอปพลิเคชันโซเชียลมีเดียบนหน้าจอ\n\nรุ่นนี้เหมาะสำหรับการใช้งานในชีวิตประจำวันทั่วไป เช่น การรับการแจ้งเตือน การติดตามสุขภาพเบื้องต้น และการใช้งานฟังก์ชันสำหรับชาวเกมมิ่งครับ",
+    "current_answer": "รองรับครับ Black Shark S1 Pro มีจุดเด่นคือมี AI Chat GPT ติดตั้งมาให้ในตัวนาฬิกา หน้าจอ AMOLED ขนาด 1.43 นิ้ว ความละเอียด 466 x 466 พิกเซล ความสว่าง 600nit และค่า Refresh Rate 60Hz ตัวเรือนทำจากซิงค์อัลลอยพร้อมขอบขัดเงา CNC และสายซิลิโคนเกรดสูง รองรับ Bluetooth Calling สำหรับโทรออกผ่านระบบเบอร์โทรศัพท์ มี Gaming Health Monitoring Mode เปิด Game Mode เพื่อวัดอัตราการเต้นของหัวใจและความเครียดเมื่อเล่นเกม กันน้ำมาตรฐาน IP68 และใช้งานใน Daily mode ได้นานถึง 15 วันครับ"
+  },
+  {
+    "id": "Q034",
+    "question": "Black Shark S1 Classic มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "group": "catalog",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 8.3,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สวัสดีครับ Black Shark ยินดีให้บริการครับ สำหรับ Black Shark S1 Classic โดดเด่นด้วยดีไซน์เรียบหรูสไตล์คลาสสิกผสมความทันสมัย ตัวเรือนซิงค์อัลลอยคู่กับเม็ดมะยมสเตนเลสสตีล หน้าจอ AMOLED ขนาด 1.43 นิ้ว ความละเอียด 466 x 466 พิกเซล (326 PPI) สู้แดดได้ดียิ่งขึ้นด้วยความสว่าง 600nit และใช้งานลื่นไหลด้วยอัตรารีเฟรช 60Hz ครับ \n\nนอกจากนี้ยังมีฟังก์ชันบลูทูธสำหรับการโทรเข้า-ออก โหมดเกมที่ช่วยวัดอัตราการเต้นของหัวใจและความเครียดเมื่อเล่นเกม มีโหมดออกกำลังกายมากกว่า 100 โหมด ฟังก์ชันตรวจจับและวัดคุณภาพการนอน ตรวจวัดระดับออกซิเจนในเลือด (SpO2) หน้าปัดนาฬิกากว่า 150 รูปแบบ แบตเตอรี่ใช้งานได้นานสูงสุด 12 วัน และมีมาตรฐานการกันน้ำกันฝุ่นระดับ IP68 ครับ",
+    "current_answer": "สวัสดีครับ Black Shark S1 Classic มีจุดเด่นคือดีไซน์เรียบหรูผสมผสานความย้อนยุคและความทันสมัย ตัวเรือนผลิตจากซิงค์อัลลอยคู่กับเม็ดมะยมสเตนเลสสตีลเกรดสูง หน้าจอ AMOLED ขนาด 1.43 นิ้ว ความละเอียด 466 x 466 พิกเซล (326 PPI) พร้อมความสว่าง 600 nit สู้แดดได้ดียิ่งขึ้น และมีอัตรารีเฟรชเรต 60Hz ใช้งานได้อย่างลื่นไหลครับ \n\nนอกจากนี้ยังมีฟังก์ชัน Bluetooth Calling รองรับการโทรเข้า-ออกผ่านระบบเบอร์โทรศัพท์ พร้อมบันทึกรายชื่อผู้ติดต่อได้ มีโหมดตรวจวัดสุขภาพ เช่น ฟังก์ชันตรวจจับและวัดคุณภาพการนอนอย่างละเอียด (Sleep Monitoring) และฟังก์ชันตรวจวัดระดับออกซิเจนในเลือด (SpO2 Monitoring) รวมถึงมีโหมดกีฬามากกว่า 100 โหมด ฟังก์ชัน Gaming Health Monitoring Mode และฟังก์ชันเปิด Game Mode เพื่อวัดอัตราการเต้นของหัวใจและความเครียดเมื่อเล่นเกมครับ ด้านการใช้งานมาพร้อมแบตเตอรี่ที่ใช้งานในโหมดปกติได้นานสูงสุด 12 วัน และมีมาตรฐานการกันน้ำกันฝุ่นระดับ IP68 ครับ"
+  },
+  {
+    "id": "Q035",
+    "question": "Black Shark GT3 มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "group": "catalog",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 5.63,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สวัสดีครับ Black Shark GT3 มีจุดเด่นคือหน้าจอ AMOLED ขนาด 1.78 นิ้ว ความละเอียด 368 x 448 พิกเซล สู้แดดด้วยความสว่าง 600 nit ตัวเรือนทำจากอลูมิเนียมอัลลอย น้ำหนักเบาเพียง 25 กรัม มีฟังก์ชัน Bluetooth Calling รองรับการโทรเข้า-ออกพร้อมบันทึกรายชื่อ และแบตเตอรี่ที่ใช้งานได้ยาวนานสูงสุด 10 วันครับ\n\nนอกจากนี้ยังมีโหมดกีฬาถึง 100 โหมด พร้อมฟังก์ชันตรวจวัดสุขภาพตลอด 24 ชั่วโมง ทั้งอัตราการเต้นของหัวใจ ออกซิเจนในเลือด และคุณภาพการนอนหลับ รวมถึงมีมาตรฐานกันน้ำและกันฝุ่น IP68 ครับผม",
+    "current_answer": "รองรับครับ Black Shark GT3 ตอบโจทย์การใช้งานในชีวิตประจำวันและการดูแลสุขภาพ โดยจุดเด่นหลักอยู่ที่หน้าจอ AMOLED ขนาด 1.78 นิ้ว ความละเอียด 368 x 448 พิกเซล ความสว่าง 600 nit ตัวเรือนทำจากอลูมิเนียมอัลลอยน้ำหนักเบาเพียง 25 กรัม นอกจากนี้ยังรองรับการโทรเข้า-ออกผ่านบลูทูธ มีโหมดกีฬาถึง 100 โหมด พร้อมฟังก์ชันตรวจวัดสุขภาพครบถ้วน เช่น อัตราการเต้นของหัวใจ ออกซิเจนในเลือด และการนอนหลับ แบตเตอรี่ใช้งานได้นานสูงสุดถึง 10 วันครับ"
+  },
+  {
+    "id": "Q036",
+    "question": "Black Shark GT3 NEO มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "group": "catalog",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 5.57,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สวัสดีครับ Black Shark ยินดีให้บริการครับ สำหรับ Black Shark GT3 NEO รุ่นนี้จะโดดเด่นด้วยหน้าจอขนาดใหญ่เต็มตา 2.02 นิ้ว พร้อมความสว่าง 600nit และมีความละเอียด 240 x 296 Pixel พร้อมฟังก์ชันโทรเข้า-ออก มีโหมดกีฬามากถึง 100 โหมด มีแบตเตอรี่ที่ใช้งานได้นานสุด 7 วัน รวมถึงมีฟังก์ชันตรวจวัดสุขภาพครบครันดูแลได้ตลอด 24 ชั่วโมง ไม่ว่าจะเป็นอัตราการเต้นของหัวใจ ออกซิเจนในเลือด และการนอนหลับครับ \n\nในด้านความเหมาะสมกับการใช้งาน รุ่นนี้ตอบโจทย์ผู้ที่ต้องการสมาร์ทวอทช์สำหรับติดตามกิจกรรมและสุขภาพในชีวิตประจำวัน พร้อมช่วยอำนวยความสะดวกในการรับสายและแจ้งเตือนจากแอปพลิเคชันโซเชียลมีเดียได้ดีครับ หากสนใจหรือมีข้อสงสัยเพิ่มเติมสอบถามได้เลยนะครับ",
+    "current_answer": "สวัสดีครับ Black Shark GT3 NEO มีจุดเด่นและเหมาะกับการใช้งานในชีวิตประจำวันและการออกกำลังกายทั่วไปครับ โดยรุ่นนี้รองรับการโทรเข้า-ออกผ่านบลูทูธ (รองรับการโทรออกผ่านระบบเบอร์โทรศัพท์เท่านั้น) มีโหมดกีฬา 100 โหมด มีฟังก์ชันตรวจวัดสุขภาพตลอด 24 ชั่วโมง เช่น อัตราการเต้นของหัวใจ, ออกซิเจนในเลือด (SpO2) และการตรวจจับคุณภาพการนอนหลับ มาพร้อมหน้าจอขนาด 2.022 นิ้ว ความละเอียด 240 x 296 pixel แบตเตอรี่ใช้งานได้สูงสุด 7 วัน และมาตรฐานกันน้ำกันฝุ่น IP68 ครับ ทั้งนี้ รุ่นนี้รองรับการแจ้งเตือนจากแอปโซเชียลมีเดีย แต่ไม่รองรับการพิมพ์ข้อความตอบกลับ และไม่รองรับการโทรผ่านแอปโซเชียลมีเดียโดยตรงครับผม"
+  },
+  {
+    "id": "Q037",
+    "question": "BLACK SHARK RUN มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "group": "catalog",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 5.39,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "BLACK SHARK RUN โดดเด่นด้วยดีไซน์สปอร์ต สวมใส่สบาย น้ำหนักเบาเพียง 30 กรัม มาพร้อมหน้าจอ AMOLED ขนาด 1.43 นิ้ว ความสว่างสูงสุด 1000 Nits มองเห็นชัดเจนแม้ใช้งานกลางแจ้ง และรองรับโหมดกีฬาถึง 150 แบบครับ\n\nสำหรับการใช้งาน รุ่นนี้เหมาะสำหรับผู้ที่ต้องการติดตามกิจกรรมในชีวิตประจำวันและการออกกำลังกายครับ เนื่องจากมี Built-in GPS ช่วยติดตามเส้นทางการวิ่งอย่างแม่นยำ พร้อมระบบวัดค่าสุขภาพตลอด 24 ชั่วโมง และมาตรฐานกันน้ำ 5ATM ให้สวมใส่ลุยกิจวัตรประจำวันได้อย่างมั่นใจครับ",
+    "current_answer": "สวัสดีครับ แอดมินยินดีให้บริการครับ สำหรับ BLACK SHARK RUN โดดเด่นด้วยดีไซน์สปอร์ต สวมใส่สบาย เคลื่อนไหวได้อย่างคล่องตัว ตัวเรือนเบาพิเศษเพียง 30 กรัม มาพร้อมหน้าจอ AMOLED ขนาด 1.43 นิ้ว ความสว่างสูงสุด 1000 Nits เห็นชัดแม้ใช้งานกลางแจ้ง และมีสายนาฬิกา 2 แบบ (สายซิลิโคนและสายผ้า) รองรับทุกไลฟ์สไตล์ครับ\n\nด้านฟังก์ชันและการใช้งาน รองรับการติดตามเส้นทางการวิ่งอย่างแม่นยำด้วย Built-in GPS (รองรับระบบดาวเทียมหลักถึง 5 Satellite), รองรับโหมดกีฬาถึง 150 แบบ, มาตรฐานกันน้ำ 5ATM, วัดค่าสุขภาพตลอด 24 ชั่วโมง (อัตราการเต้นของหัวใจ, ค่าออกซิเจนในเลือด SpO2 และความเครียด), ติดตามวิเคราะห์คุณภาพการนอนหลับ, รองรับ ENC Bluetooth Calling สนทนาคมชัด และแบตเตอรี่ใช้งานทั่วไปสูงสุด 15 วันครับผม"
+  },
+  {
+    "id": "Q038",
+    "question": "Black Shark GT3 Neo2 มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "group": "catalog",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 7.56,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สวัสดีครับ Black Shark ยินดีให้บริการครับ สำหรับ Black Shark GT3 Neo2 มีจุดเด่นอยู่ที่หน้าจอขนาด 2.01 นิ้ว ความสว่าง 600 Nits พร้อมอัตรารีเฟรช 60Hz ตัวเรือนมีน้ำหนักเบาเพียง 23.7 กรัม และรองรับโหมดกีฬาถึง 34 ชนิดครับ\n\nในส่วนของการใช้งาน รุ่นนี้ตอบโจทย์การใช้งานในชีวิตทั่วไปและการออกกำลังกาย มีมาตรฐานกันน้ำระดับ IP68 แบตเตอรี่ใช้งานทั่วไปได้นานสูงสุด 8 วัน รองรับการรับสายผ่านบลูทูธด้วยระบบตัดเสียงรบกวน ENC รวมถึงแจ้งเตือนข้อความจากแอปพลิเคชันยอดนิยมได้ครับ",
+    "current_answer": "จุดเด่นของ Black Shark GT3 Neo2 จะอยู่ที่หน้าจอขนาด 2.01 นิ้ว ความสว่าง 600 Nits และอัตรารีเฟรช 60Hz พร้อมดีไซน์ตัวเรือนบางเบา สวมใส่สบายตลอดวันครับ \n\nด้านการใช้งานจะเหมาะกับการใช้งานในชีวิตประจำวันทั่วไปครับ ตัวเรือนมีมาตรฐานกันน้ำระดับ IP68 รองรับโหมดกีฬาถึง 34 ชนิด พร้อมฟังก์ชันติดตามสุขภาพตลอด 24 ชั่วโมง ไม่ว่าจะเป็นอัตราการเต้นของหัวใจ ออกซิเจนในเลือด และการวิเคราะห์คุณภาพการนอนหลับ นอกจากนี้ยังรองรับ Dual Bluetooth สำหรับรับสายและแจ้งเตือนแบบเรียลไทม์ครับ"
+  },
+  {
+    "id": "Q039",
+    "question": "Black Shark PureLoop มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "group": "catalog",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 4,
+    "elapsed_seconds": 21.5,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "น้อง Black Shark ขอแจ้งว่า Black Shark PureLoop โดดเด่นด้วยดีไซน์แบบไม่มีหน้าจอแสดงผล ช่วยลดการมองหรือความกังวลใจเรื่องการแสดงข้อมูลบนหน้าจอ ตัวเรือนน้ำหนักเบาเพียง 11.4 กرام สวมใส่สบายด้วยสายผ้าเกรดพรีเมียม และแบตเตอรี่ที่ใช้งานทั่วไปได้ถึง 14 วันครับ \n\nสำหรับการใช้งานที่เหมาะสม รุ่นนี้เหมาะกับการติดตามและวิเคราะห์สุขภาพตลอด 24 ชั่วโมง เช่น อัตราการเต้นของหัวใจ ออกซิเจนในเลือด การนอนหลับ รวมถึงรองรับการออกกำลังกายกว่า 30 ชนิดกีฬา พร้อมกันน้ำระดับ 3ATM สำหรับใช้ชีวิตประจำวันครับผม",
+    "current_answer": "สวัสดีครับ Black Shark PureLoop เป็นสมาร์ตวอทช์ที่ไม่มีหน้าจอแสดงผล ออกแบบมาเพื่อช่วยให้คุณโฟกัสกับตัวเองได้อย่างเต็มที่แบบไร้หน้าจอและไร้การกังวลใจเรื่องการแสดงข้อมูลครับ \n\nสำหรับจุดเด่นและลักษณะการใช้งาน มีดังนี้ครับ:\n- น้ำหนักเบาเพียง 11.4 กรัม คล่องตัวทุกการเคลื่อนไหว สวมใส่นอนได้สบายไม่อึดอัดด้วยสายผ้าเกรดพรีเมียม นุ่มนวลและอ่อนโยนต่อผิว\n- ติดตามและวิเคราะห์ข้อมูลสุขภาพตลอด 24 ชั่วโมง ทั้งอัตราการเต้นของหัวใจ, HRV, ออกซิเจนในเลือด, ความเครียด และการนอนหลับ พร้อมประมวลผลคะแนนร่างกาย (Body Score) และช่วยวิเคราะห์สภาพร่างกายเพื่อการฟื้นฟูโดยเฉพาะ\n- รองรับการออกกำลังกายกว่า 30 ชนิดกีฬา พร้อมแสดงผลทันทีหลังออกกำลังกาย\n- มาตรฐานกันน้ำระดับ 3ATM ออกแบบมาเพื่อการใช้ชีวิตประจำวัน ทนเหงื่อ ทนฝน หรือละอองน้ำ\n- แบตเตอรี่ใช้งานทั่วไปได้นานสูงสุดถึง 14 วัน (หรือใช้งานหนักได้ประมาณ 8 วัน) โดยไม่ต้องชาร์จทุกวันครับ"
+  },
+  {
+    "id": "Q040",
+    "question": "Black Shark Genuine Leather Strap มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "group": "catalog",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 10.45,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สวัสดีครับคุณลูกค้า สำหรับสายนาฬิกา Black Shark Genuine Leather Strap มีจุดเด่นคือใช้วัสดุหนังแท้ มีขนาดสาย 22 มิลลิเมตร สามารถติดตั้งและถอดออกได้ง่ายโดยไม่ต้องใช้เครื่องมือใด ๆ และปรับความยาวสายให้เข้ากับข้อมือผู้สวมใส่ได้ครับ\n\nในด้านการใช้งาน สายรุ่นนี้ระบุไว้ว่าสำหรับรุ่น Black Shark A3 เท่านั้นครับ",
+    "current_answer": "สวัสดีครับ Black Shark Genuine Leather Strap โดดเด่นด้วยวัสดุหนังแท้ ติดตั้งและถอดออกได้ง่ายโดยไม่ต้องใช้เครื่องมือ และสามารถปรับความยาวสายให้เข้ากับข้อมือผู้สวมใส่ได้ครับ \n\nสำหรับความเหมาะสมในการใช้งาน สินค้าชิ้นนี้เหมาะกับการใช้งานกับรุ่น Black Shark A3 เท่านั้นครับ เนื่องจากระบุว่าเป็นสายสำหรับรุ่น Black Shark A3 เท่านั้น โดยตัวสายมีขนาด 22 มิลลิเมตร และมีความยาว (ไม่รวมตัวเครื่อง) อยู่ที่ 74.5 มิลลิเมตร + 120 มิลลิเมตรครับผม"
+  },
+  {
+    "id": "Q041",
+    "question": "Black Shark GS3 Smartwatch Charger มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "group": "catalog",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 4,
+    "elapsed_seconds": 130.28,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สวัสดีครับคุณลูกค้า สำหรับ Black Shark GS3 Smartwatch Charger มีจุดเด่นคือผลิตจากวัสดุคุณภาพสูง ทนทาน ใช้งานได้ยาวนาน และใช้งานง่าย สะดวก ออกแบบมาเพื่อความสะดวกสบายในการชาร์จสมาร์ทวอทช์ครับ โดยสินค้านี้เหมาะสำหรับใช้งานกับสมาร์ทวอทช์รุ่น Black Shark GS3 เท่านั้น และรูปแบบสายเป็น USB ครับผม",
+    "current_answer": "รองรับครับ สำหรับ Black Shark GS3 Smartwatch Charger มีจุดเด่นคือผลิตจากวัสดุคุณภาพสูง ทนทาน ใช้งานได้ยาวนาน ออกแบบมาให้ใช้งานง่ายและสะดวกในการชาร์จสมาร์ทวอทช์ มีรูปแบบสายเป็น USB ครับ โดยสินค้าชิ้นนี้ออกแบบมาและใช้สำหรับสมาร์ทวอทช์รุ่น Black Shark GS3 เท่านั้นครับผม"
+  },
+  {
+    "id": "Q042",
+    "question": "Black Shark GS3 Sport Smartwatch Charger มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "group": "catalog",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 27.1,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สำหรับ Black Shark GS3 Sport Smartwatch Charger มีจุดเด่นคือผลิตจากวัสดุคุณภาพสูง ทนทาน ใช้งานได้ยาวนาน ออกแบบมาให้ใช้งานง่ายและสะดวกสบายในการชาร์จสมาร์ทวอทช์ โดยรูปแบบสายเป็น USB ครับ สินค้าชิ้นนี้ใช้สำหรับสมาร์ทวอทช์รุ่น Black Shark GS3 Sport เท่านั้นครับ",
+    "current_answer": "รองรับครับ สำหรับ Black Shark GS3 Sport Smartwatch Charger มีจุดเด่นคือผลิตจากวัสดุคุณภาพสูง ทนทาน ใช้งานได้ยาวนาน ออกแบบมาเพื่อให้ใช้งานง่าย สะดวกสบายในการชาร์จ และใช้สำหรับสมาร์ทวอทช์รุ่น Black Shark GS3 Sport เท่านั้น โดยใช้รูปแบบสายเป็น USB ครับ เหมาะสำหรับใช้งานเป็นสายชาร์จทดแทนหรือพกพาครับ"
+  },
+  {
+    "id": "Q043",
+    "question": "Black Shark S1 Pro Smartwatch Charger มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "group": "catalog",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 4.8,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สวัสดีครับคุณลูกค้า สำหรับ Black Shark S1 Pro Smartwatch Charger ตัวนี้ผลิตจากวัสดุคุณภาพสูง ทนทาน ใช้งานได้ยาวนาน และออกแบบมาเพื่อความสะดวกสบายในการชาร์จสมาร์ทวอทช์ครับ \n\nในด้านการใช้งาน จะใช้สำหรับสมาร์ทวอทช์รุ่น Black Shark S1 Pro เท่านั้น และรูปแบบสายเป็น USB ครับผม",
+    "current_answer": "รองรับครับ ตัวสายชาร์จ Black Shark S1 Pro Smartwatch Charger มีจุดเด่นตรงที่ผลิตจากวัสดุคุณภาพสูง ทนทาน และใช้งานได้ยาวนาน พร้อมทั้งใช้งานง่าย สะดวกสบายในการชาร์จ โดยออกแบบมาเพื่อใช้งานสำหรับสมาร์ทวอทช์รุ่น Black Shark S1 Pro เท่านั้นครับ"
+  },
+  {
+    "id": "Q044",
+    "question": "Black Shark GS3 Sport Smartwatch Cha มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "group": "catalog",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 5.01,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สวัสดีครับ สายชาร์จ Black Shark GS3 Sport Smartwatch Charger มีจุดเด่นคือผลิตจากวัสดุคุณภาพสูง ทนทาน ใช้งานได้ยาวนาน และใช้งานง่าย สะดวก ออกแบบมาเพื่อความสะดวกสบายในการชาร์จสมาร์ทวอทช์ครับ โดยตัวสินค้าเหมาะสำหรับใช้งานกับสมาร์ทวอทช์รุ่น Black Shark GS3 Sport เท่านั้นครับผม",
+    "current_answer": "รองรับครับ ตัวนี้โดดเด่นเรื่องการผลิตจากวัสดุคุณภาพสูง มีความทนทาน ใช้งานได้ยาวนาน และใช้งานง่ายสะดวก โดยออกแบบมาเพื่อความสะดวกสบายในการชาร์จสมาร์ทวอทช์ \n\nสำหรับความเหมาะสมในการใช้งาน สินค้านี้เหมาะสำหรับใช้งานร่วมกับสมาร์ทวอทช์รุ่น Black Shark GS3 Sport เท่านั้นครับ โดยตัวสายชาร์จมาในรูปแบบ USB ครับผม"
+  },
+  {
+    "id": "Q045",
+    "question": "Black Shark Pad 7 wifi มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "group": "catalog",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 23.31,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สวัสดีครับ Black Shark Pad 7 wifi โดดเด่นด้วยดีไซน์ตัวเครื่องวัสดุฝาหลังและขอบเครื่องอะลูมิเนียม น้ำหนักเบาเพียง 505 กรัม มาพร้อมหน้าจอ IPS LCD ขนาด 11 นิ้ว ความละเอียด 1920 × 1200 (FHD) รีเฟรชเรต 90Hz ความสว่าง 420 nits ขับเคลื่อนด้วยชิปประมวลผล MediaTek Helio G88 และหน่วยความจำ RAM 6GB พร้อม Extended RAM สูงสุด 16GB รวมเป็น 24GB ทั้งยังมาพร้อมลำโพงคู่ (2 Speakers) พร้อมชิปเสียง K9 Smart Amplifier และรองรับความคมชัดระดับ 1080P จากแอปพลิเคชันอย่าง Netflix Widevine L1, YouTube, HBO และ Prime Video ครับ\n\nในด้านการใช้งาน รุ่นนี้เหมาะสำหรับการพกพาเพื่อความบันเทิง ดูหนัง ฟังเพลง หรือใช้งานทั่วไป เช่น การท่องเว็บ การเพิ่มหน่วยความจำ ROM 128GB ด้วย Micro-SD Card สูงสุด 1TB และรองรับการเปิดใช้งาน 2 แอปพลิเคชันพร้อมกันในหน้าจอเดียวครับผม",
+    "current_answer": "สวัสดีครับ Black Shark Pad 7 wifi รุ่นนี้โดดเด่นด้วยดีไซน์ตัวเครื่องน้ำหนักเบาเพียง 505 กรัม ใช้วัสดุฝาหลังและขอบเครื่องอลูมิเนียม พร้อมหน้าจอ IPS LCD ขนาด 11 นิ้ว ความละเอียด 1920 × 1200 (FHD) ที่มีรีเฟรชเรท 90Hz ครับ\n\nในด้านการใช้งาน รุ่นนี้ตอบโจทย์ความบันเทิงและความสะดวกสบายด้วยจุดเด่นต่างๆ ดังนี้ครับ:\n- รองรับการสตรีมมิ่งความคมชัดระดับ 1080P ผ่าน Netflix Widevine L1 รวมถึง YouTube, HBO และ Prime Video\n- ขับเคลื่อนด้วยชิปประมวลผล MediaTek Helio G88 และหน่วยความจำ RAM 6GB พร้อม Extended Ram สูงสุด 16GB รวมเป็น 24GB\n- เพิ่มหน่วยความจำด้วย Micro-SD Card ได้สูงสุดถึง 1TB\n- แบตเตอรี่ความจุ 7700mAh ที่ใช้งานได้ยาวนานสูงสุดประมาณ 13 ชั่วโมง\n- รองรับการเปิดใช้งาน 2 แอปพลิเคชันพร้อมกันในหน้าจอเดียว\n- รองรับการใช้งาน Google Lens ค้นหาสิ่งต่างๆ จากทั่วโลกด้วยรูปภาพครับ"
+  },
+  {
+    "id": "Q046",
+    "question": "Black Shark Pad 7 LTE มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "group": "catalog",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 22.38,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สวัสดีครับ สำหรับ Black Shark Pad 7 LTE มีจุดเด่นดังนี้ครับ\n\n- ดีไซน์และหน้าจอ: น้ำหนักเบา 505 กรัม วัสดุฝาหลังและขอบเครื่อง Aluminum หน้าจอ IPS LCD ขนาด 11 นิ้ว ความละเอียด 1920 × 1200 (FHD) อัตรารีเฟรช 90Hz ความสว่างสูงสุด 420 nits\n- ความบันเทิง: รองรับ Netflix Widevine L1 พร้อมทั้ง YouTube, HBO และ Prime Video มีลำโพงคู่พร้อมชิปเสียง K9 Smart Amplifier และรองรับพอร์ตหูฟัง 3.5 มม.\n- ประสิทธิภาพและหน่วยความจำ: ชิปประมวลผล MediaTek Helio G88, GPU ARM Mali-G52 ทำงานบนระบบปฏิบัติการ Android 15 ครอบด้วย Joy OS, RAM 6GB พร้อม Extended RAM สูงสุด 16GB รวมเป็น 24GB, ROM 128GB และรองรับ Micro-SD Card สูงสุด 1TB\n- แบตเตอรี่และการใช้งาน: แบตเตอรี่ 7,700mAh ใช้งานได้สูงสุดประมาณ 13 ชั่วโมง (ฟังเพลงได้ 13 ชั่วโมง, ท่องเว็บ 9 ชั่วโมง, คุยโทรศัพท์ 7 ชั่วโมง, ดูวิดีโอ 6 ชั่วโมง, เล่นเกม 5.5 ชั่วโมง) รองรับการเปิดใช้งาน 2 แอปพลิเคชันพร้อมกันในหน้าจอเดียว และรองรับ Google Lens\n- กล้อง: กล้องหลัง 13MP และกล้องหน้า 5MP\n\nรุ่นนี้จึงเหมาะกับการใช้งานด้านความบันเทิง ดูหนัง ฟังเพลง ท่องเว็บไซต์ และการใช้งานทั่วไปครับ",
+    "current_answer": "สวัสดีครับ Black Shark ยินดีให้บริการครับ สำหรับ Black Shark Pad 7 LTE จะโดดเด่นด้วยดีไซน์ตัวเครื่องน้ำหนักเบาเพียง 505 กรัม พร้อมวัสดุฝาหลังและขอบเครื่อง Aluminum รวมถึงหน้าจอ IPS LCD ขนาด 11 นิ้ว ความละเอียด FHD (1920 × 1200) รีเฟรชเรท 90Hz ความสว่างสูงสุด 420 nits ครับ\n\nในด้านความเหมาะสมในการใช้งาน รุ่นนี้ตอบโจทย์ความบันเทิงและการใช้งานทั่วไปได้ดีครับ เพราะรองรับการดูความบันเทิงระดับ 1080P ทั้ง Netflix Widevine L1, YouTube, HBO และ Prime Video ขับเคลื่อนด้วยชิปประมวลผล MediaTek Helio G88 และหน่วยความจำ RAM 6GB ที่เพิ่ม Extended RAM ได้รวมสูงสุด 24GB พร้อม ROM 128GB และยังเพิ่ม MicroSD Card ได้สูงสุดถึง 1TB นอกจากนี้ยังมีแบตเตอรี่ความจุ 7700mAh ที่รองรับการใช้งานได้ยาวนานสูงสุดประมาณ 13 ชั่วโมง และยังรองรับการเปิดใช้งาน 2 แอปพลิเคชันพร้อมกันในหน้าจอเดียวครับผม"
+  },
+  {
+    "id": "Q047",
+    "question": "Black Shark Pad 7 Pro LTE มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "group": "catalog",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 4,
+    "elapsed_seconds": 169.96,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "Black Shark Pad 7 Pro LTE มีจุดเด่นเรื่องดีไซน์เพรียวบาง พกพาสะดวกด้วยน้ำหนักเบาเพียง 513 กรัม และหน้าจอ IPS LCD ขนาด 11 นิ้ว ความละเอียดระดับ FHD (1920 × 1200) ที่มีรีเฟรชเรต 120Hz และความสว่างสูงสุด 420 nits ครับ ตัวเครื่องขับเคลื่อนด้วยหน่วยประมวลผล MediaTek Helio G100 พร้อม RAM 8GB และความจุภายใน 256GB รองรับการเพิ่ม MicroSD Card สูงสุด 1TB ทั้งยังรองรับความบันเทิงด้วยมาตรฐาน Widevine L1 สำหรับรับชมสตรีมมิ่งระดับ Full HD, ระบบเสียงลำโพง 4 ตัว, รองรับการเชื่อมต่อ 4G LTE และ Wi-Fi ใช้งานนอกสถานที่ได้ และมีแบตเตอรี่ความจุ 8800mAh ที่ใช้งานต่อเนื่องได้ยาวนานสูงสุด 13 ชั่วโมง\n\nในด้านการใช้งาน แท็บเล็ตตัวนี้เหมาะสำหรับความบันเทิงทั่วไปและการรับชมมัลติมีเดีย, เหมาะสำหรับการเรียนออนไลน์และประชุมงานด้วยกล้องหน้า 8MP, รวมถึงเพิ่มความคล่องตัวในการทำงานด้วยฟังก์ชัน Split Screen รองรับการใช้งาน 2 แอปพลิเคชันพร้อมกันในหน้าจอเดียวครับ",
+    "current_answer": "สวัสดีครับ น้อง Black Shark ยินดีให้บริการครับ สำหรับ Black Shark Pad 7 Pro LTE รุ่นนี้มีความโดดเด่นในเรื่องดีไซน์เพรียวบาง น้ำหนักเบาเพียง 513 กรัม พกพาสะดวก และขับเคลื่อนด้วยหน่วยประมวลผล MediaTek Helio G100 พร้อม RAM 8GB ที่ช่วยให้ใช้งานทั่วไปและมัลติมีเดียได้อย่างราบรื่นครับ\n\nด้านความเหมาะสมในการใช้งาน รุ่นนี้ตอบโจทย์ความบันเทิงด้วยหน้าจอ IPS LCD ขนาด 11 นิ้ว รีเฟรชเรต 120Hz พร้อมมาตรฐาน Widevine L1 สำหรับรับชมความบันเทิงและสตรีมมิ่งความละเอียด Full HD รวมถึงมีระบบเสียงลำโพง 4 ตัว นอกจากนี้ยังรองรับการเชื่อมต่อ 4G LTE และ Wi-Fi ทำให้ใช้งานนอกสถานที่ได้อย่างมีประสิทธิภาพ เหมาะสำหรับการเรียนออนไลน์และประชุมงานด้วยกล้องหน้า 8MP รวมถึงรองรับการใช้งาน 2 แอปพลิเคชันพร้อมกันในหน้าจอเดียวเพื่อเพิ่มความคล่องตัวในการทำงานครับผม"
+  },
+  {
+    "id": "Q048",
+    "question": "Black Shark Gaming Tablet มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "group": "catalog",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 31.56,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สวัสดีครับ สำหรับ Black Shark Gaming Tablet มีจุดเด่นดังนี้ครับ\n\n- ดีไซน์กะทัดรัด น้ำหนักเบา พกพาง่าย ขอบเครื่องและฝาหลังผลิตจากอะลูมิเนียมเกรดอากาศยาน\n- ประสิทธิภาพแรงระดับเรือธงด้วยชิปประมวลผล Snapdragon 8s Gen 3 พร้อมหน่วยความจำ RAM 12GB และ ROM 256GB\n- หน้าจอขนาด 8.8 นิ้ว ความละเอียด 2.5K พร้อมค่า Refresh Rate สูงถึง 144Hz\n- ระบบระบายความร้อนด้วย Vapor Chamber และกราฟีน พร้อมรองรับการติดตั้งพัดลมเกมมิ่งระบายความร้อน\n- รองรับการดู Netflix แบบ Widevine L1\n- มี Pro Level Gaming Mode ช่วยตัดการแจ้งเตือนและรีดประสิทธิภาพสูงสุดของเครื่อง พร้อมรักษารักษาเฟรมเรตให้นิ่ง\n- ระบบเสียงลำโพงคู่ พร้อมระบบ K9 Smart Amplifier\n- รองรับการใช้งาน Gemini AI ผู้ช่วยอัจฉริยะ\n\nรุ่นนี้จึงเหมาะสำหรับการเล่นเกม ความบันเทิง และการใช้งานทั่วไปครับ",
+    "current_answer": "Black Shark Gaming Tablet รุ่นนี้โดดเด่นด้วยดีไซน์กะทัดรัด น้ำหนักเบา และบาง พกพาง่าย ตัวเครื่องทำจากอะลูมิเนียมเกรดอากาศยาน ขับเคลื่อนด้วยชิปประมวลผล Snapdragon 8s Gen 3 พร้อม RAM 12GB และความจุ 256GB มาพร้อมหน้าจอขนาด 8.8 นิ้ว ความละเอียด 2.5K และรีเฟรชเรท 144Hz รวมถึงระบบระบายความร้อนด้วย Vapor Chamber และกราฟีนครับ \n\nด้านการใช้งานที่เหมาะสม รุ่นนี้เหมาะกับการเล่นเกมด้วย Pro Level Gaming Mode ที่ช่วยตัดการแจ้งเตือนและรีดประสิทธิภาพสูงสุด ให้เฟรมเรตลื่นไหลไร้อาการกระตุก นอกจากนี้ยังรองรับการดู Netflix แบบ Widevine L1 ให้ความคมชัดขั้นสุด และรองรับการเชื่อมต่อภาพขึ้นหน้าจอขนาดใหญ่ด้วย DisplayPort (USB-C) ครับผม"
+  },
+  {
+    "id": "Q049",
+    "question": "Black Shark FunCooler 5 Neo มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "group": "catalog",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 8.63,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "Black Shark FunCooler 5 Neo โดดเด่นด้วยดีไซน์ใหม่ที่ได้แรงบันดาลใจจากวาฬครับ มีจุดเด่นเรื่องการใช้แผ่นทำความเย็น Peltier ร่วมกับฮีตซิงก์ขนาดใหญ่และพัดลมความเร็วสูง 5000rpm ช่วยลดอุณหภูมิได้อย่างมีประสิทธิภาพประมาณ 32°C พร้อมออกแบบทิศทางลมออกทั้งบนและล่างเพื่อให้ไม่รู้สึกร้อนมือเมื่อเล่นเกม ควบคุมการใช้งานง่ายด้วยปุ่มเดียว มีไฟ RGB เพิ่มบรรยากาศความเป็นเกมมิ่ง และรองรับการใช้งานร่วมกับขาตั้งกล้องหรือกิมบอลผ่านรูสกุล 1/4 นิ้วครับ",
+    "current_answer": "สวัสดีครับน้อง Black Shark ยินดีให้บริการครับ สำหรับ Black Shark FunCooler 5 Neo ตัวนี้โดดเด่นด้วยดีไซน์ใหม่แรงบันดาลใจจากวาฬครับ \n\nจุดเด่นหลักคือระบบทำความเย็น Peltier ที่สามารถลดอุณหภูมิลงได้ประมาณ 32 องศาเซลเซียส ใช้กำลังไฟ 15 วัตต์ พร้อมแผ่นทำความเย็นและฮีตซิงก์ขนาดใหญ่ ทำงานร่วมกับพัดลมรอบหมุนสูงถึง 5,000 รอบต่อนาทีเพื่อช่วยระบายความร้อนได้อย่างรวดเร็ว นอกจากนี้ยังออกแบบทิศทางลมออกด้านบนและล่างเพื่อให้ไม่รู้สึกร้อนมือเมื่อเล่นเกม มีไฟ RGB เพิ่มบรรยากาศความเป็นเกมมิ่ง และรองรับการต่อเข้ากับขาตั้งกล้องหรือกิมบอลผ่านรูสกูล 1/4 นิ้วได้สะดวกครับ\n\nสำหรับลักษณะการใช้งานที่เหมาะสม รุ่นนี้ควบคุมการใช้งานง่ายด้วยปุ่มเดียว เริ่มทำความเย็นได้ทันที และจะไม่รองรับการเชื่อมต่อผ่านแอป Shark Arsenal ครับผม"
+  },
+  {
+    "id": "Q050",
+    "question": "Black Shark GS3 กันน้ำระดับไหนครับ",
+    "group": "spec",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 14.89,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "Black Shark GS3 รองรับการกันน้ำระดับ 5 ATM ซึ่งทนทานต่อแรงดันน้ำได้ถึงประมาณ 50 เมตร และผ่านมาตรฐานการกันน้ำกันฝุ่นระดับ IP69K ที่สามารถกันฝุ่นได้อย่างสมบูรณ์พร้อมกันน้ำอุณหภูมิสูงสุด 80°C ครับผม",
+    "current_answer": "รองรับครับ Black Shark GS3 ผ่านมาตรฐานการกันน้ำ ทนทานต่อแรงดันน้ำได้ถึง 5 ATM หรือประมาณ 50 เมตร และยังทนทานต่อการกันน้ำกันฝุ่นระดับ IP69K ที่สามารถกันฝุ่นได้อย่างสมบูรณ์และกันน้ำอุณหภูมิสูงสุดได้ถึง 80°C เลยครับผม"
+  },
+  {
+    "id": "Q051",
+    "question": "Black Shark GS3 แบตใช้งานทั่วไปได้กี่วันครับ",
+    "group": "spec",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 9.84,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สำหรับ Black Shark GS3 สามารถใช้งานแบบ Daily Use หรือการใช้งานทั่วไปได้นานสุดถึง 21 วันต่อการชาร์จเต็มหนึ่งครั้ง และสามารถใช้งานใน Standby Mode ได้นานสุด 45 วันครับ ทั้งนี้ระยะเวลาการใช้งานอาจขึ้นอยู่กับพฤติกรรมการใช้งานของแต่ละบุคคลนะครับ",
+    "current_answer": "สวัสดีครับ Black Shark GS3 สามารถใช้งานในโหมดการใช้งานทั่วไป (Daily Use) ได้ยาวนานสูงสุดถึง 21 วันต่อการชาร์จเต็มหนึ่งครั้งครับ ทั้งนี้ ระยะเวลาการใช้งานจริงอาจแตกต่างกันไปขึ้นอยู่กับพฤติกรรมการใช้งานของแต่ละบุคคลครับ"
+  },
+  {
+    "id": "Q052",
+    "question": "Black Shark GS3 Ultra จอรีเฟรชเรทกี่ Hzครับ",
+    "group": "spec",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 5.99,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "หน้าจอของ Black Shark GS3 Ultra รองรับอัตรารีเฟรชเรท 60Hz ครับ โดยมาพร้อมหน้าจอ AMOLED ขนาด 1.43 นิ้ว ครับผม",
+    "current_answer": "รองรับ 60Hz ครับ \n\nรุ่นนี้มาพร้อมหน้าจอ AMOLED ขนาด 1.43 นิ้ว รองรับรีเฟรชเรท 60Hz ครับผม"
+  },
+  {
+    "id": "Q053",
+    "question": "Black Shark GS3 Ultra GPS เป็นแบบไหนครับ",
+    "group": "spec",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 11.2,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สมาร์ทวอทช์รุ่นนี้มาพร้อมการอัปเกรด GPS เป็น Dual-Band รองรับ 6 เครือข่าย ได้แก่ GPS, BeiDou, GLONASS, GALILEO, NAVIC และ QZSS เพื่อความแม่นยำยิ่งขึ้นครับ",
+    "current_answer": "รุ่นนี้รองรับ GPS แบบ Dual-Band พร้อมรองรับเครือข่ายดาวเทียม GPS, BeiDou, GLONASS, GALILEO, NAVIC และ QZSS ครบถ้วน ซึ่งช่วยให้การระบุตำแหน่งมีความแม่นยำยิ่งขึ้นครับ"
+  },
+  {
+    "id": "Q054",
+    "question": "Black Shark A3 จอขนาดเท่าไหร่ครับ",
+    "group": "spec",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 111.32,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "Black Shark A3 มาพร้อมหน้าจอขนาด 1.53 นิ้วครับ",
+    "current_answer": "รองรับครับ หน้าจอของ Black Shark A3 มีขนาด 1.53 นิ้วครับ"
+  },
+  {
+    "id": "Q055",
+    "question": "Black Shark A3 ต้องใช้แอปอะไรครับ",
+    "group": "spec",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 13.6,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สวัสดีครับ สำหรับ Black Shark A3 จะใช้งานร่วมกับแอปพลิเคชัน Shark Fitlife โดยสามารถใช้งานได้ทั้งในระบบ iOS และ Android ครับผม",
+    "current_answer": "รองรับครับ Black Shark A3 จะใช้งานร่วมกับแอปพลิเคชัน Shark Fitlife โดยสามารถใช้งานได้ทั้งระบบ iOS และ Android ช่วยให้ปรับแต่งหน้าปัด ดูค่าสถานะสุขภาพ และตั้งค่าการใช้งานต่างๆ ได้ครับ"
+  },
+  {
+    "id": "Q056",
+    "question": "Black Shark S3 มี GPS ในตัวไหมครับ",
+    "group": "spec",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 5.34,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "มีครับ Black Shark S3 มี Built-in GPS ในตัวถึง 5 เครือข่าย ช่วยติดตามเส้นทางการวิ่งได้อย่างแม่นยำครับ",
+    "current_answer": "รองรับครับ Black Shark S3 มี Built-in GPS มาให้ถึง 5 เครือข่าย ได้แก่ GPS, BeiDou, GLONASS, GALILEO และ QZSS ช่วยติดตามเส้นทางการวิ่งได้อย่างแม่นยำครับ"
+  },
+  {
+    "id": "Q057",
+    "question": "Black Shark S3 Classic เปลี่ยนสายได้ไหมครับ",
+    "group": "spec",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 12.41,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สำหรับ Black Shark S3 Classic สามารถเปลี่ยนสายนาฬิกาได้ครับ โดยตัวสายมีขนาด 22 มิลลิเมตร และสามารถดูวิดีโอแนะนำวิธีการใส่สายนาฬิกาได้ที่ youtu.be/Oen126kBRzI ครับ หากต้องการสอบถามข้อมูลเพิ่มเติมสามารถสอบถามได้เลยนะครับ",
+    "current_answer": "รองรับครับ สำหรับ Black Shark S3 Classic สามารถเปลี่ยนสายนาฬิกาได้ โดยตัวสายมีขนาด 22 มิลลิเมตรครับ สามารถดูวิธีการใส่สายนาฬิกาเพิ่มเติมได้ที่ลิงก์นี้ครับ youtu.be/Oen126kBRzI"
+  },
+  {
+    "id": "Q058",
+    "question": "BLACK SHARK RUN รับสาย LINE ผ่าน iPhone ได้ไหมครับ",
+    "group": "spec",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 32.56,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "รับสาย LINE ผ่าน iPhone ได้ครับผม สำหรับ BLACK SHARK RUN รองรับฟีเจอร์ ENC Bluetooth Calling ที่ช่วยให้สามารถรับสายโทรเข้าของแอปพลิเคชันยอดนิยมอย่าง LINE ผ่านนาฬิกาได้โดยตรงสำหรับระบบปฏิบัติการ iOS ครับผม",
+    "current_answer": "รองรับครับ สำหรับ iPhone รุ่นนี้รองรับการรับสายโทรเข้าของแอปพลิเคชันยอดนิยมอย่าง Line ผ่านนาฬิกาได้โดยตรงครับ เนื่องจากฟีเจอร์ ENC Bluetooth Calling รองรับการรับสายโทรเข้าของแอปพลิเคชันดังกล่าวผ่านนาฬิกาได้โดยตรงสำหรับระบบปฏิบัติการ iOS ครับผม"
+  },
+  {
+    "id": "Q059",
+    "question": "BLACK SHARK RUN แบตใช้งานได้นานเท่าไหร่ครับ",
+    "group": "spec",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 4,
+    "elapsed_seconds": 42.81,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สวัสดีครับ สำหรับแบตเตอรี่ของ Black Shark Run จะใช้งานต่อเนื่องยาวนานสูงสุดถึง 15 วันครับ โดยแบ่งเป็นการใช้งานทั่วไปสูงสุด 15 วัน และการใช้งานหนักสูงสุด 8 วันครับผม",
+    "current_answer": "สำหรับระยะเวลาการใช้งานแบตเตอรี่จะสามารถใช้งานต่อเนื่องยาวนานสูงสุดถึง 15 วันครับ โดยหากเป็นการใช้งานทั่วไปจะอยู่ได้สูงสุด 15 วัน แต่ถ้าใช้งานหนักจะสูงสุดอยู่ที่ประมาณ 8 วันครับผม"
+  },
+  {
+    "id": "Q060",
+    "question": "Black Shark T24 Bluetooth เวอร์ชันอะไรครับ",
+    "group": "spec",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 16.53,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สำหรับ Black Shark T24 จะใช้บลูทูธเวอร์ชัน 5.4 ครับ",
+    "current_answer": "รองรับ Bluetooth 5.4 ครับผม"
+  },
+  {
+    "id": "Q061",
+    "question": "Black Shark T18 Bluetooth เวอร์ชันอะไรครับ",
+    "group": "spec",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 5,
+    "elapsed_seconds": 25.65,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "Black Shark T18 ใช้บลูทูธเวอร์ชัน 5.3 ครับ",
+    "current_answer": "รองรับ Black Shark T18 ใช้บลูทูธเวอร์ชัน 5.3 ครับ"
+  },
+  {
+    "id": "Q062",
+    "question": "Black Shark Pad 7Pro UE จอขนาดกี่นิ้วครับ",
+    "group": "spec",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 51.04,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สวัสดีครับ Black Shark Pad 7Pro UE มาพร้อมหน้าจอขนาด 11 นิ้ว ความละเอียดระดับ FHD+ ครับ",
+    "current_answer": "รองรับครับ Black Shark Pad 7Pro UE มาพร้อมหน้าจอคมชัดขนาด 11 นิ้ว ความละเอียดระดับ FHD+ โดยใช้พาเนลจอแบบ IPS LCD รองรับอัตรารีเฟรช 120Hz ที่ช่วยให้แสดงผลได้อย่างลื่นไหล และมีความสว่างสูงสุด 450 Nits ครับผม"
+  },
+  {
+    "id": "Q063",
+    "question": "Black Shark Gaming Tablet หน้าจอขนาดกี่นิ้วครับ",
+    "group": "spec",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 101.42,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "Black Shark Gaming Tablet มาพร้อมหน้าจอขนาด 8.8 นิ้ว ความละเอียด 2.5K ครับ",
+    "current_answer": "Black Shark Gaming Tablet มีหน้าขนาด 8.8 นิ้วครับ \n\nโดยมาพร้อมความละเอียดระดับ 2.5K บนพาเนลหน้าจอแบบ IPS LCD และรองรับค่า Refresh rate สูงถึง 144Hz ช่วยให้แสดงผลภาพได้อย่างคมชัดและลื่นไหลเต็มตาครับผม"
+  },
+  {
+    "id": "Q064",
+    "question": "Black Shark FunCooler 5 Neo ติดตั้งกับมือถือแบบไหนครับ",
+    "group": "spec",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 5.41,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สวัสดีครับคุณลูกค้า สำหรับ Black Shark FunCooler 5 Neo จากข้อมูลระบุวิธีการติดตั้งแบบหนีบครับผม",
+    "current_answer": "รองรับครับ สำหรับ Black Shark FunCooler 5 Neo รุ่นนี้ใช้วิธีการติดตั้งแบบหนีบครับ ยินดีให้บริการข้อมูลเพิ่มเติมนะครับผม"
+  },
+  {
+    "id": "Q065",
+    "question": "Black Shark Magcooler 6 Pro ติดตั้งแบบแม่เหล็กหรือแบบหนีบครับ",
+    "group": "spec",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 250.91,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สำหรับ Black Shark Magcooler 6 Pro รุ่นนี้รองรับการติดตั้งแบบแม่เหล็กครับ โดยตัวเครื่องมาพร้อมกับแม่เหล็กแรงดูดพลังสูงแบบ 12N ที่ช่วยให้ติดแน่นและใช้งานได้อย่างมั่นใจครับผม",
+    "current_answer": "รองรับการติดตั้งแบบแม่เหล็กครับ\n\nสำหรับ Black Shark Magcooler 6 Pro รุ่นนี้จะใช้ระบบการติดตั้งแบบแม่เหล็ก โดยมีแม่เหล็กแรงดูดพลังสูงแบบ 12N ช่วยให้ติดแน่นหนาครับผม"
+  },
+  {
+    "id": "Q066",
+    "question": "Black Shark S1 Pro มีฟังก์ชันตรวจสุขภาพอะไรครับ",
+    "group": "spec",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 6.85,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สวัสดีครับ สำหรับ Black Shark S1 Pro จะมีฟังก์ชันตรวจวัดสุขภาพและความฟิต ได้แก่ Sleep Monitoring ฟังก์ชันตรวจจับและวัดคุณภาพการนอนหลับ, SpO2 Monitoring ฟังก์ชันตรวจวัดระดับออกซิเจนในเลือด และ Gaming Health Monitoring Mode ฟังก์ชันตรวจวัดสุขภาพสำหรับชาวเกมมิ่ง ซึ่งสามารถเปิด Game Mode เพื่อวัดอัตราการเต้นของหัวใจและความเครียดเมื่อเล่นเกมได้ครับ",
+    "current_answer": "สวัสดีครับ Black Shark S1 Pro รองรับฟังก์ชันตรวจสุขภาพ ดังนี้ครับ\n\n- Sleep Monitoring สำหรับตรวจจับและวัดคุณภาพการนอน\n- SpO2 Monitoring สำหรับตรวจวัดระดับออกซิเจนในเลือด\n- Gaming Health Monitoring Mode ฟังก์ชันตรวจวัดสุขภาพสำหรับชาวเกมมิ่ง โดยสามารถเปิด Game Mode เพื่อวัดอัตราการเต้นของหัวใจและความเครียดเมื่อเล่นเกมได้ครับ"
+  },
+  {
+    "id": "Q067",
+    "question": "Black Shark GT3 แบตอยู่ได้กี่วันครับ",
+    "group": "spec",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 4.5,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สำหรับรุ่น Black Shark GT3 แบตเตอรี่ใช้งานได้นานสูงสุดถึง 10 วันครับ ทั้งนี้ระยะเวลาการใช้งานอาจขึ้นอยู่กับการใช้งานของแต่ละบุคคลด้วยครับผม",
+    "current_answer": "รองรับครับ แบตเตอรี่ใช้งานได้นานสูงสุดถึง 10 วัน (Daily mode) ครับ ทั้งนี้ ระยะเวลาการใช้งานจะขึ้นอยู่กับการใช้งานของแต่ละบุคคลด้วยนะครับ"
+  },
+  {
+    "id": "Q068",
+    "question": "Black Shark T23 หูฟังอยู่ได้นานกี่ชั่วโมงครับ",
+    "group": "spec",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 197.82,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สำหรับ Black Shark T23 สามารถใช้งานฟังต่อเนื่องได้สูงสุด 8 ชั่วโมงต่อการชาร์จหนึ่งครั้ง และเมื่อใช้งานร่วมกับเคสชาร์จจะใช้งานรวมกันได้สูงสุดถึง 40 ชั่วโมงครับ",
+    "current_answer": "สวัสดีครับ หูฟัง Black Shark T23 สามารถใช้งานฟังเพลงต่อเนื่องได้สูงสุดถึง 8 ชั่วโมงต่อการชาร์จหนึ่งครั้ง และใช้งานได้ยาวนานรวมสูงสุดถึง 40 ชั่วโมงเมื่อใช้ร่วมกับเคสชาร์จครับผม"
+  },
+  {
+    "id": "Q069",
+    "question": "Black Shark Pad 7 LTE รองรับเครือข่ายอะไรครับ",
+    "group": "spec",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 6,
+    "elapsed_seconds": 32.43,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สำหรับ Black Shark Pad 7 LTE ตามข้อมูลสินค้าในระบบของเรายังไม่มีการระบุรายละเอียดเรื่องการรองรับเครือข่ายมือถือไว้ครับ หากต้องการสอบถามข้อมูลส่วนไหนเพิ่มเติม แจ้งเข้ามาได้เลยนะครับ",
+    "current_answer": "ยังยืนยันไม่ได้ครับ สำหรับ Black Shark Pad 7 LTE จากข้อมูลในระบบระบุรายละเอียดการเชื่อมต่อไว้เพียง Wi-Fi 802.11 ac/a/b/g/n (2.4G / 5G) และ Bluetooth 5.0 ส่วนรายละเอียดเกี่ยวกับเครือข่ายมือถือหรือซิมการ์ดไม่ได้มีระบุไว้ในข้อมูลสินค้าครับ"
+  },
+  {
+    "id": "Q070",
+    "question": "GS3 ชาร์จไม่เข้า ต้องลองแก้ยังไง",
+    "group": "faq",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 8,
+    "elapsed_seconds": 78.37,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+      "วิธีแก้ปัญหารายรุ่น-Black Shark-เฉพาะติ๊กส่งลูกค้าได้-20261118-0114.xlsx"
+    ],
+    "baseline_answer": "เบื้องต้นให้ตรวจสอบไฟเซ็นเซอร์สีเขียวที่ด้านหลังตัวเรือนว่ายังติดอยู่หรือไม่ จากนั้นลองเปลี่ยนหัวชาร์จเป็นขนาด 5V 1A หรือ 5V 2A พร้อมทำความสะอาดขั้วชาร์จทั้งที่ตัวนาฬิกาและสายชาร์จ จากนั้นเสียบชาร์จทิ้งไว้ประมาณ 30 ถึง 60 นาที ก่อนลองเปิดเครื่องใหม่อีกครั้ง หากยังไม่สามารถใช้งานได้ รบกวนถ่ายวิดีโอขณะดำเนินการและแจ้งหมายเลขคำสั่งซื้อกลับมาเพื่อให้เจ้าหน้าที่ตรวจสอบและดูแลต่อได้เลยครับ",
+    "current_answer": "เบื้องต้นลองตรวจสอบไฟเซ็นเซอร์สีเขียวที่ด้านหลังตัวเรือนดูก่อนนะครับว่ายังติดอยู่ไหมครับ จากนั้นลองเปลี่ยนหัวชาร์จเป็นขนาด 5V 1A หรือ 5V 2A พร้อมกับทำความสะอาดขั้วชาร์จทั้งที่ตัวนาฬิกาและแท่นชาร์จให้เรียบร้อย แล้วเสียบชาร์จทิ้งไว้ประมาณ 30 ถึง 60 นาที ก่อนลองเปิดเครื่องใหม่อีกครั้งครับ หากทำตามนี้แล้วยังชาร์จไม่เข้า รบกวนขอหมายเลขคำสั่งซื้อพร้อมกับถ่ายวิดีโอตอนกำลังดำเนินการแก้ไขส่งให้แอดมินตรวจสอบเพื่อช่วยเหลือต่อได้เลยครับ"
+  },
+  {
+    "id": "Q071",
+    "question": "GS3 หน้าจอเป็นลายสีขาว ทำยังไงดี",
+    "group": "faq",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 4,
+    "elapsed_seconds": 18.21,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+      "วิธีแก้ปัญหารายรุ่น-Black Shark-เฉพาะติ๊กส่งลูกค้าได้-20261118-0114.xlsx"
+    ],
+    "baseline_answer": "เบื้องต้นแนะนำให้ลองรีสตาร์ทตัวเรือนดูก่อนนะครับ โดยกดปุ่ม HOME ที่มุมบนด้านขวาค้างไว้ประมาณ 10–25 วินาที จนกว่าหน้าจอจะมีการเปลี่ยนแปลงหรือดับลงและเริ่มทำงานใหม่ครับ หากทำตามขั้นตอนนี้แล้วหน้าจอยังคงแสดงผลผิดปกติอยู่ รบกวนถ่ายวิดีโอขณะดำเนินการพร้อมแจ้งหมายเลขคำสั่งซื้อส่งให้เจ้าหน้าที่ตรวจสอบเพื่อดำเนินการต่อได้เลยนะครับ",
+    "current_answer": "น้อง Black Shark แนะนำให้ลองรีสตาร์ทตัวเรือนดูก่อนครับ โดยกดปุ่ม HOME บริเวณมุมบนด้านขวาค้างไว้ประมาณ 10–25 วินาที จนกว่าหน้าจอนาฬิกาจะดับลงและเริ่มทำงานใหม่อีกครั้งครับผม \n\nหากทำตามขั้นตอนนี้แล้วหน้าจอยังแสดงผลเป็นสีขาวอยู่ รบกวนถ่ายวิดีโอขณะดำเนินการและแสดงอาการ พร้อมแจ้งหมายเลขคำสั่งซื้อกลับมาทางแอปพลิเคชันนี้เพื่อให้เจ้าหน้าที่ตรวจสอบและดูแลต่อได้เลยครับ"
+  },
+  {
+    "id": "Q072",
+    "question": "GS3 Ultra ปุ่มกดค้าง รีสตาร์ตอย่างไร",
+    "group": "faq",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 10,
+    "elapsed_seconds": 37.92,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+      "วิธีแก้ปัญหารายรุ่น-Black Shark-เฉพาะติ๊กส่งลูกค้าได้-20261118-0114.xlsx"
+    ],
+    "baseline_answer": "หากต้องการรีสตาร์ตนาฬิกา Black Shark GS3 Ultra สามารถทำได้โดยการกดปุ่ม Power ที่มุมบนด้านขวาค้างไว้ประมาณ 10 ถึง 25 วินาที จนกว่าหน้าจอนาฬิกาจะมีการเปลี่ยนแปลงและดับลงเพื่อเริ่มทำงานใหม่อีกครั้งครับ สำหรับอาการปุ่มกดติดขัด สามารถทำความสะอาดเบื้องต้นโดยใช้น้ำยาสเตคลีนหยดหรือทารอบปุ่ม ทิ้งไว้ประมาณ 3 ถึง 5 นาที แล้วใช้แปรงขนนุ่มทำความสะอาดเบา ๆ ก่อนเช็ดทำความสะอาดและรอให้แห้งสนิทเพื่อทดลองใช้งานอีกครั้งครับ",
+    "current_answer": "รองรับครับ หากต้องการรีสตาร์ทตัวเครื่องเมื่อปุ่มกดค้าง สามารถกดปุ่มด้านขวาบนค้างไว้ประมาณ 20–25 วินาทีจนกว่านาฬิกาจะปิดเครื่อง จากนั้นลองเปิดใช้งานใหม่อีกครั้งครับ ส่วนปัญหาเรื่องปุ่มกดติดขัดหรือกดไม่ปกติ สามารถทำความสะอาดเบื้องต้นโดยใช้น้ำยาสเตคลีนหยดหรือทาบริเวณรอบปุ่ม ทิ้งไว้ประมาณ 3–5 นาทีเพื่อช่วยละลายคราบสกปรก แล้วใช้แปรงขนนุ่มทำความสะอาดรอบปุ่มอย่างเบามือ ก่อนเช็ดทำความสะอาดและรอให้แห้งสนิทแล้วลองใช้งานดูอีกครั้งนะครับ หากดำเนินการตามคำแนะนำแล้วยังไม่สามารถใช้งานได้ รบกวนแจ้งหมายเลขคำสั่งซื้อพร้อมแนบวิดีโอขณะดำเนินการแก้ไขปัญหาเพื่อส่งให้เจ้าหน้าที่ตรวจสอบและช่วยเหลือต่อไปครับ"
+  },
+  {
+    "id": "Q073",
+    "question": "GS3 Ultra แจ้งเตือน LINE ไม่ขึ้น แก้ตรงไหน",
+    "group": "faq",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 6,
+    "elapsed_seconds": 66.59,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+      "วิธีแก้ปัญหารายรุ่น-Black Shark-เฉพาะติ๊กส่งลูกค้าได้-20261118-0114.xlsx"
+    ],
+    "baseline_answer": "สำหรับการแก้ไขปัญหาแจ้งเตือน LINE ไม่ขึ้นบน GS3 Ultra เบื้องต้นแนะนำให้ตรวจสอบการตั้งค่าดังนี้ครับ\n\n1. ตรวจสอบการตั้งค่าในแอป ว่าได้เปิดใช้งานการแจ้งเตือนและเลือกแอป LINE เรียบร้อยแล้ว\n2. ตรวจสอบสิทธิ์ของแอป ว่ามือถือได้อนุญาตสิทธิ์การแจ้งเตือน บลูทูธ และการทำงานเบื้องหลังให้แอปแล้ว\n3. ตรวจสอบการเชื่อมต่อบลูทูธ ว่าเปิดบลูทูธและนาฬิกายังคงเชื่อมต่อกับแอปอยู่ หากไม่เชื่อมต่อให้ลองปิด-เปิดบลูทูธหรือเชื่อมต่อใหม่อีกครั้ง\n4. ทดลองส่งข้อความจากแอป LINE เพื่อตรวจสอบว่านาฬิกามีการแจ้งเตือนหรือไม่\n\nหากทำตามขั้นตอนแล้วยังไม่สามารถใช้งานได้ รบกวนแจ้งหมายเลขคำสั่งซื้อพร้อมแนบวิดีโอแก้ไขส่งให้แอดมินตรวจสอบเพื่อดำเนินการต่อไปครับ",
+    "current_answer": "เบื้องต้นให้ตรวจสอบการตั้งค่าในแอป Shark Track ว่าได้เปิดใช้งานการแจ้งเตือนและเลือกแอป LINE เรียบร้อยแล้ว รวมถึงตรวจสอบว่ามือถือได้อนุญาตสิทธิ์การแจ้งเตือน บลูทูธ และการทำงานเบื้องหลังให้กับแอปแล้วครับ\n\nจากนั้นตรวจสอบการเชื่อมต่อบลูทูธว่านาฬิกายังคงเชื่อมต่อกับแอปอยู่ หากยังไม่สามารถใช้งานได้ ให้เปิดแอปนาฬิกาเพื่อซิงก์ข้อมูลใหม่อีกครั้งครับผม"
+  },
+  {
+    "id": "Q074",
+    "question": "S3 ชาร์จไม่เข้า ลองอะไรได้บ้าง",
+    "group": "faq",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 6,
+    "elapsed_seconds": 18.06,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+      "วิธีแก้ปัญหารายรุ่น-Black Shark-เฉพาะติ๊กส่งลูกค้าได้-20261118-0114.xlsx"
+    ],
+    "baseline_answer": "เบื้องต้นรบกวนตรวจสอบไฟเซ็นเซอร์สีเขียวที่ด้านหลังตัวเรือนดูก่อนครับว่ายังติดอยู่ไหม จากนั้นลองเปลี่ยนหัวชาร์จเป็นขนาด 5V 1A หรือ 5V 2A พร้อมกับทำความสะอาดขั้วชาร์จทั้งที่ตัวนาฬิกาและสายชาร์จให้สะอาดเรียบร้อย\n\nเมื่อทำความสะอาดเสร็จแล้ว ให้ลองเสียบชาร์จทิ้งไว้ประมาณ 30 ถึง 60 นาที ก่อนลองเปิดเครื่องใหม่อีกครั้งนะครับ หากลองทำตามขั้นตอนเหล่านี้แล้วยังพบปัญหาการชาร์จ รบกวนแจ้งหมายเลขคำสั่งซื้อพร้อมแนบวิดีโอแสดงอาการหรือขณะกำลังดำเนินการแก้ไขส่งกลับมาให้เจ้าหน้าที่ตรวจสอบเพื่อช่วยเหลือเพิ่มเติมได้เลยนะครับ",
+    "current_answer": "น้อง Black Shark ขอแนะนำให้ตรวจสอบไฟเซ็นเซอร์สีเขียวที่ด้านหลังตัวเรือนดูก่อนครับว่ายังมีติดอยู่ไหม แล้วลองเปลี่ยนไปใช้หัวชาร์จขนาด 5V 1A หรือ 5V 2A ดูครับ พร้อมทั้งทำความสะอาดขั้วชาร์จทั้งที่ตัวนาฬิกาและสายชาร์จให้เรียบร้อย จากนั้นเสียบชาร์จทิ้งไว้ประมาณ 30 ถึง 60 นาที ก่อนลองเปิดเครื่องใหม่อีกครั้งครับผม"
+  },
+  {
+    "id": "Q075",
+    "question": "S3 Classic เปลี่ยนสายอย่างไร",
+    "group": "faq",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 11.81,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "แอดมินแนะนำให้ดูคลิปวิธีใส่สายนาฬิกาได้จากลิงก์ youtu.be/Oen126kBRzI นี้เลยครับ จะมีขั้นตอนการเปลี่ยนสายให้ดูครับ",
+    "current_answer": "วิธีเปลี่ยนสายนาฬิกาสามารถดูตัวอย่างขั้นตอนการใส่สายได้จากลิงก์นี้เลยครับ youtu.be/Oen126kBRzI หากติดขัดตรงไหนสอบถามเพิ่มเติมได้ตลอดนะครับ"
+  },
+  {
+    "id": "Q076",
+    "question": "A3 วัดการนอนไม่ขึ้น ต้องตั้งค่าอะไรไหม",
+    "group": "faq",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 4,
+    "elapsed_seconds": 10.43,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+      "วิธีแก้ปัญหารายรุ่น-Black Shark-เฉพาะติ๊กส่งลูกค้าได้-20261118-0114.xlsx"
+    ],
+    "baseline_answer": "สำหรับการตรวจสอบการใช้งานฟังก์ชันตรวจวัดการนอนหลับของ Black Shark A3 เบื้องต้นแนะนำให้ตรวจสอบวิธีการสวมใส่และการตั้งค่าดังนี้ครับ\n\n1. การสวมใส่: ควรสวมใส่นาฬิกาให้เหนือกระดูกข้อมือขึ้นมาประมาณ 2 นิ้วมือ และไม่ควรสวมใส่ให้หลวมหรือแน่นจนเกินไป\n2. การตั้งค่าการวัดอัตโนมัติ: ลองเปิดการตั้งค่าการวัดอัตราการเต้นของหัวใจควบคู่กันไปด้วย\n3. การตั้งค่าสำหรับระบบ iOS: หากใช้งานโทรศัพท์ระบบ iOS ให้เข้าไปที่ตั้งค่ามือถือ > ตั้งค่าทั่วไป > ภาษาและภูมิภาค แล้วเปลี่ยนปฏิทินให้เป็นคริสต์ศักราช\n4. การซิงก์ข้อมูล: เปิดแอปพลิเคชันเพื่อทำการซิงก์ข้อมูลใหม่อีกครั้ง และตรวจสอบว่าแอปและเฟิร์มแวร์เป็นเวอร์ชันล่าสุดหรือไม่\n\nหากลองทำตามขั้นตอนทั้งหมดแล้วยังไม่สามารถใช้งานได้ รบกวนแจ้งหมายเลขคำสั่งซื้อพร้อมแนบวิดีโอแสดงอาการเพื่อให้เจ้าหน้าที่ตรวจสอบครับ",
+    "current_answer": "เบื้องต้นสามารถตั้งค่าและตรวจสอบการใช้งานตามขั้นตอนเพื่อแก้ไขปัญหาการวัดการนอนหลับได้ครับ\n\n1. เปิดแอปนาฬิกาเพื่อทำการซิงก์ข้อมูลใหม่อีกครั้ง และรอสักครู่เพื่อตรวจสอบข้อมูล\n2. ตรวจสอบแอปและเฟิร์มแวร์นาฬิกาว่าเป็นเวอร์ชันล่าสุดหรือไม่ หากมีอัปเดตให้ดำเนินการอัปเดต\n3. สำหรับโทรศัพท์ระบบ iOS ให้เข้าไปที่ตั้งค่ามือถือ > ตั้งค่าทั่วไป > ภาษาและภูมิภาค แล้วเปลี่ยนปฏิทินให้เป็นคริสต์ศักราช\n4. ให้ทำการรีเซ็ตนาฬิกาและโทรศัพท์ จากนั้นทำการเชื่อมต่อนาฬิกากับแอปอีกครั้ง\n5. เปิดการตั้งค่าการวัดอัตราการเต้นของหัวใจแบบอัตโนมัติ โดยโหมดนอนหลับจะเริ่มทำงานตั้งแต่ช่วงเวลา 21.00 ถึง 09.00 น. และตอนสวมใส่นาฬิกาควรใส่ให้เหนือข้อมือขึ้นมาประมาณ 2 นิ้วมือ ไม่รัดแน่นหรือหลวมจนเกินไป รวมถึงหลีกเลี่ยงบริเวณที่มีรอยสักหรือขนแขนหนา\n6. ตรวจสอบว่าการวัดค่าต่างๆ ขึ้นปกติหรือไม่"
+  },
+  {
+    "id": "Q077",
+    "question": "S1 Pro ไมโครโฟนไม่มีเสียง แก้ยังไง",
+    "group": "faq",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 5,
+    "elapsed_seconds": 102.71,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+      "วิธีแก้ปัญหารายรุ่น-Black Shark-เฉพาะติ๊กส่งลูกค้าได้-20261118-0114.xlsx"
+    ],
+    "baseline_answer": "สำหรับปัญหาไมโครโฟนไม่มีเสียง แนะนำให้ลองตรวจสอบบริเวณช่องไมโครโฟน โดยสังเกตรูขนาดเล็กบริเวณข้างปุ่มควบคุมด้านขวาของอุปกรณ์ว่ามีฝุ่น เศษผง หรือสิ่งสกปรกอุดตันอยู่หรือไม่ หากพบสิ่งสกปรก สามารถใช้น้ำยาไล่ความชื้นสำหรับอุปกรณ์อิเล็กทรอนิกส์ช่วยทำความสะอาดอย่างระมัดระวัง โดยระวังอย่าใช้วัตถุมีคมแทงเข้าไปในช่องไมโครโฟนเด็ดขาด จากนั้นลองทดสอบใช้งานใหม่อีกครั้ง หากยังพบปัญหา สามารถแจ้งหมายเลขคำสั่งซื้อพร้อมแนบวิดีโอขณะดำเนินการแก้ไขเพื่อให้เจ้าหน้าที่ตรวจสอบได้เลยครับ",
+    "current_answer": "ยังยืนยันไม่ได้ เนื่องจากข้อมูลในระบบไม่ระบุวิธีแก้ไขปัญหาไมโครโฟนไม่มีเสียงสำหรับรุ่น Black Shark S1 Pro ครับ"
+  },
+  {
+    "id": "Q078",
+    "question": "S1 Pro แจ้งเตือน LINE ไม่แสดงข้อความ ต้องเช็กอะไร",
+    "group": "faq",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 4,
+    "elapsed_seconds": 28.18,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+      "วิธีแก้ปัญหารายรุ่น-Black Shark-เฉพาะติ๊กส่งลูกค้าได้-20261118-0114.xlsx"
+    ],
+    "baseline_answer": "สำหรับการแจ้งเตือน LINE ที่ไม่แสดงตัวอย่างข้อความบน Black Shark S1 Pro รบกวนตรวจสอบเบื้องต้นตามขั้นตอนนี้ครับ\n\n1. ให้ทำการทดสอบส่งข้อความ LINE เข้ามือถือที่ใช้เชื่อมต่อกับนาฬิกา (โดยให้ออกจากแอป LINE ก่อน) แล้วดูว่าป๊อปอัปแจ้งเตือนที่มือถือแสดงเป็นแจ้งเตือนข้อความเข้าหรือแสดงเนื้อหาแชท\n2. หากป๊อปอัปแจ้งเตือนแสดงเป็นข้อความเข้าโดยไม่แสดงรายละเอียดแชท ให้ตั้งค่ามือถือตามระบบดังนี้ครับ\n- **Android:** ไปที่การตั้งค่ามือถือ > แอป LINE > การแจ้งเตือน > เปิดใช้งาน \"แสดงข้อความแชทที่ได้รับ\"\n- **iOS:** ไปที่การตั้งค่ามือถือ > แอป LINE > การแจ้งเตือน > เปิด \"อนุญาตการแจ้งเตือน\" > ไปที่หัวข้อ \"แสดงตัวอย่าง\" แล้วเลือก \"ตลอดเวลา (ค่าเริ่มต้น)\"\n\nหากลองทำตามขั้นตอนทั้งหมดนี้แล้วยังไม่สามารถใช้งานได้ รบกวนถ่ายคลิปขณะทดสอบ พร้อมแจ้งเบอร์โทรและเวลาที่สะดวกให้ติดต่อกลับ เพื่อให้เจ้าหน้าที่ตรวจสอบเพิ่มเติมได้เลยครับ",
+    "current_answer": "แอดมินแนะนำให้ลองตรวจสอบการตั้งค่าเบื้องต้นดูก่อนนะครับ อาการนี้มักเกิดจากการตั้งค่าการแจ้งเตือนในตัวเครื่องมือถือครับ\n\nสำหรับระบบ Android ให้เข้าไปที่การตั้งค่าของมือถือ แล้วเลือกแอป LINE ไปที่การแจ้งเตือน จากนั้นเปิดใช้งานฟังก์ชัน \"แสดงข้อความแชทที่ได้รับ\" ครับ ส่วนถ้าใช้งาน iOS ให้ไปที่การตั้งค่ามือถือ เลือกแอป LINE เข้าไปที่การแจ้งเตือน ตรวจสอบว่าเปิดอนุญาตการแจ้งเตือนไว้แล้ว และตรงหัวข้อ \"แสดงตัวอย่าง\" ให้ติ๊กเลือกเป็น \"ตลอดเวลา\" ครับ\n\nลองตั้งค่าตามนี้ดูได้เลยนะครับ หากลองทำตามขั้นตอนทั้งหมดนี้แล้วยังไม่สามารถใช้งานได้ รบกวนถ่ายคลิปขณะทดสอบเพื่อเป็นข้อมูลให้เจ้าหน้าที่ตรวจสอบ พร้อมแจ้งเบอร์และเวลาที่สะดวกให้ติดต่อกลับได้เลยนะครับ"
+  },
+  {
+    "id": "Q079",
+    "question": "RUN ไม่บันทึกการนอน มีวิธีแก้ไหม",
+    "group": "faq",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 4,
+    "elapsed_seconds": 118.03,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+      "วิธีแก้ปัญหารายรุ่น-Black Shark-เฉพาะติ๊กส่งลูกค้าได้-20261118-0114.xlsx"
+    ],
+    "baseline_answer": "เบื้องต้นให้ลองเปิดแอปนาฬิกาเพื่อซิงก์ข้อมูลใหม่อีกครั้ง และตรวจสอบว่าแอปกับเฟิร์มแวร์เป็นเวอร์ชันล่าสุดหรือไม่ จากนั้นลองเปิดการตั้งค่าการวัดอัตราการเต้นของหัวใจแบบอัตโนมัติ โดยฟีเจอร์ตรวจจับการนอนหลับ ระบบจะเริ่มบันทึกข้อมูลเมื่อนอนอย่างน้อย 20 นาที หรือในช่วงเวลา 21.00 - 09.00 น. รวมถึงสวมใส่นาฬิกาให้เหนือข้อมือขึ้นมาประมาณ 2 นิ้วมือ และไม่รัดแน่นหรือหลวมจนเกินไป สำหรับผู้ใช้งาน iOS สามารถตรวจสอบการตั้งค่าปฏิทินให้เป็นคริสต์ศักราชผ่านลิงก์นี้ได้เลยครับ https://youtu.be/ch-xGMcKsT4 หากทำตามขั้นตอนแล้วยังไม่สามารถใช้งานได้ ให้ทำการรีเซ็ตนาฬิกาและโทรศัพท์แล้วลองเชื่อมต่อใหม่อีกครั้งนะครับ",
+    "current_answer": "รองรับครับ สำหรับปัญหาการไม่บันทึกการนอน แนะนำให้ตรวจสอบเบื้องต้นดังนี้ครับ: 1. สวมใส่นาฬิกาให้เหนือบริเวณข้อมือขึ้นมาประมาณ 2 นิ้วมือ ปรับสายให้กระชับพอดีไม่แน่นหรือหลวมเกินไป และหลีกเลี่ยงจุดที่มีรอยสักหรือขนแขนหนา 2. เปิดใช้งานฟังก์ชันตรวจวัดอัตราการเต้นของหัวใจแบบอัตโนมัติไว้ 3. ระบบจะเริ่มบันทึกข้อมูลเมื่อมีการนอนอย่างน้อย 20 นาทีขึ้นไป 4. หากมีข้อมูลในนาฬิกาแต่ไม่แสดงในแอป ให้เปิดแอปนาฬิกาเพื่อซิงก์ข้อมูลใหม่อีกครั้ง ตรวจสอบเวอร์ชันแอปและเฟิร์มแวร์ให้เป็นปัจจุบัน หรือหากใช้งาน iOS ให้ตั้งค่าปฏิทินในมือถือให้เป็นคริสต์ศักราชผ่านลิงก์นี้ครับ https://youtu.be/ch-xGMcKsT4"
+  },
+  {
+    "id": "Q080",
+    "question": "RUN เชื่อมกับมือถือไม่ได้ ควรลองอะไร",
+    "group": "faq",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 4,
+    "elapsed_seconds": 19.74,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+      "วิธีแก้ปัญหารายรุ่น-Black Shark-เฉพาะติ๊กส่งลูกค้าได้-20261118-0114.xlsx"
+    ],
+    "baseline_answer": "แนะนำให้ลองตรวจสอบการตั้งค่าสิทธิ์และการเชื่อมต่อบลูทูธดูก่อนนะครับ โดยเปิดแอปนาฬิกาเพื่อเช็คสถานะการเชื่อมต่อ และไปที่เมนูด้านล่างเลือกอุปกรณ์เพื่อรอให้ระบบซิงค์ข้อมูลใหม่ประมาณ 1-2 นาทีครับ นอกจากนี้ควรตรวจสอบการอนุญาตสิทธิ์และการทำงานเบื้องหลังของแอป Shark Sport บน Android หรือแอป Shark Wearable บน iOS ให้เรียบร้อยครับ หากยังพบปัญหาการเชื่อมต่อ สามารถลองปิดและเปิดบลูทูธที่มือถือใหม่อีกครั้ง หรือทำการรีเซ็ตนาฬิกาโดยกดปุ่มด้านขวาบนค้างไว้ประมาณ 20-25 วินาทีจนเครื่องปิดแล้วเปิดใหม่ครับผม",
+    "current_answer": "สวัสดีครับ แนะนำให้ลองตรวจสอบการเชื่อมต่อบลูทูธที่มือถือและเปิดแอปพลิเคชันเพื่อดูสถานะการเชื่อมต่อ หากสถานะแสดงว่าหลุด ให้ลองปิดและเปิดบลูทูธใหม่ หรือกดเชื่อมต่อใหม่อีกครั้งครับ นอกจากนี้ แนะนำให้ตรวจสอบการอนุญาตสิทธิ์การแจ้งเตือนและการทำงานเบื้องหลังของแอปพลิเคชัน Shark Sport สำหรับระบบ Android หรือแอป Shark Wearable สำหรับระบบ iOS ให้เรียบร้อยครับ พร้อมทั้งเปิดแอปนาฬิกาไปที่เมนูด้านล่างเลือกอุปกรณ์เพื่อรอสัก 1-2 นาทีให้นาฬิกาซิงค์ข้อมูลเชื่อมต่อใหม่อีกรอบครับผม"
+  },
+  {
+    "id": "Q081",
+    "question": "FunCooler 5 Neo ใบพัดไม่หมุน ทำยังไง",
+    "group": "faq",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 4,
+    "elapsed_seconds": 57.58,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+      "วิธีแก้ปัญหารายรุ่น-Black Shark-เฉพาะติ๊กส่งลูกค้าได้-20261118-0114.xlsx"
+    ],
+    "baseline_answer": "น้อง Black Shark แนะนำให้ลองตรวจสอบเบื้องต้นตามนี้ดูก่อนนะครับ \n\n1. ลองตรวจดูว่ามีสิ่งแปลกปลอมหรือเส้นผมติดอยู่บริเวณใบพัดลมไหมครับ ถ้าพบ ให้ปิดเครื่องและถอดสายชาร์จก่อนนำออกทุกครั้ง โดยระมัดระวังห้ามใช้ของแข็งแหย่หรือออกแรงงัดใบพัด เพราะอาจทำให้ใบพัดหักหรือเสียหายได้ครับ\n2. ลองเปลี่ยนมาใช้หัวชาร์จ 15W และสายชาร์จเส้นอื่นที่ใช้งานได้ปกติ เพื่อเช็คว่าอาการผิดปกติเกิดจากอุปกรณ์ชาร์จหรือเปล่านะครับ\n\nหากลองทำตามขั้นตอนเหล่านี้แล้วยังพบปัญหาเดิม แจ้งอาการเพิ่มเติมให้แอดมินทราบ เพื่อช่วยตรวจสอบและแนะนำวิธีแก้ไขในขั้นตอนถัดไปได้เลยครับ",
+    "current_answer": "น้อง Black Shark แนะนำให้ลองตรวจสอบเบื้องต้นตามนี้ดูก่อนนะครับ \n\n1. ให้ลองตรวจดูว่ามีเส้นผมหรือสิ่งแปลกปลอมติดอยู่บริเวณใบพัดหรือเปล่าครับ หากพบ ให้ปิดเครื่องและถอดสายชาร์จก่อนนำออกทุกครั้ง คำเตือน: ควรนำสิ่งแปลกปลอมออกอย่างระมัดระวัง ห้ามใช้ของแข็งแหย่หรือออกแรงงัดใบพัด เพราะอาจทำให้ใบพัดหักหรือเสียหายได้ครับ\n2. ทดลองเปลี่ยนใช้หัวชาร์จ 15W และสายชาร์จเส้นอื่นที่ใช้งานได้ปกติ เพื่อทดสอบว่าอาการผิดปกติเกิดจากอุปกรณ์ชาร์จหรือไม่ครับ\n\nหากตรวจสอบตามขั้นตอนข้างต้นแล้ว แต่ยังพบปัญหาเดิม รบกวนแจ้งอาการเพิ่มเติมให้แอดมินทราบ เพื่อช่วยตรวจสอบและแนะนำวิธีแก้ไขในขั้นตอนถัดไปครับ"
+  },
+  {
+    "id": "Q082",
+    "question": "FunCooler 5 Pro ไม่เย็น ต้องเช็กอะไร",
+    "group": "faq",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 4,
+    "elapsed_seconds": 27.66,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+      "วิธีแก้ปัญหารายรุ่น-Black Shark-เฉพาะติ๊กส่งลูกค้าได้-20261118-0114.xlsx"
+    ],
+    "baseline_answer": "น้อง Black Shark แนะนำให้ลองตรวจสอบหัวชาร์จและสายชาร์จดูก่อนนะครับ ลองเปลี่ยนมาใช้หัวชาร์จ 35W และสายชาร์จเส้นอื่นที่ใช้งานได้ปกติ เพื่อทดสอบดูว่าอาการผิดปกติเกิดจากอุปกรณ์ชาร์จหรือไม่ครับ หากตรวจสอบตามขั้นตอนข้างต้นแล้ว แต่ยังพบปัญหาเดิม รบกวนแจ้งอาการเพิ่มเติมให้แอดมินทราบ เพื่อช่วยตรวจสอบต่อไปได้เลยนะครับ",
+    "current_answer": "สวัสดีครับ น้อง Black Shark แนะนำให้ลองตรวจสอบหัวชาร์จและสายชาร์จดูก่อนได้เลยครับ โดยลองเปลี่ยนมาใช้หัวชาร์จขนาด 35W และสายชาร์จเส้นอื่นที่ใช้งานได้ปกติ เพื่อทดสอบว่าอาการผิดปกติเกิดจากอุปกรณ์ชาร์จหรือไม่ครับ นอกจากนี้ ลองตรวจสอบดูด้วยนะครับว่ามีเส้นผมหรือสิ่งแปลกปลอมติดอยู่บริเวณใบพัดลมหรือไม่ หากพบ ให้ปิดเครื่องและถอดสายชาร์จก่อนนำออกทุกครั้ง และควรนำสิ่งแปลกปลอมออกอย่างระมัดระวัง ห้ามใช้ของแข็งแหย่หรือออกแรงงัดใบพัด เพราะอาจทำให้ใบพัดหักหรือเสียหายได้ครับผม"
+  },
+  {
+    "id": "Q083",
+    "question": "T24 ข้างหนึ่งไม่ดัง รีเซ็ตยังไง",
+    "group": "faq",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 4,
+    "elapsed_seconds": 87.33,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+      "วิธีแก้ปัญหารายรุ่น-Black Shark-เฉพาะติ๊กส่งลูกค้าได้-20261118-0114.xlsx"
+    ],
+    "baseline_answer": "น้อง Black Shark แนะนำให้ลองแก้ไขเบื้องต้นตามอาการเสียงออกไม่เท่ากันหรือข้างหนึ่งไม่ดัง โดยตรวจสอบและทำความสะอาดบริเวณตะแกรงหูฟังครับ:\n1. ถอดหูฟังออกจากหู และตรวจสอบว่ามีฝุ่น เศษผง หรือสิ่งสกปรกอุดตันที่ตะแกรงหูฟังหรือไม่\n2. ใช้แปรงขนนุ่มหรือแปรงสำหรับทำความสะอาดอุปกรณ์อิเล็กทรอนิกส์ค่อย ๆ ปัดบริเวณตะแกรงหูฟังเพื่อกำจัดสิ่งสกปรก\n3. หากมีจุกซิลิโคน ให้ถอดจุกหูฟังออกก่อนแล้วทำความสะอาดแยกกัน\n4. ทำความสะอาดจุกหูฟังโดยใช้ผ้าแห้งหรือวิธีที่เหมาะสม แล้วเช็ดให้แห้งสนิทก่อนใส่กลับเข้าที่\n*(ข้อควรระวัง: ไม่ควรใช้ของแหลม แรงดันลมแรง หรือของเหลวเทลงบนตะแกรงโดยตรง)*\n\nส่วนวิธีการรีเซ็ตหูฟัง Black Shark T24 มีขั้นตอนดังนี้ครับ:\n1. ลบการเชื่อมต่อเดิมบนมือถือ ไปที่เมนูบลูทูธและกดเลือกชื่อบลูทูธของหูฟัง จากนั้นกด \"ลืมอุปกรณ์นี้ (Forget Device)\"\n2. นำหูฟังทั้ง 2 ข้างใส่กลับเข้าไปในกล่องชาร์จ และเปิดฝากล่องไว้\n3. กดปุ่มสัมผัสที่หูฟังด้านซ้ายและขวาค้างไว้ประมาณ 10 วินาที หรือจนกว่าไฟสถานะที่หูฟังจะเริ่มกะพริบ\n4. เมื่อไฟสถานะกะพริบเป็นลักษณะเดียวกัน หมายถึงการรีเซ็ตสำเร็จ\n5. เชื่อมต่อกับมือถือใหม่อีกครั้ง ไปที่เมนูบลูทูธ ค้นหาอุปกรณ์ และกดเลือกชื่อบลูทูธ Black Shark T24 เพื่อจับคู่ใหม่\n\nหากดำเนินการแล้วอาการยังเหมือนเดิม สามารถแจ้งกลับมาที่ช่องทางนี้ได้เลยครับ",
+    "current_answer": "สวัสดีครับน้อง Black Shark ยินดีช่วยดูอาการนี้ให้นะครับ\n\nสำหรับปัญหาเสียงดังข้างเดียว สามารถแก้ไขเบื้องต้นได้โดยการทำความสะอาดบริเวณตะแกรงหูฟัง โดยถอดหูฟังออกแล้วตรวจสอบว่ามีสิ่งอุดตันหรือสิ่งสกปรกติดอยู่หรือไม่ จากนั้นใช้แปรงขนนุ่มค่อย ๆ ปัดทำความสะอาดเบา ๆ (ไม่ควรใช้ของแหลม แรงดันลมแรง หรือของเหลวเทลงบนตะแกรงโดยตรง) หรือหากต้องการรีเซ็ตคืนค่าโรงงาน สามารถทำตามขั้นตอนดังนี้ได้ครับ:\n1. ลบการเชื่อมต่อเดิมบนมือถือ ไปที่เมนูบลูทูธและกด \"ลืมอุปกรณ์นี้ (Forget Device)\" สำหรับ Black Shark T24\n2. นำหูฟังทั้ง 2 ข้างใส่กลับเข้าไปในกล่องชาร์จ และเปิดฝากล่องไว้\n3. กดปุ่มสัมผัสที่หูฟังด้านซ้ายและขวาค้างไว้ประมาณ 10 วินาที หรือจนกว่าไฟสถานะที่หูฟังจะเริ่มกะพริบเป็นลักษณะเดียวกันเมื่อรีเซ็ตสำเร็จ\n4. เชื่อมต่อกับมือถือใหม่อีกครั้งโดยค้นหาและเลือกชื่อบลูทูธ Black Shark T24\n\nหากดำเนินการแล้วเป็นแบบเดิม แจ้งกลับมาที่ช่องทางนี้ได้เลยครับ"
+  },
+  {
+    "id": "Q084",
+    "question": "T18 เชื่อม Bluetooth ไม่ได้ ต้องทำอย่างไร",
+    "group": "faq",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 4,
+    "elapsed_seconds": 8.03,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+      "วิธีแก้ปัญหารายรุ่น-Black Shark-เฉพาะติ๊กส่งลูกค้าได้-20261118-0114.xlsx"
+    ],
+    "baseline_answer": "สวัสดีครับ ยินดีช่วยดูให้นะครับ สำหรับปัญหาที่หูฟัง Black Shark T18 เชื่อมต่อบลูทูธไม่ได้ ลองทำตามขั้นตอนการแก้ไขเบื้องต้นดูนะครับ\n\n1. ไปที่เมนูบลูทูธบนมือถือแล้วกดลืมอุปกรณ์ (Forget Device) ของ Black Shark T18\n2. นำหูฟังทั้ง 2 ข้างออกจากกล่องชาร์จ\n3. รีเซ็ตคืนค่าโรงงานหูฟังโดยกดปุ่มสัมผัสที่หูฟังด้านซ้ายและขวา 5 ครั้ง ไฟสถานะที่หูฟังจะเริ่มกะพริบ\n4. เมื่อไฟสถานะที่หูฟังกะพริบเป็นลักษณะเดียวกัน หมายถึงการรีเซ็ตคืนค่าโรงงานหูฟังสำเร็จ (หากไม่แสดงแบบนี้ให้ทำข้อ 3 ใหม่อีกครั้ง)\n5. เชื่อมต่อกับมือถือใหม่อีกครั้ง ไปที่เมนูบลูทูธของมือถือ และกดค้นหาอุปกรณ์ จากนั้นกดเลือกชื่อบลูทูธ Black Shark T18 เพื่อทำการจับคู่ใหม่\n\nหากดำเนินการตามที่แจ้งแล้วยังเป็นแบบเดิม แจ้งกลับมาช่องทางนี้ได้เลยครับ",
+    "current_answer": "ยังยืนยันไม่ได้ เนื่องจากข้อมูลจากระบบไม่ระบุวิธีการแก้ไขปัญหาการเชื่อมต่อ Bluetooth ของ Black Shark T18 ครับ หากพบอาการดังกล่าว ไม่สามารถยืนยันวิธีแก้ไขตามข้อมุลที่มีได้ครับ"
+  },
+  {
+    "id": "Q085",
+    "question": "ในร้านมีนาฬิกา Kieslect ไหม",
+    "group": "shop_boundary",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": false,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 2,
+    "elapsed_seconds": 7.98,
+    "source_files": [],
+    "baseline_answer": "ตอนนี้ยังไม่พบสินค้าที่ตรงกับสิ่งที่ต้องการในข้อมูลร้านครับ บอกการใช้งานที่สำคัญที่สุดอีกนิดได้ไหมครับ",
+    "current_answer": "ตอนนี้ยังไม่พบสินค้าที่ตรงกับสิ่งที่ต้องการในข้อมูลร้านครับ บอกการใช้งานที่สำคัญที่สุดอีกนิดได้ไหมครับ"
+  },
+  {
+    "id": "Q086",
+    "question": "มี IMILAB รุ่นไหนแนะนำบ้าง",
+    "group": "shop_boundary",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": false,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 2,
+    "elapsed_seconds": 48.1,
+    "source_files": [],
+    "baseline_answer": "ตอนนี้ยังไม่พบสินค้าที่ตรงกับสิ่งที่ต้องการในข้อมูลร้านครับ บอกการใช้งานที่สำคัญที่สุดอีกนิดได้ไหมครับ",
+    "current_answer": "ตอนนี้ยังไม่พบสินค้าที่ตรงกับสิ่งที่ต้องการในข้อมูลร้านครับ บอกการใช้งานที่สำคัญที่สุดอีกนิดได้ไหมครับ"
+  },
+  {
+    "id": "Q087",
+    "question": "มีหูฟัง KOSPET ไหม",
+    "group": "shop_boundary",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": false,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 44.28,
+    "source_files": [],
+    "baseline_answer": "ตอนนี้ยังไม่พบสินค้าที่ตรงกับสิ่งที่ต้องการในข้อมูลร้านครับ บอกการใช้งานที่สำคัญที่สุดอีกนิดได้ไหมครับ",
+    "current_answer": "ตอนนี้ยังไม่พบสินค้าที่ตรงกับสิ่งที่ต้องการในข้อมูลร้านครับ บอกการใช้งานที่สำคัญที่สุดอีกนิดได้ไหมครับ"
+  },
+  {
+    "id": "Q088",
+    "question": "ช่วยแนะนำสินค้าแบรนด์อื่นแทน Black Shark หน่อย",
+    "group": "shop_boundary",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 5,
+    "elapsed_seconds": 418.69,
+    "source_files": [],
+    "baseline_answer": "ผมช่วยเรื่องสินค้าในร้าน Black Shark Thailand ได้ครับ ถ้าอยากให้ดูรุ่นหรือการใช้งาน บอกมาได้เลย",
+    "current_answer": "ตอนนี้ยังไม่พบสินค้าที่ตรงกับสิ่งที่ต้องการในข้อมูลร้านครับ บอกการใช้งานที่สำคัญที่สุดอีกนิดได้ไหมครับ"
+  },
+  {
+    "id": "Q089",
+    "question": "ร้านนี้ขายนาฬิกายี่ห้ออะไรบ้าง",
+    "group": "shop_boundary",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 8.36,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "ตอนนี้ทางร้านมีสมาร์ทวอทช์และอุปกรณ์สวมใส่อัจฉริยะจากแบรนด์ Black Shark วางจำหน่ายทั้งหมด 15 รุ่น ได้แก่:\n\n1. Black Shark GS3\n2. Black Shark GS3 Sport\n3. Black Shark GS3 Ultra\n4. Black Shark GS3 Ultra (REFINED EDITION)\n5. Black Shark A3\n6. Black Shark S3\n7. Black Shark S3 Classic\n8. Black Shark S1 Pro\n9. Black Shark S1 Classic\n10. Black Shark GT3\n11. Black Shark GT3 NEO\n12. BLACK SHARK RUN\n13. Black Shark GT3 Neo2\n14. Black Shark PureLoop\n15. z Black Shark PureLoop\n\nหากสนใจรุ่นไหนเป็นพิเศษ สอบถามข้อมูลเพิ่มเติมได้เลยนะครับ",
+    "current_answer": "น้อง Black Shark ยินดีให้บริการครับ ทางร้านของเราจำหน่ายสมาร์ทวอทช์แบรนด์ Black Shark ครับผม\n\nโดยในหมวดหมู่สมาร์ทวอทช์ตอนนี้มีทั้งหมด 14 รุ่น ได้แก่ Black Shark GS3, Black Shark GS3 Sport, Black Shark GS3 Ultra, Black Shark GS3 Ultra (REFINED EDITION), Black Shark A3, Black Shark S3, Black Shark S3 Classic, Black Shark S1 Pro, Black Shark S1 Classic, Black Shark GT3, Black Shark GT3 NEO, BLACK SHARK RUN, Black Shark GT3 Neo2 และ Black Shark PureLoop ครับ ลูกค้าสนใจรุ่นไหนเป็นพิเศษสอบถามข้อมูลเพิ่มเติมได้เลยนะครับ"
+  },
+  {
+    "id": "Q090",
+    "question": "มีของ Luckyitmall มาขายไหม",
+    "group": "shop_boundary",
+    "baseline_status": "need_model",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 1,
+    "elapsed_seconds": 3.62,
+    "source_files": [],
+    "baseline_answer": "ขอชื่อรุ่นที่หมายถึงอีกนิดครับ จะได้เช็กข้อมูลให้ตรงตัว",
+    "current_answer": "แชทนี้เป็นของร้าน Black Shark Thailand ครับ ส่วนร้าน Luckyitmall เป็นคนละร้าน ผมจึงยังยืนยันข้อมูลสินค้าของร้านนั้นให้ไม่ได้ครับ"
+  },
+  {
+    "id": "Q091",
+    "question": "S3 ของร้าน Thaisuperphone ต่างจากของร้านนี้ยังไง",
+    "group": "shop_boundary",
+    "baseline_status": "need_model",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 1,
+    "elapsed_seconds": 6.64,
+    "source_files": [],
+    "baseline_answer": "บอกอีกหนึ่งรุ่นที่อยากเทียบได้ไหมครับ ผมจะเทียบตามเรื่องที่ถามให้",
+    "current_answer": "แชทนี้เป็นของร้าน Black Shark Thailand ครับ ส่วนร้าน Thaisuperphone เป็นคนละร้าน ผมจึงยังยืนยันข้อมูลสินค้าของร้านนั้นให้ไม่ได้ครับ"
+  },
+  {
+    "id": "Q092",
+    "question": "บอกรายชื่อสินค้าของร้าน Youpin Online Store ให้หน่อย",
+    "group": "shop_boundary",
+    "baseline_status": "handoff_mock",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 1,
+    "elapsed_seconds": 32.13,
+    "source_files": [],
+    "baseline_answer": "เรื่องนี้ต้องให้เจ้าหน้าที่ช่วยตรวจสอบครับ",
+    "current_answer": "แชทนี้เป็นของร้าน Black Shark Thailand ครับ ส่วนร้าน Youpin Online Store เป็นคนละร้าน ผมจึงยังยืนยันข้อมูลสินค้าของร้านนั้นให้ไม่ได้ครับ"
+  },
+  {
+    "id": "Q093",
+    "question": "ถ้าไม่มีรุ่นที่ถาม ขอรุ่นที่ร้านนี้มีจริงแทน",
+    "group": "shop_boundary",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 6,
+    "elapsed_seconds": 337.69,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "ทางร้านเรามีแท็บเล็ตให้เลือก 3 รุ่นด้วยกันครับ ได้แก่ Black Shark Pad 7Pro UE, Black Shark Pad 7 wifi และ Black Shark Pad 7 LTE โดยทุกรุ่นมาพร้อมหน้าจอขนาด 11 นิ้ว ความละเอียด FHD+ และรองรับหน่วยความจำเสริมด้วย MicroSD Card ครับ",
+    "current_answer": "สวัสดีครับ น้อง Black Shark ยินดีให้บริการครับ ตอนนี้ทางร้านมีสินค้าในสต็อกทั้งหมด 3 รุ่นด้วยกันครับ ประกอบด้วย Black Shark Pad 7Pro UE, Black Shark GS3 และ Black Shark GS3 Sport ครับผม"
+  },
+  {
+    "id": "Q094",
+    "question": "สินค้าที่คุณแนะนำเป็นของร้าน Black Shark Thailand ใช่ไหม",
+    "group": "shop_boundary",
+    "baseline_status": "need_model",
+    "current_status": "need_model",
+    "status_regression": false,
+    "answer_changed": false,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 1,
+    "elapsed_seconds": 1.31,
+    "source_files": [],
+    "baseline_answer": "ขอชื่อรุ่นที่หมายถึงอีกนิดครับ จะได้เช็กข้อมูลให้ตรงตัว",
+    "current_answer": "ขอชื่อรุ่นที่หมายถึงอีกนิดครับ จะได้เช็กข้อมูลให้ตรงตัว"
+  },
+  {
+    "id": "Q095",
+    "question": "ในร้านมีนาฬิการุ่นอะไรบ้าง",
+    "group": "inventory_compare",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 40.82,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "ตอนนี้ทางร้านมีนาฬิกาและอุปกรณ์สวมใส่อยู่ 15 รุ่นครับ ประกอบด้วย Black Shark GS3, Black Shark GS3 Sport, Black Shark GS3 Ultra, Black Shark GS3 Ultra (REFINED EDITION), Black Shark A3, Black Shark S3, Black Shark S3 Classic, Black Shark S1 Pro, Black Shark S1 Classic, Black Shark GT3, Black Shark GT3 NEO, BLACK SHARK RUN, Black Shark GT3 Neo2, Black Shark PureLoop และ z Black Shark PureLoop ครับผม สนใจรุ่นไหนสอบถามเพิ่มเติมได้เลยนะครับ",
+    "current_answer": "น้อง Black Shark ยินดีให้บริการครับ ตอนนี้ทางร้านมีสมาร์ทวอทช์ให้เลือกทั้งหมด 14 รุ่นด้วยกันครับ ได้แก่ \n\n1. Black Shark GS3\n2. Black Shark GS3 Sport\n3. Black Shark GS3 Ultra\n4. Black Shark GS3 Ultra (REFINED EDITION)\n5. Black Shark A3\n6. Black Shark S3\n7. Black Shark S3 Classic\n8. Black Shark S1 Pro\n9. Black Shark S1 Classic\n10. Black Shark GT3\n11. Black Shark GT3 NEO\n12. BLACK SHARK RUN\n13. Black Shark GT3 Neo2\n14. Black Shark PureLoop\n\nสนใจรุ่นไหนเป็นพิเศษ สอบถามเพิ่มเติมได้เลยนะครับ"
+  },
+  {
+    "id": "Q096",
+    "question": "หูฟังในร้านมีรุ่นไหนให้เลือก",
+    "group": "inventory_compare",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 211.97,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "น้อง Black Shark ยินดีให้บริการครับ ตอนนี้ทางร้านมีหูฟังไร้สาย (TWS) ให้เลือกทั้งหมด 7 รุ่น ได้แก่:\n\n1. Black Shark T11\n2. Black Shark T18\n3. Black Shark Rokas 3\n4. Black Shark T23\n5. Black Shark T24\n6. Black Shark C3\n7. Black Shark Rokas 5\n\nหากสนใจรุ่นไหน สอบถามรายละเอียดเพิ่มเติมได้เลยนะครับ",
+    "current_answer": "ในร้านของเราตอนนี้มีหูฟังไร้สาย (TWS) ให้เลือกทั้งหมด 7 รุ่นด้วยกันครับ ประกอบด้วยรุ่น Black Shark T11, Black Shark T18, Black Shark Rokas 3, Black Shark T23, Black Shark T24, Black Shark C3 และ Black Shark Rokas 5 ครับผม ลูกค้าสนใจรุ่นไหนเป็นพิเศษสอบถามรายละเอียดเพิ่มเติมได้เลยนะครับ"
+  },
+  {
+    "id": "Q097",
+    "question": "มีพัดลมระบายความร้อนรุ่นไหนบ้าง",
+    "group": "inventory_compare",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 5.26,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สวัสดีครับ ตอนนี้ทางร้านมีพัดลมระบายความร้อนระบบทำความเย็น Peltier ทั้งหมด 11 รุ่น ดังนี้ครับ:\n\n1. Black Shark FunCooler 5 Neo\n2. Black Shark FunCooler 5 Pro\n3. Black Shark FunCooler 5\n4. Black Shark FunCooler 4\n5. Black Shark MagCooler 3 Pro\n6. Black Shark FunCooler 3 Pro\n7. Black Shark Magcooler 6\n8. Black Shark Magcooler 6 Pro\n9. Black Shark Magcooler 6 Max\n10. Black Shark Magcooler 6 Ultra\n11. Black Shark Supercharged Laptop Cooler Pro\n\nสนใจดูรายละเอียดหรือฟังก์ชันของรุ่นไหนเป็นพิเศษ สอบถามเพิ่มเติมได้เลยนะครับ",
+    "current_answer": "น้อง Black Shark ยินดีให้บริการครับ ตอนนี้ทางร้านมีพัดลมระบายความร้อนระบบ Peltier ทั้งหมด 11 รุ่นด้วยกันครับ ได้แก่ \n\n1. Black Shark FunCooler 5 Neo\n2. Black Shark FunCooler 5 Pro\n3. Black Shark FunCooler 5\n4. Black Shark FunCooler 4\n5. Black Shark MagCooler 3 Pro\n6. Black Shark FunCooler 3 Pro\n7. Black Shark Magcooler 6\n8. Black Shark Magcooler 6 Pro\n9. Black Shark Magcooler 6 Max\n10. Black Shark Magcooler 6 Ultra\n11. Black Shark Supercharged Laptop Cooler Pro\n\nหากสนใจรุ่นไหนเป็นพิเศษ สอบถามรายละเอียดเพิ่มเติมได้เลยนะครับ"
+  },
+  {
+    "id": "Q098",
+    "question": "GS3 กับ GS3 Ultra รุ่นไหนเหมาะกับวิ่งมากกว่า",
+    "group": "inventory_compare",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 49.1,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "น้อง Black Shark ขอเปรียบเทียบทั้งสองรุ่นให้ฟังครับ โดยทั้งสองรุ่นรองรับโหมดกีฬาและการออกกำลังกาย รวมถึงมีฟังก์ชันสำหรับตรวจจับการออกกำลังกายเช่นการวิ่งเหมือนกัน แต่จะมีรายละเอียดสเปคบางส่วนที่แตกต่างกันดังนี้ครับ\n\n- **Black Shark GS3**: รองรับโหมดกีฬามากกว่า 100 ชนิด มีระบบ Built-in GPS 5 เครือข่าย (GPS, BeiDou, GLONASS, GALILEO, QZSS) และหน้าจอสว่างสูงสุด 600Nit\n- **Black Shark GS3 Ultra**: รองรับโหมดกีฬา 160 ชนิด มีระบบ GPS แบบ Dual-Band 6 เครือข่าย (GPS, BeiDou, GLONASS, GALILEO, NAVIC, QZSS) และหน้าจอสว่างสูงสุด 1000Nits\n\nหากสนใจรุ่นไหนสามารถสอบถามเพิ่มเติมได้เลยนะครับผม",
+    "current_answer": "รองรับ ทั้ง Black Shark GS3 และ Black Shark GS3 Ultra รองรับการใช้งานสำหรับการวิ่งครับ เนื่องจากมีโหมดกีฬาและระบบตรวจจับการออกกำลังกายที่ระบุการวิ่ง รวมถึงรองรับ Strava ทั้งสองรุ่นครับ\n\nเพื่อให้เห็นภาพรวมและเปรียบเทียบความแตกต่างที่เกี่ยวข้องกับการใช้งาน น้อง Black Shark สรุปข้อมูลมาให้ตามตารางนี้เลยครับ\n\n| คุณสมบัติ | Black Shark GS3 | Black Shark GS3 Ultra |\n| :--- | :--- | :--- |\n| เครือข่ายดาวเทียม GPS | GPS, BeiDou, GLONASS, GALILEO, QZSS (5 เครือข่าย) | GPS, BeiDou, GLONASS, GALILEO, NAVIC, QZSS (6 เครือข่าย) |\n| โหมดกีฬา | มากกว่า 100 ชนิด | 160 ชนิด |\n| ความสว่างหน้าจอ | 600Nit | 1000Nits |\n\nหากสนใจรุ่นที่มีความสว่างหน้าหน้าจอสูงและรองรับเครือข่ายดาวเทียมมากกว่า สามารถเลือก Black Shark GS3 Ultra ได้ครับ หรือหากต้องการรุ่นที่ใช้งานทั่วไปได้ยาวนานกว่า GS3 ก็รองรับการใช้งานได้ดีเช่นกันครับ"
+  },
+  {
+    "id": "Q099",
+    "question": "T24 กับ T18 ต่างกันตรงไหน",
+    "group": "inventory_compare",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 4,
+    "elapsed_seconds": 35.42,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สวัสดีครับ Black Shark T24 และ Black Shark T18 มีความแตกต่างกันดังนี้ครับ\n\n| คุณสมบัติ | Black Shark T24 | Black Shark T18 |\n| :--- | :--- | :--- |\n| ประเภทหูฟัง | In-Ear | In-Ear |\n| Bluetooth | 5.4 | 5.3 |\n| Dynamic Driver | 13 มม. | 12.4 มม. |\n| ไมโครโฟน | ENC Mic | Triple Mic + ENC |\n| การตัดเสียงรบกวน | ENC | ANC / Transparency Mode |\n| ระยะเวลาการใช้งานหูฟัง | 6 ชม. | 8 ชม. |\n| ระยะเวลาการใช้งานรวมเคส | 30 ชม. | 40 ชม. |\n| แบตเตอรี่หูฟัง / เคส | 30mAh / 360mAh | 45mAh / 350mAh |\n| กันน้ำ | ไม่รองรับ | IP54 (เฉพาะหูฟัง) |\n| น้ำหนักหูฟังต่อข้าง | 3.9 กรัม | 5 กรัม |\n| อุปกรณ์ในกล่อง | หูฟัง, สายชาร์จ, คู่มือการใช้งาน | หูฟัง, จุกซิลิโคน (S/M/L), สายชาร์จ, คู่มือการใช้งาน |\n\nหากต้องการข้อมูลเพิ่มเติมสอบถามได้เลยครับ",
+    "current_answer": "สวัสดีครับ น้อง Black Shark ยินดีช่วยเปรียบเทียบข้อมูลให้ครับ สำหรับหูฟัง T24 และ T18 จะมีจุดเด่นและสเปกบางส่วนที่แตกต่างกันอย่างชัดเจน สามารถดูรายละเอียดเทียบกันตามตารางด้านล่างนี้ได้เลยครับ\n\n| คุณสมบัติ | Black Shark T24 | Black Shark T18 |\n| :--- | :--- | :--- |\n| ขนาดไดนามิกไดร์เวอร์ | 13 มม. | 12.4 มม. |\n| บลูทูธ | 5.4 | 5.3 |\n| ระบบตัดเสียงรบกวน | ENC | ANC / Transparency Mode |\n| ไมโครโฟน | ENC Mic | Triple Mic + ENC |\n| ระยะเวลาใช้งานหูฟัง | 6 ชม. (รวม 30 ชม.) | 8 ชม. (รวม 40 ชม.) |\n| การกันน้ำ | ไม่รองรับ | IP54 |\n| น้ำหนักหูฟังต่อข้าง | 3.9 กรัม | 5 กรัม |\n| อุปกรณ์ในกล่อง | หูฟัง Black Shark T24, สายชาร์จ, คู่มือการใช้งาน | Black Shark T18, จุกซิลิโคน (S / M / L), สายชาร์จ, คู่มือการใช้งาน |\n\nถ้าเน้นเรื่องความเบาสบาย T24 จะตอบโจทย์ได้ดีครับ แต่ถ้าต้องการฟังก์ชันที่ครบเครื่องกว่า เช่น ระบบตัดเสียงรบกวน ANC, ไมโครโฟน Triple Mic + ENC, แบตเตอรี่ที่ใช้งานได้นานขึ้น รวมถึงมาตรฐานกันน้ำ IP54 ตัว T18 จะเป็นรุ่นที่เหมาะสมกว่าครับผม"
+  },
+  {
+    "id": "Q100",
+    "question": "S3 กับ S3 Classic ตัวไหนเหมาะกับว่ายน้ำ",
+    "group": "inventory_compare",
+    "baseline_status": "answered",
+    "current_status": "answered",
+    "status_regression": false,
+    "answer_changed": true,
+    "scope_checked": true,
+    "scope_ok": true,
+    "provider_call_count": 3,
+    "elapsed_seconds": 22.0,
+    "source_files": [
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ],
+    "baseline_answer": "สวัสดีครับ สำหรับการเปรียบเทียบระหว่าง Black Shark S3 และ Black Shark S3 Classic มีข้อมูลดังนี้ครับ\n\n- Black Shark S3: มาพร้อมมาตรฐานการกันน้ำระดับ 5ATM ซึ่งสามารถทนต่อแรงดันน้ำได้เทียบเท่าความลึกถึง 50 เมตร และหมดกังวลเรื่องกิจกรรมทางน้ำ\n- Black Shark S3 Classic: มาพร้อมมาตรฐานการกันน้ำ 3ATM สามารถกันน้ำ ทนฝน และละอองน้ำ\n\nข้อมูลในแหล่งข้อมูลไม่ได้ระบุการรองรับกิจกรรมว่ายน้ำโดยตรงสำหรับทั้งสองรุ่นครับ หากต้องการสอบถามข้อมูลเพิ่มเติมสามารถแจ้งได้เลยนะครับ",
+    "current_answer": "รุ่น Black Shark S3 เหมาะสมกว่าครับ เนื่องจากรุ่น S3 มาพร้อมมาตรฐานการกันน้ำระดับ 5ATM สามารถทนต่อแรงดันน้ำได้เทียบเท่าความลึกถึง 50 เมตร ส่วนรุ่น S3 Classic รองรับมาตรฐานการกันน้ำ 3ATM ซึ่งระบุว่าสามารถกันน้ำ ทนฝน และละอองน้ำครับ\n\n| คุณสมบัติ | Black Shark S3 | Black Shark S3 Classic |\n| :--- | :--- | :--- |\n| มาตรฐานการกันน้ำ | 5ATM (ทนแรงดันน้ำลึก 50 เมตร) | 3ATM (กันน้ำ ทนฝน และละอองน้ำ) |\n| โหมดกีฬา | 150 โหมด | 120 โหมด |\n| วัสดุสายนาฬิกา | สายซิลิโคนแม่เหล็ก | สายซิลิโคน |\n\nหากเน้นการใช้งานทางน้ำ ตัว Black Shark S3 จะมีความเหมาะสมมากกว่าครับ"
+  }
+]

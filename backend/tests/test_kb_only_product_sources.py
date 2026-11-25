@@ -79,6 +79,7 @@ class KBOnlyProductSourceTests(unittest.TestCase):
         self.assertEqual(body["status"], "handoff_required")
         self.assertTrue(body["handoff_required"])
         self.assertEqual(body["handoff_reason"], "card_not_in_shop_kb")
+        self.assertIn("KB", body["handoff_explanation"])
         self.assertEqual(body["unresolved_item_ids"], ["456"])
         self.assertFalse(engine.called)
 
@@ -152,6 +153,8 @@ class KBOnlyProductSourceTests(unittest.TestCase):
 
         self.assertEqual(body["status"], "handoff_required")
         self.assertTrue(body["handoff_required"])
+        self.assertEqual(body["handoff_reason"], "card_not_in_shop_kb")
+        self.assertIn("KB", body["handoff_explanation"])
         self.assertEqual(body["unresolved_item_ids"], ["456"])
         self.assertFalse(engine.called)
 
