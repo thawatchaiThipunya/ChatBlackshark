@@ -994,7 +994,9 @@ class ProductChatEngine:
         # Duplicate FAQ content across color variants is collapsed for selection, while labels remain.
         faq_intents = {"troubleshooting", "product_info", "store_support"}
         relevant_faqs = ([faq for faq in data.get("faqs", [])
-                          if _faq_product(faq, catalog) in names]
+                          if (_faq_product(faq, catalog) in names
+                              or (intent == "store_support"
+                                  and not str(faq.get("model_name") or "").strip()))]
                          if intent in faq_intents else [])
         faq_variant_labels: list[str] = []
         faq_variant_sources: list[tuple[str, dict[str, Any]]] = []
@@ -1098,21 +1100,30 @@ class ProductChatEngine:
                     return finish(provider_failure(faq_reason, intent, session_id))
                 selected_faqs = [unique_faqs[index] for index in (faq_indexes or [])]
                 if selected_faqs:
-                    selected = [catalog[name] for name in names]
-                    evidence_parts = [
-                        "\n\n".join(f"KB_PRODUCT: {item['name']}\n{item.get('description') or ''}"
-                                    for item in selected),
-                        "FAQ_EVIDENCE:\n" + "\n\n".join(
-                            f"FAQ_MODEL: {faq.get('model_name') or ''}\nFAQ_QUESTION: {faq.get('question') or ''}\n"
-                            f"FAQ_ANSWER: {faq.get('answer') or ''}" for faq in selected_faqs),
-                    ]
-                    sources = [item.get("source") or {} for item in selected]
-                    sources.extend(faq.get("source") or {} for faq in selected_faqs)
-                    reply = self._reply(question, intent, needs, selected, history, session_id,
-                                        evidence_override="\n\n".join(part for part in evidence_parts if part),
-                                        source_override=sources, product_label=" / ".join(names) or None)
-                    return finish(reply)
-            return finish(create_escalation("sensitive_topic", intent))
+                    faq_evidence = "FAQ_EVIDENCE:\n" + "\n\n".join(
+                        f"FAQ_MODEL: {faq.get('model_name') or ''}\nFAQ_QUESTION: {faq.get('question') or ''}\n"
+                        f"FAQ_ANSWER: {faq.get('answer') or ''}" for faq in selected_faqs)
+                    faq_reply = self._reply(
+                        question, intent, needs, [catalog[name] for name in names], history, session_id,
+                        evidence_override=faq_evidence,
+                        source_override=[faq.get("source") or {} for faq in selected_faqs],
+                        product_label=" / ".join(names) or None)
+                    if faq_reply.get("reason") != "insufficient_shop_evidence":
+                        return finish(faq_reply)
+
+            # FAQ evidence did not answer the question. Fall back to the exact
+            # product records already resolved from this shop's Supabase KB;
+            # card titles and external listing descriptions are not evidence.
+            selected = [catalog[name] for name in names]
+            if selected:
+                product_evidence = "\n\n".join(
+                    f"KB_PRODUCT: {item['name']}\n{item.get('description') or ''}" for item in selected)
+                return finish(self._reply(
+                    question, intent, needs, selected, history, session_id,
+                    evidence_override=product_evidence,
+                    source_override=[item.get("source") or {} for item in selected],
+                    product_label=" / ".join(names) or None))
+            return finish(create_escalation("insufficient_shop_evidence", intent))
         if intent == "product_search":
             unmatched_mentions = [mention for mention in plan.get("product_mentions", [])
                                   if not _catalog_contains_mention(mention, products)]
