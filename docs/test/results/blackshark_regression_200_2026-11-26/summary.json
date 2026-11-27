@@ -1,0 +1,99 @@
+{
+  "planned_questions": 200,
+  "completed_questions": 200,
+  "run_status": "completed",
+  "stop_reason": null,
+  "result_status_counts": {
+    "answered": 193,
+    "handoff_mock": 4,
+    "need_model": 1,
+    "handoff_required": 2
+  },
+  "group_counts": {
+    "conversation": 24,
+    "catalog": 25,
+    "spec": 20,
+    "faq": 15,
+    "shop_boundary": 10,
+    "inventory_compare": 6,
+    "item_id_only": 32,
+    "card_followup": 48,
+    "inventory_broad": 5,
+    "inventory_category": 8,
+    "card_disambiguation": 1,
+    "card_kb_conflict": 1,
+    "fake_item_id": 1,
+    "multi_card": 1,
+    "card_comparison": 1,
+    "card_product_qa": 2
+  },
+  "scope_checked_count": 200,
+  "scope_ok_count": 200,
+  "shop_scope_failures": 0,
+  "scope_not_evaluated_count": 0,
+  "provider": "openrouter",
+  "model": "google/gemini-3.5-flash-lite",
+  "provider_calls": 599,
+  "provider_cost_usd": 0.7547204,
+  "events_without_reported_cost": 0,
+  "ai_usage_hub_accepted": 598,
+  "ai_usage_hub_rejected": 1,
+  "budget_guard_usd": 1.5,
+  "user_hard_budget_usd": 2.0,
+  "median_elapsed_seconds": 5.428,
+  "p95_elapsed_seconds": 7.688,
+  "answer_changes_vs_baseline": 92,
+  "baseline_status_regressions": 3,
+  "baseline_provider": "openrouter",
+  "baseline_model": "google/gemini-3.5-flash-lite",
+  "baseline_cost_usd": 0.4379588,
+  "deterministic_cases_total": 200,
+  "deterministic_cases_passed": 200,
+  "deterministic_check_items_total": 309,
+  "deterministic_check_items_passed": 309,
+  "answer_quality_grade": "not_independently_llm_scored",
+  "quality_grading_note": "The run used one real OpenRouter provider; no paid second-model judge was used. Deterministic checks compare outputs with live shop-scoped KB and expected card identity.",
+  "shop_name": "Black Shark Thailand",
+  "shop_id": "1191420560",
+  "platform": "shopee",
+  "branch": "codex/fix-shop-kb-followups",
+  "head_commit": "51c45e478664c14989116b648017c417741d5cfb",
+  "working_tree_dirty": true,
+  "created_at": "2026-11-26T10:35:48.355041+00:00",
+  "manual_findings": [
+    {
+      "id": "Q012",
+      "severity": "high",
+      "type": "answer_regression",
+      "note": "Baseline answered; current run returned handoff_mock/insufficient_shop_evidence for whether S3 and S3 Classic can be used for swimming. Shop KB B8 says S3 is 5ATM and supports water activities; B9 says S3 Classic is 3ATM and rated for rain/splashes. The bot should explain the distinction and uncertainty instead of handing off."
+    },
+    {
+      "id": "Q061",
+      "severity": "high",
+      "type": "answer_regression",
+      "note": "Baseline answered; current run handed off for T18 Bluetooth version. Shop KB B39 states Bluetooth 5.3, so the answer is available in the scoped product record."
+    },
+    {
+      "id": "Q077",
+      "severity": "high",
+      "type": "faq_regression",
+      "note": "Baseline answered; current run handed off for S1 Pro microphone troubleshooting. Shop FAQ C3 contains checks for the microphone opening, obstruction, careful cleaning, and retesting."
+    },
+    {
+      "id": "N198",
+      "severity": "high",
+      "type": "incorrect_spec_in_comparison",
+      "note": "The comparison table says GS3 Ultra is 30 Hz. Shop KB B5 says 60 Hz; the same run also answered 60 Hz correctly for the single-product questions Q008 and Q052. This comparison answer contradicts its own allowed source and is an accuracy failure."
+    },
+    {
+      "id": "Q069",
+      "severity": "info",
+      "type": "handoff_supported_by_kb_gap",
+      "note": "This handoff is not a regression: baseline also handed off. In the Black Shark-only KB rows B23–B24 for Pad 7 LTE, the product name contains LTE but no cellular band/network standard is specified; the record only states Wi‑Fi 2.4/5 GHz and Bluetooth 5.0. Handoff avoids guessing."
+    }
+  ],
+  "category_checker_note": "Broad category expectations include one KB product without a unique category, reported as 'หมวดหมู่ยังไม่ระบุ'; it is included in the shop-wide category summary, not in any named category.",
+  "report_rebuilt_without_provider_calls": true,
+  "ai_usage_hub_delivery_note": "598 of 599 provider usage events were accepted by AIUsageHub. One successful OpenRouter completion (HTTP 200) was charged and retained in the local usage log, but its AIUsageHub report delivery failed during a transient URL/network error. It was not resent to avoid creating a duplicate billing record.",
+  "manual_review_count": 5
+}

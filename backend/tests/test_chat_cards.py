@@ -159,13 +159,14 @@ class CardChatFlowTests(unittest.TestCase):
     def test_exact_card_turn_uses_chat_engine_with_mongo_context_and_kb_model(self):
         listing = {
             "item_id": "123456789",
-            "name": "Black Shark GS3 Smart Watch",
+            "name": "(NewArrival) Official product listing",
             "description": "รายการจาก Mongo: รองรับโหมดว่ายน้ำ",
             "image_url": "https://example.test/gs3.webp",
             "images": [],
         }
         products = [{"name": "Black Shark GS3", "description":
-                     "ประเภทสินค้า: smart watch\nชื่อรุ่นสินค้าย่อ: GS3\nกันน้ำ 5ATM", "source": {"file": "kb.xlsx"}}]
+                     "ประเภทสินค้า: smart watch\nชื่อรุ่นสินค้าย่อ: GS3\nกันน้ำ 5ATM",
+                     "item_ids": [123456789], "source": {"file": "kb.xlsx"}}]
 
         class FakeStore:
             def __init__(self):
@@ -208,6 +209,7 @@ class CardChatFlowTests(unittest.TestCase):
         self.assertEqual(reply["source_type"], "shopee_exact_item")
         saved_messages = [payload for action, payload in fake_store.saved if action == "save_message"]
         self.assertEqual(len(saved_messages), 2)
+        self.assertEqual(saved_messages[0]["payload"]["product_cards"][0]["product_name"], "Black Shark GS3")
         user_turn_id = saved_messages[0]["payload"]["request_id"]
         assistant_turn_id = saved_messages[1]["payload"]["request_id"]
         self.assertTrue(user_turn_id)

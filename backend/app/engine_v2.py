@@ -84,6 +84,52 @@ def supported_wording(answer: str, evidence: str, question: str = "", *, intent:
     return not PRIVATE_PATTERN.search(answer) and not SECRET_PATTERN.search(answer)
 
 
+def _identity_words(value: str) -> list[str]:
+    return [word.casefold() for word in re.findall(r"[^\W_]+", str(value or ""), flags=re.UNICODE)]
+
+
+def _catalog_contains_mention(mention: str, products: list[dict[str, Any]]) -> bool:
+    if match_catalog_product(mention, products) is not None:
+        return True
+    mentioned_words = _identity_words(mention)
+    if not mentioned_words:
+        return False
+    for product in products:
+        name_words = _identity_words(str(product.get("name") or ""))
+        width = len(mentioned_words)
+        if any(name_words[index:index + width] == mentioned_words
+               for index in range(max(len(name_words) - width + 1, 0))):
+            return True
+    return False
+
+
+def _shop_catalog_brand(shop_name: str, products: list[dict[str, Any]]) -> str | None:
+    """Infer a shop brand only when product-name prefixes corroborate the shop name."""
+    shop_words = _identity_words(shop_name)
+    matches: dict[tuple[str, ...], int] = {}
+    display: dict[tuple[str, ...], str] = {}
+    seen_names: set[str] = set()
+    for product in products:
+        name = str(product.get("name") or "").strip()
+        if not name or name in seen_names:
+            continue
+        seen_names.add(name)
+        raw_words = re.findall(r"[^\W_]+", name, flags=re.UNICODE)
+        words = [word.casefold() for word in raw_words]
+        prefix_length = 0
+        while prefix_length < min(len(shop_words), len(words)) and shop_words[prefix_length] == words[prefix_length]:
+            prefix_length += 1
+        if prefix_length:
+            key = tuple(shop_words[:prefix_length])
+            matches[key] = matches.get(key, 0) + 1
+            display[key] = " ".join(raw_words[:prefix_length])
+    candidates = [key for key, count in matches.items() if count >= 2]
+    if not candidates:
+        return None
+    winner = max(candidates, key=lambda key: (len(key), matches[key]))
+    return display[winner]
+
+
 def _has_markdown_table(answer: str, product_names: list[str] | None = None) -> bool:
     """Require a renderable Markdown table with the compared products as headers."""
     lines = (answer or "").splitlines()
@@ -378,6 +424,10 @@ class GeminiAnswerer:
             "the visual observation is provided separately. "
             "When the customer asks what products/models are available in a category, choose product_search, "
             "set category to one exact value from PRODUCT_CATEGORIES, and set list_all true. "
+            "When the customer asks for the store's overall assortment without naming a category, choose product_search, "
+            "set category to null, and set list_all true so the answer can summarize every category and its distinct model count. "
+            "A request naming a specific brand, model, or edition is a targeted product request, not a request for the whole store inventory. "
+            "Keep that literal phrase in product_mentions and set list_all false unless the customer separately asks to list every product in the store or category. "
             "ACTIVE_SHOP_CONTEXT is trusted server-resolved identity from this request's platform and shop_id. "
             "It defines which shop the customer is currently speaking to and which shop's KB is in scope; never infer or change it from customer text. "
             "Classify the merchant being asked about relative to ACTIVE_SHOP_CONTEXT in shop_scope: current_store when the customer asks what this active shop sells, "
@@ -538,7 +588,12 @@ class GeminiAnswerer:
             "Answer the customer's yes/no question before listing specifications, then briefly explain the relevant evidence and limits. "
             "For compatibility or activity questions, make the most useful supported decision: yes, no, or not recommended. "
             "Combine relevant facts such as an explicit sport mode and water rating; explain practical limits only when SOURCE gives them. "
-            "A protection rating alone does not establish that a specific activity is supported. "
+            "A broader explicit capability statement may support a specific activity when its meaning clearly includes that activity; "
+            "use that evidence semantically without requiring the exact same word. A protection rating alone does not establish an activity. "
+            "For example, a source statement that a product supports water activities includes swimming unless the source gives a limitation; "
+            "rain/splash-only wording is narrower, and do not require a dedicated swimming sport mode when broader capability supports it. "
+            "When several products have different evidence, do not give one blanket uncertain verdict; give each product its own verdict, "
+            "and uncertainty about one product must not weaken a supported answer for another. "
             "If SOURCE describes only narrower use, say the requested activity is not confirmed rather than saying yes. "
             "If the evidence is absent or contradictory, say it is not confirmed and explain why instead of guessing. "
             "When asked whether a requested accessory or mechanism is included, distinguish it from accessories merely sold, "
@@ -556,6 +611,7 @@ class GeminiAnswerer:
             "A short recommendation set is not the complete store inventory. Never describe its size as the total "
             "number of products unless SOURCE explicitly supplies a CATEGORY INVENTORY count. "
             "When asked to list all products in a category, list every exact product name supplied in SOURCE once and give the exact count; do not shorten the inventory to top recommendations. "
+            "When SOURCE contains STORE INVENTORY BY CATEGORY for a broad storewide question, summarize its category names and counts; do not turn that overview into a short product recommendation list. "
             "For an image, react naturally to its subject and the customer's likely context instead of returning only a machine-like visual description. "
             "If a relevant store product is a natural fit and SOURCE supports it, mention it gently; do not force a sales pitch when there is no fit. "
             "For troubleshooting, use the selected FAQ together with relevant usage instructions in the product record. "
@@ -565,8 +621,10 @@ class GeminiAnswerer:
             "do not ask for contact details or order numbers unless the customer requests escalation. "
             "If SOURCE contradicts itself on a requested fact, state both conflicting values and that it cannot be confirmed. "
             "If a requested fact is absent, say so plainly. Never invent specs, numbers, price, stock, actions, or policies. "
-            "Return ONLY JSON with keys answer and handoff_reason. Set handoff_reason to insufficient_shop_evidence "
-            "when SOURCE does not contain enough evidence to answer one or more requested factual needs, or the relevant facts conflict. "
+            "When some but not all of the customer's requested facts can be answered from SOURCE, answer the supported parts "
+            "and clearly mark which parts remain unconfirmed; set handoff_reason to none. Set handoff_reason to "
+            "insufficient_shop_evidence only when none of the requested facts can be answered from SOURCE. "
+            "Return ONLY JSON with keys answer and handoff_reason. "
             "Set handoff_reason to none when the question is answerable from SOURCE or is ordinary small talk. "
             "You may give a short truthful explanation in answer when evidence is insufficient; do not guess. "
             "FAQ_MODEL_LABELS are names used in FAQ records; they do not prove which version or stock variant a customer will receive. "
@@ -605,15 +663,20 @@ class GeminiAnswerer:
                 "(ได้/รองรับ, ไม่ได้/ไม่รองรับ, or ยังยืนยันไม่ได้), followed by the relevant evidence; never leave the customer "
                 "to infer the verdict from specifications alone. Preserve a supported direct verdict from the draft. "
                 "For compatibility or activity questions about several products, address each product explicitly. "
-                "A rating alone does not establish support for an activity; if SOURCE does not explicitly support it, "
-                "state that support is not confirmed instead of saying yes. "
+                "A broader explicit capability statement may support a specific activity when its meaning clearly includes that activity; "
+                "use that evidence semantically without requiring the exact same word. A rating alone does not establish an activity. "
+                "For example, a source statement that a product supports water activities includes swimming unless the source gives a limitation; "
+                "rain/splash-only wording is narrower, and do not require a dedicated swimming sport mode when broader capability supports it. "
+                "When several products have different evidence, do not give one blanket uncertain verdict; give each product its own verdict, "
+                "and uncertainty about one product must not weaken a supported answer for another. "
+                "If SOURCE describes only narrower use, state the requested activity is not confirmed instead of saying yes. "
                 "Correct Thai spelling and remove unrelated scripts while keeping a natural, conversational tone. "
                 "Do not add claims, numbers, promises, or details. If a claim is unsupported, rewrite conservatively "
-                "while answering whatever the evidence does support. If any requested factual need still cannot be "
-                "confirmed from SOURCE, set handoff_reason to insufficient_shop_evidence; otherwise set it to none. "
+                "while answering whatever the evidence does support. If a fact is missing, state uncertainty for that fact "
+                "while preserving supported facts. This stage edits customer-facing wording only; do not decide routing or handoff. "
                 + ("For INTENT comparison, the final answer MUST retain a valid Markdown comparison table with literal | separators and a separator row; do not turn it into bullets or prose. "
                    if intent == "comparison" else "")
-                + "Return ONLY JSON with keys answer (string) and handoff_reason (none or insufficient_shop_evidence). "
+                + "Return ONLY JSON with key answer (string). "
                 "The answer must be the final customer-facing text.\n"
                 f"INTENT: {intent}\nCUSTOMER: {json.dumps(question, ensure_ascii=False)}\n"
                 f"DRAFT: {json.dumps(draft, ensure_ascii=False)}\nSOURCE:\n{evidence}"
@@ -624,8 +687,6 @@ class GeminiAnswerer:
             reviewed = _json_object(reviewed_raw)
             if not reviewed or not isinstance(reviewed.get("answer"), str) or not reviewed["answer"].strip():
                 return None, "llm_unavailable"
-            if reviewed.get("handoff_reason") == "insufficient_shop_evidence":
-                return None, "handoff:insufficient_shop_evidence"
             raw = reviewed["answer"].strip()
         expected_products = [name.strip() for name in (product_name or "").split(" / ") if name.strip()]
         if intent == "comparison" and not _has_markdown_table(raw, expected_products):
@@ -724,11 +785,20 @@ class ProductChatEngine:
         except Exception:
             return {**handoff("knowledge_unavailable"), "session_id": session_id}
         products = data.get("products") or []
-        catalog = {item["name"]: item for item in products}
+        catalog = {item["name"]: dict(item) for item in products}
+        categories_by_name: dict[str, set[str]] = {}
         for product in products:
-            if not product.get("category"):
-                product["category"] = category_from_description(product.get("description"))
-        categories = list(dict.fromkeys(item["category"] for item in products if item.get("category")))
+            name = str(product.get("name") or "").strip()
+            category = str(product.get("category") or category_from_description(product.get("description")) or "").strip()
+            if name and category:
+                categories_by_name.setdefault(name, set()).add(category)
+        for name, item in catalog.items():
+            categories = categories_by_name.get(name, set())
+            # Duplicate KB rows can have a category on one row and a blank value
+            # on another. Keep a single unambiguous category for the product; if
+            # the rows disagree, leave it unclassified instead of guessing.
+            item["category"] = next(iter(categories)) if len(categories) == 1 else None
+        categories = list(dict.fromkeys(item["category"] for item in catalog.values() if item.get("category")))
         safe_cards = []
         for card in (card_context or []):
             if not isinstance(card, dict) or len(safe_cards) >= 10:
@@ -844,6 +914,7 @@ class ProductChatEngine:
                         order_context_ambiguous = True
         analysis = {"intent": intent, "topic": plan["topic"], "needs": needs,
                     "product_names": names, "category": plan.get("category"),
+                    "product_mentions": plan.get("product_mentions", []),
                     "list_all": plan.get("list_all", False), "unresolved": plan["unresolved"],
                     "shop_scope": plan.get("shop_scope", "unspecified")}
 
@@ -1043,8 +1114,37 @@ class ProductChatEngine:
                     return finish(reply)
             return finish(create_escalation("sensitive_topic", intent))
         if intent == "product_search":
+            unmatched_mentions = [mention for mention in plan.get("product_mentions", [])
+                                  if not _catalog_contains_mention(mention, products)]
+            if unmatched_mentions and not names:
+                current_shop = str(active_shop.get("shop_name") or store_label or "ร้านนี้")[:100]
+                requested = " / ".join(unmatched_mentions[:3])
+                shop_brand = _shop_catalog_brand(current_shop, products)
+                try:
+                    persona = self.store.persona() if callable(getattr(self.store, "persona", None)) else {}
+                except Exception:
+                    persona = {}
+                particle = "ค่ะ" if isinstance(persona, dict) and persona.get("voice") == "female" else "ครับ"
+                if shop_brand and all(_catalog_contains_mention(shop_brand, [item]) for item in products):
+                    shop_catalog_note = f"ตอนนี้ข้อมูลสินค้าของร้านนี้เป็นแบรนด์ {shop_brand} เท่านั้น{particle}"
+                elif shop_brand:
+                    shop_catalog_note = f"ในรายการของร้านนี้มีสินค้าแบรนด์ {shop_brand}{particle}"
+                else:
+                    shop_catalog_note = f"ผมจะอ้างอิงเฉพาะสินค้าที่ผูกกับร้าน {current_shop} เท่านั้น{particle}"
+                answer = (f"แชทนี้เป็นของร้าน {current_shop} {particle} ตอนนี้ยังไม่พบ {requested} "
+                          f"ในรายการสินค้าของร้าน จึงยังแนะนำรุ่นนั้นไม่ได้{particle} {shop_catalog_note} "
+                          f"ถ้าสนใจ บอกหมวดหรือการใช้งานได้เลย ผมช่วยเลือกรุ่นที่มีในร้านนี้ให้{particle}")
+                analysis["unmatched_product_mentions"] = unmatched_mentions[:3]
+                analysis["shop_catalog_brand"] = shop_brand
+                return finish({"status": "answered", "intent": intent, "reason": "requested_product_not_in_shop_kb",
+                               "answer": answer, "sources": [], "product_name": None,
+                               "session_id": session_id, "handoff_mock": False, "handoff_sent": False})
             if plan.get("list_all") and plan.get("category") in categories:
-                selected = [item for item in products if item.get("category") == plan["category"]]
+                selected_by_name = {}
+                for item in catalog.values():
+                    if item.get("category") == plan["category"]:
+                        selected_by_name.setdefault(item["name"], item)
+                selected = list(selected_by_name.values())
                 analysis["product_names"] = [item["name"] for item in selected]
                 concise = [{**item, "description": str(item.get("description") or "")[:1400]}
                            for item in selected]
@@ -1057,6 +1157,34 @@ class ProductChatEngine:
                 reply = self._reply(question, intent, needs, concise, history, session_id,
                                     evidence_override="\n\n".join([inventory_evidence, commerce_evidence(commerce)]))
                 return finish(include_cards(reply, commerce))
+            if plan.get("list_all"):
+                grouped: dict[str, dict[str, dict[str, Any]]] = {}
+                for item in catalog.values():
+                    name = str(item.get("name") or "").strip()
+                    category = str(item.get("category") or "หมวดหมู่ยังไม่ระบุ").strip()
+                    if name:
+                        grouped.setdefault(category, {}).setdefault(name, item)
+                inventory_lines = [f"- {category}; count={len(items)}"
+                                   for category, items in grouped.items()]
+                total = sum(len(items) for items in grouped.values())
+                analysis["product_names"] = []
+                analysis["category_summary"] = [
+                    {"category": category, "count": len(items)} for category, items in grouped.items()
+                ]
+                source_rows = []
+                seen_sources = set()
+                for items in grouped.values():
+                    for item in items.values():
+                        source = item.get("source") or {}
+                        source_key = json.dumps(source, sort_keys=True, ensure_ascii=False)
+                        if source and source_key not in seen_sources:
+                            seen_sources.add(source_key)
+                            source_rows.append(source)
+                evidence = (f"STORE INVENTORY BY CATEGORY: total_unique_products={total}; "
+                            f"category_count={len(grouped)}\n" + "\n".join(inventory_lines))
+                reply = self._reply(question, intent, needs, [], history, session_id,
+                                    evidence_override=evidence, source_override=source_rows)
+                return finish(reply)
             search_catalog = [item for item in products if not plan.get("category")
                               or item.get("category") == plan["category"]]
             selected_names, select_reason = self.answerer.select_products(question, needs, search_catalog)

@@ -351,6 +351,37 @@ class IntentFlowTests(unittest.TestCase):
         self.assertIn("answer the customer's yes/no question before listing specifications", prompts[0].casefold())
         self.assertIn("must begin with a clear, source-supported verdict", prompts[1].casefold())
 
+    def test_review_keeps_supported_answer_when_another_compared_model_is_uncertain(self):
+        expected = (
+            "สำหรับ Black Shark S3 รองรับครับ เพราะมีมาตรฐานการกันน้ำระดับ 5ATM "
+            "ที่ช่วยให้หมดกังวลเรื่องกิจกรรมทางน้ำ แต่สำหรับรุ่น Black Shark S3 Classic "
+            "ยังยืนยันไม่ได้ครับ เนื่องจากระบุไว้เพียงมาตรฐานการกันน้ำ 3ATM "
+            "ที่สามารถกันน้ำ ทนฝน และละอองน้ำได้ โดยข้อมูลในระบบยังไม่มีการระบุชัดเจนว่า "
+            "รองรับการใส่ว่ายน้ำครับ"
+        )
+        prompts = []
+
+        def generate(key, prompt):
+            prompts.append(prompt)
+            handoff_reason = ("insufficient_shop_evidence" if prompt.startswith("ANSWER REVIEW") else "none")
+            return json.dumps({"answer": expected, "handoff_reason": handoff_reason}, ensure_ascii=False)
+
+        store = FakeStore([])
+        store.runtime_config = lambda: {}
+        answer, reason = GeminiAnswerer(store, generate).answer(
+            "ว่ายน้ำได้ทั้งคู่ไหมคะ",
+            "สินค้า: Black Shark S3\n11. หมดกังวลเรื่องกิจกรรมทางน้ำ ด้วยมาตรฐานการกันน้ำระดับ 5ATM\n"
+            "สินค้า: Black Shark S3 Classic\nมาตรฐานการกันน้ำ 3ATM สามารถกันน้ำ ทนฝน และละอองน้ำ",
+            "Black Shark S3 Classic / Black Shark S3", intent="compatibility",
+            needs=["swimming suitability for Black Shark S3", "swimming suitability for Black Shark S3 Classic"])
+
+        self.assertEqual(reason, "llm_grounded")
+        self.assertEqual(answer, expected)
+        self.assertEqual(len(prompts), 2)
+        umbrella_activity_rule = "a source statement that a product supports water activities includes swimming"
+        self.assertIn(umbrella_activity_rule, prompts[0].casefold())
+        self.assertIn(umbrella_activity_rule, prompts[1].casefold())
+
     def test_text_question_for_product_missing_from_kb_does_not_use_scoped_mongo_evidence(self):
         prompts = []
         def generate(key, prompt):
@@ -390,6 +421,76 @@ class IntentFlowTests(unittest.TestCase):
         self.assertEqual(plan["category"], "smart watch")
         self.assertTrue(plan["list_all"])
 
+    def test_unavailable_brand_search_does_not_use_whole_shop_inventory(self):
+        prompts = []
+
+        def generate(key, prompt):
+            prompts.append(prompt)
+            if "Return ONLY JSON with keys: intent" in prompt:
+                return json.dumps({"intent": "product_search", "topic": "IMILAB recommendations",
+                                   "needs": ["recommend IMILAB models"], "product_names": [],
+                                   "product_mentions": ["IMILAB"], "category": None,
+                                   "list_all": True, "unresolved": False})
+            if "STORE INVENTORY BY CATEGORY" in prompt:
+                answer = ("ร้านนี้มีสินค้า IMILAB รวม 45 รายการ แบ่งเป็นสมาร์ทวอทช์ 15 รุ่น "
+                          "แท็บเล็ต 5 รุ่น และหูฟังไร้สาย 7 รุ่นครับ")
+            else:
+                answer = "พบสินค้า IMILAB ครับ"
+            return json.dumps({"answer": answer, "handoff_reason": "none"}, ensure_ascii=False)
+
+        products = []
+        for category, label, count in (("smart watch", "Watch", 15), ("Pad", "Pad", 5),
+                                       ("หูฟังไร้สาย (TWS)", "Earbuds", 7),
+                                       ("ระบบทำความเย็น : Peltier", "Cooler", 11),
+                                       ("Accessories", "Accessory", 7)):
+            products.extend({"name": f"Black Shark {label} {index}", "description": label,
+                             "category": category, "source": {"file": "blackshark.xlsx"}}
+                            for index in range(1, count + 1))
+        engine = self.engine(products, generate)
+        engine.store.scope = {"platform": "shopee", "shop_id": "blackshark-shop-id",
+                              "shop_name": "Black Shark Thailand"}
+
+        result = engine.answer("มี IMILAB รุ่นไหนแนะนำบ้าง")
+
+        self.assertEqual(result["status"], "answered")
+        self.assertFalse(result["handoff_sent"])
+        self.assertEqual(result["reason"], "requested_product_not_in_shop_kb")
+        self.assertIn("Black Shark Thailand", result["answer"])
+        self.assertIn("Black Shark", result["answer"])
+        self.assertIn("IMILAB", result["answer"])
+        self.assertNotIn("45 รายการ", result["answer"])
+        self.assertNotIn("IMILAB", " ".join(result["intent_analysis"].get("product_names", [])))
+        self.assertEqual(len(prompts), 1, "unsupported brand must not trigger broad inventory answer generation")
+
+    def test_unavailable_brand_response_uses_the_active_shop_for_any_tenant(self):
+        prompts = []
+
+        def generate(key, prompt):
+            prompts.append(prompt)
+            if "Return ONLY JSON with keys: intent" in prompt:
+                return json.dumps({"intent": "product_search", "topic": "KOSPET availability",
+                                   "needs": ["check KOSPET availability"], "product_names": [],
+                                   "product_mentions": ["KOSPET"], "category": None,
+                                   "list_all": True, "unresolved": False})
+            return json.dumps({"answer": "พบสินค้า KOSPET ครับ", "handoff_reason": "none"}, ensure_ascii=False)
+
+        products = [{"name": "Cultech Xiaomi Pad", "description": "แท็บเล็ต", "category": "Pad",
+                     "source": {"file": "cultech.xlsx"}}]
+        engine = self.engine(products, generate)
+        engine.store.scope = {"platform": "shopee", "shop_id": "cultech-shop-id",
+                              "shop_name": "Cultech Official Store"}
+
+        result = engine.answer("มี KOSPET รุ่นไหนแนะนำบ้าง")
+
+        self.assertEqual(result["status"], "answered")
+        self.assertEqual(result["reason"], "requested_product_not_in_shop_kb")
+        self.assertIn("Cultech Official Store", result["answer"])
+        self.assertIn("KOSPET", result["answer"])
+        self.assertIn("ยังไม่พบ", result["answer"])
+        self.assertNotIn("Black Shark", result["answer"])
+        self.assertFalse(result["handoff_sent"])
+        self.assertEqual(len(prompts), 1)
+
     def test_category_inventory_contains_every_category_match(self):
         prompts = []
         names = ["Black Shark GS3", "Black Shark A3", "Black Shark S3"]
@@ -402,13 +503,89 @@ class IntentFlowTests(unittest.TestCase):
             return "มีนาฬิกาตามข้อมูลร้านดังนี้ครับ " + " ".join(names)
         products = [{"name": name, "description": "ประเภทสินค้า: smart watch", "category": "smart watch", "source": {}}
                     for name in names]
+        products.append({**products[0], "category": None})
         products.append({"name": "Black Shark Pad 7Pro LTE", "description": "ประเภทสินค้า: Pad", "category": "Pad", "source": {}})
         result = self.engine(products, generate).answer("มีนาฬิกาอะไรบ้าง")
         self.assertEqual(result["status"], "answered")
         self.assertEqual(result["intent_analysis"]["product_names"], names)
+        self.assertEqual(len(result["intent_analysis"]["product_names"]), len(set(result["intent_analysis"]["product_names"])))
         self.assertTrue(all(name in result["answer"] for name in names))
         self.assertNotIn("Black Shark Pad 7Pro LTE", result["answer"])
         self.assertEqual(len(prompts), 2)
+
+    def test_broad_inventory_summarizes_each_category_and_distinct_product_count(self):
+        prompts = []
+
+        def generate(key, prompt):
+            prompts.append(prompt)
+            if "Return ONLY JSON with keys: intent" in prompt:
+                return json.dumps({"intent": "product_search", "topic": "store inventory",
+                                   "needs": ["categories and counts"], "product_names": [],
+                                   "category": None, "list_all": True, "unresolved": False})
+            if "STORE INVENTORY BY CATEGORY" in prompt:
+                return "มีแท็บเล็ต 2 รุ่น และสมาร์ทวอทช์ 1 รุ่นครับ"
+            if "Find products in this one store" in prompt:
+                return json.dumps({"product_names": ["Black Shark Pad A"]})
+            return "พบสินค้า Black Shark Pad A ครับ"
+
+        products = [
+            {"name": "Black Shark Pad A", "category": "Pad", "description": "แท็บเล็ต", "source": {"file": "shop.xlsx"}},
+            {"name": "Black Shark Pad A", "category": "Pad", "description": "แท็บเล็ต", "source": {"file": "shop.xlsx"}},
+            {"name": "Black Shark Pad B", "category": "Pad", "description": "แท็บเล็ต", "source": {"file": "shop.xlsx"}},
+            {"name": "Black Shark GS3", "category": "smart watch", "description": "นาฬิกา", "source": {"file": "shop.xlsx"}},
+        ]
+
+        result = self.engine(products, generate).answer("ร้านนี้มีอะไรขายบ้าง")
+
+        self.assertEqual(result["status"], "answered")
+        self.assertEqual(result["intent_analysis"]["product_names"], [])
+        self.assertTrue(any("Pad" in prompt and "count=2" in prompt for prompt in prompts))
+        self.assertTrue(any("smart watch" in prompt and "count=1" in prompt for prompt in prompts))
+        self.assertFalse(any("Find products in this one store" in prompt for prompt in prompts))
+
+    def test_category_list_uses_category_from_another_duplicate_kb_row(self):
+        def generate(key, prompt):
+            if "Return ONLY JSON with keys: intent" in prompt:
+                return json.dumps({"intent": "product_search", "topic": "watch inventory",
+                                   "needs": ["all watches"], "product_names": [],
+                                   "category": "smart watch", "list_all": True,
+                                   "unresolved": False})
+            return "Black Shark GS3 และ Black Shark PureLoop ครับ"
+
+        products = [
+            {"name": "Black Shark PureLoop", "description": "คำอธิบายที่มีรายละเอียด",
+             "category": "smart watch", "source": {"cell": "B16"}},
+            {"name": "Black Shark PureLoop", "description": "ข้อมูลรุ่นเดียวกันอีกแถว",
+             "category": None, "source": {"cell": "B59"}},
+            {"name": "Black Shark GS3", "description": "นาฬิกา",
+             "category": "smart watch", "source": {"cell": "B3"}},
+        ]
+
+        result = self.engine(products, generate).answer("มีนาฬิการุ่นอะไรบ้าง")
+
+        self.assertEqual(result["status"], "answered")
+        self.assertIn("Black Shark PureLoop", result["intent_analysis"]["product_names"])
+
+    def test_conflicting_duplicate_categories_stay_unclassified_across_requests(self):
+        def generate(key, prompt):
+            if "Return ONLY JSON with keys: intent" in prompt:
+                return json.dumps({"intent": "product_search", "topic": "category inventory",
+                                   "needs": ["all products in category"], "product_names": [],
+                                   "category": "Pad", "list_all": True, "unresolved": False})
+            return "Black Shark Pad B ครับ"
+
+        products = [
+            {"name": "Black Shark Pad A", "description": "แท็บเล็ต", "category": "Pad", "source": {}},
+            {"name": "Black Shark Pad A", "description": "แท็บเล็ต", "category": "smart watch", "source": {}},
+            {"name": "Black Shark Pad B", "description": "แท็บเล็ต", "category": "Pad", "source": {}},
+        ]
+        engine = self.engine(products, generate)
+
+        first = engine.answer("มี Pad รุ่นอะไรบ้าง")
+        second = engine.answer("มี Pad รุ่นอะไรบ้าง")
+
+        self.assertEqual(first["intent_analysis"]["product_names"], ["Black Shark Pad B"])
+        self.assertEqual(second["intent_analysis"]["product_names"], ["Black Shark Pad B"])
 
     def test_complete_category_list_keeps_all_names_with_compact_product_facts(self):
         prompts = []
@@ -737,25 +914,28 @@ class IntentFlowTests(unittest.TestCase):
         self.assertEqual(result["handoff_reason"], "insufficient_shop_evidence")
         self.assertIn("หลักฐาน", result["handoff_explanation"])
 
-    def test_answer_review_can_escalate_when_draft_cannot_cover_every_need(self):
+    def test_answer_review_cannot_turn_a_supported_answer_into_handoff(self):
+        prompts = []
+
         def generate(key, prompt):
+            prompts.append(prompt)
             if "Return ONLY JSON with keys: intent" in prompt:
-                return json.dumps({"intent": "product_info", "topic": "battery and GPS", "needs": ["GPS battery life"],
-                                   "product_names": ["Model A"], "unresolved": False})
+                return json.dumps({"intent": "product_info", "topic": "Bluetooth version", "needs": ["Bluetooth version"],
+                                   "product_names": ["Black Shark T18"], "unresolved": False})
             if "ANSWER REVIEW" in prompt:
-                return json.dumps({"answer": "รุ่นนี้มี GPS ครับ แต่ยังไม่พบเวลาการใช้งาน GPS ในข้อมูลร้าน",
+                return json.dumps({"answer": "รองรับครับ Black Shark T18 ใช้บลูทูธเวอร์ชัน 5.3 ครับ",
                                    "handoff_reason": "insufficient_shop_evidence"}, ensure_ascii=False)
-            return json.dumps({"answer": "รุ่นนี้มี GPS ครับ แต่ไม่พบข้อมูลเวลาใช้งาน",
+            return json.dumps({"answer": "รองรับครับ Black Shark T18 ใช้บลูทูธเวอร์ชัน 5.3 ครับ",
                                "handoff_reason": "none"}, ensure_ascii=False)
 
-        store = FakeStore([{"name": "Model A", "description": "มี GPS ในตัว", "source": {}}])
+        store = FakeStore([{"name": "Black Shark T18", "description": "Bluetooth 5.3", "source": {}}])
         store.runtime_config = lambda: {}
         result = ProductChatEngine(store=store, answerer=GeminiAnswerer(store, generate)).answer(
-            "เปิด GPS ใช้ได้นานกี่ชั่วโมง")
+            "Black Shark T18 Bluetooth เวอร์ชันอะไรครับ")
 
-        self.assertEqual(result["status"], "handoff_mock")
-        self.assertEqual(result["handoff_reason"], "insufficient_shop_evidence")
-        self.assertIn("หลักฐาน", result["handoff_explanation"])
+        self.assertEqual(result["status"], "answered")
+        self.assertIn("5.3", result["answer"])
+        self.assertNotIn("handoff_reason", prompts[-1])
 
     def test_legal_or_platform_dispute_intent_handoffs_before_faq_or_answer(self):
         prompts = []

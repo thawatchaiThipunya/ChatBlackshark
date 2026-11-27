@@ -1,0 +1,132 @@
+{
+  "question_count": 100,
+  "completed_questions": 100,
+  "result_status_counts": {
+    "answered": 97,
+    "handoff_mock": 2,
+    "need_model": 1
+  },
+  "group_counts": {
+    "conversation": 24,
+    "catalog": 25,
+    "spec": 20,
+    "faq": 15,
+    "shop_boundary": 10,
+    "inventory_compare": 6
+  },
+  "group_stats": {
+    "conversation": {
+      "count": 24,
+      "status_counts": {
+        "answered": 24
+      },
+      "provider_calls": 73,
+      "provider_cost_usd": 0.1187064,
+      "median_elapsed_seconds": 4.06,
+      "scope_failures": 0
+    },
+    "catalog": {
+      "count": 25,
+      "status_counts": {
+        "answered": 25
+      },
+      "provider_calls": 75,
+      "provider_cost_usd": 0.0901152,
+      "median_elapsed_seconds": 4.42,
+      "scope_failures": 0
+    },
+    "spec": {
+      "count": 20,
+      "status_counts": {
+        "answered": 19,
+        "handoff_mock": 1
+      },
+      "provider_calls": 61,
+      "provider_cost_usd": 0.062384,
+      "median_elapsed_seconds": 3.77,
+      "scope_failures": 0
+    },
+    "faq": {
+      "count": 15,
+      "status_counts": {
+        "answered": 14,
+        "handoff_mock": 1
+      },
+      "provider_calls": 59,
+      "provider_cost_usd": 0.0918401,
+      "median_elapsed_seconds": 5.48,
+      "scope_failures": 0
+    },
+    "shop_boundary": {
+      "count": 10,
+      "status_counts": {
+        "answered": 9,
+        "need_model": 1
+      },
+      "provider_calls": 19,
+      "provider_cost_usd": 0.0409745,
+      "median_elapsed_seconds": 1.96,
+      "scope_failures": 0
+    },
+    "inventory_compare": {
+      "count": 6,
+      "status_counts": {
+        "answered": 6
+      },
+      "provider_calls": 18,
+      "provider_cost_usd": 0.0339386,
+      "median_elapsed_seconds": 4.75,
+      "scope_failures": 0
+    }
+  },
+  "scope_checked_count": 100,
+  "scope_ok_count": 100,
+  "shop_scope_failures": 0,
+  "scope_not_evaluated_count": 0,
+  "provider": "openrouter",
+  "model": "google/gemini-3.5-flash-lite",
+  "shop_name": "Black Shark Thailand",
+  "shop_id": "1191420560",
+  "platform": "shopee",
+  "provider_calls_in_100_question_results": 305,
+  "provider_cost_usd": 0.4379588,
+  "ai_usage_hub_accepted_in_100_question_results": 304,
+  "ai_usage_hub_rejected_in_100_question_results": 1,
+  "aborted_attempt_questions": 14,
+  "aborted_attempt_provider_calls": 21,
+  "aborted_attempt_cost_usd": 0.0380996,
+  "judge_provider_calls": 0,
+  "judge_cost_usd": 0,
+  "total_paid_cost_usd": 0.4760584,
+  "all_attempt_provider_calls_including_aborted_and_judge": 326,
+  "all_usage_hub_accepted": 325,
+  "all_usage_hub_rejected": 1,
+  "median_elapsed_seconds": 4.13,
+  "p95_elapsed_seconds": 5.9,
+  "answers_changed_vs_baseline": 96,
+  "status_transitions": {
+    "answered -> answered": 94,
+    "answered -> handoff_mock": 2,
+    "need_model -> answered": 2,
+    "handoff_mock -> answered": 1,
+    "need_model -> need_model": 1
+  },
+  "status_regressions": [
+    "Q069",
+    "Q076"
+  ],
+  "status_improvements": [
+    "Q090",
+    "Q091",
+    "Q092"
+  ],
+  "baseline_provider_cost_usd": 0.3982544,
+  "baseline_provider_calls": 303,
+  "baseline_median_elapsed_seconds": 5.0600000000000005,
+  "baseline_p95_elapsed_seconds": 7.12,
+  "answer_quality_grade": "not_independently_scored",
+  "quality_grading_note": "Second-provider judge request was blocked by automatic approval review because it would send private shop KB and all answers externally. Do not interpret answered status as correctness.",
+  "created_at": "2026-11-26T05:55:17.573019+00:00",
+  "tested_code_branch": "codex/fix-shop-kb-followups",
+  "tested_code_commit": "51c45e4"
+}

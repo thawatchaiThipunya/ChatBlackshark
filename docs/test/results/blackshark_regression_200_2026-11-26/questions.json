@@ -1,0 +1,2002 @@
+[
+  {
+    "id": "Q001",
+    "group": "conversation",
+    "session": "C01",
+    "question": "gs3 ultra กันน้ำระดับไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q002",
+    "group": "conversation",
+    "session": "C01",
+    "question": "ใส่ว่ายน้ำได้มั้ย",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q003",
+    "group": "conversation",
+    "session": "C01",
+    "question": "อาบน้ำอุ่น เข้าซาวน่าได้ไหม",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q004",
+    "group": "conversation",
+    "session": "C01",
+    "question": "แบตอยู่ได้กี่วัน",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q005",
+    "group": "conversation",
+    "session": "C02",
+    "question": "GS3 กับ GS3 Ultra ต่างกันยังไงคะ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q006",
+    "group": "conversation",
+    "session": "C02",
+    "question": "ตัวไหนแบตอึดกว่าคะ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q007",
+    "group": "conversation",
+    "session": "C02",
+    "question": "ในกล่องแถมสายมาด้วยมั้ยคะ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q008",
+    "group": "conversation",
+    "session": "C02",
+    "question": "จอ Ultra กี่ Hz คะ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q009",
+    "group": "conversation",
+    "session": "C03",
+    "question": "S3 Classic กับ S3 เฉย ๆ ต่างกันยังไงคะ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q010",
+    "group": "conversation",
+    "session": "C03",
+    "question": "S3 Classic เปลี่ยนสายได้มั้ยคะ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q011",
+    "group": "conversation",
+    "session": "C03",
+    "question": "แล้ว S3 ตอบข้อความไลน์จากนาฬิกาได้มั้ย",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q012",
+    "group": "conversation",
+    "session": "C03",
+    "question": "ว่ายน้ำได้ทั้งคู่ไหมคะ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q013",
+    "group": "conversation",
+    "session": "C04",
+    "question": "อยากได้นาฬิกาไว้วิ่ง มี GPS ในตัว และใช้กับ Strava ได้ แนะนำรุ่นไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q014",
+    "group": "conversation",
+    "session": "C04",
+    "question": "ใช้กับ iPhone ได้ไหม",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q015",
+    "group": "conversation",
+    "session": "C04",
+    "question": "ถ้าเอา Ultra เปิด GPS วิ่ง แบตได้กี่ชั่วโมง",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q016",
+    "group": "conversation",
+    "session": "C04",
+    "question": "Ultra วัดความดันได้ไหม",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q017",
+    "group": "conversation",
+    "session": "C05",
+    "question": "A3 ใส่อาบน้ำได้ไหมครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q018",
+    "group": "conversation",
+    "session": "C05",
+    "question": "จอเป็นแบบไหน กี่นิ้วครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q019",
+    "group": "conversation",
+    "session": "C05",
+    "question": "รับสายไลน์ผ่านนาฬิกาได้มั้ย",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q020",
+    "group": "conversation",
+    "session": "C05",
+    "question": "ต้องโหลดแอปอะไรครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q021",
+    "group": "conversation",
+    "session": "C06",
+    "question": "Black Shark RUN รับสายไลน์ได้ไหมคะ ใช้ไอโฟน",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q022",
+    "group": "conversation",
+    "session": "C06",
+    "question": "แล้วถ้าใช้ Android ล่ะคะ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q023",
+    "group": "conversation",
+    "session": "C06",
+    "question": "ในกล่องมีอะไรบ้างคะ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q024",
+    "group": "conversation",
+    "session": "C06",
+    "question": "จอกี่นิ้วคะ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q025",
+    "group": "catalog",
+    "session": "catalog-Black Shark Pad 7Pro UE",
+    "question": "Black Shark Pad 7Pro UE มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q026",
+    "group": "catalog",
+    "session": "catalog-Black Shark GS3",
+    "question": "Black Shark GS3 มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q027",
+    "group": "catalog",
+    "session": "catalog-Black Shark GS3 Sport",
+    "question": "Black Shark GS3 Sport มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q028",
+    "group": "catalog",
+    "session": "catalog-Black Shark GS3 Ultra",
+    "question": "Black Shark GS3 Ultra มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q029",
+    "group": "catalog",
+    "session": "catalog-Black Shark GS3 Ultra (REFINED EDITION)",
+    "question": "Black Shark GS3 Ultra (REFINED EDITION) มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q030",
+    "group": "catalog",
+    "session": "catalog-Black Shark A3",
+    "question": "Black Shark A3 มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q031",
+    "group": "catalog",
+    "session": "catalog-Black Shark S3",
+    "question": "Black Shark S3 มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q032",
+    "group": "catalog",
+    "session": "catalog-Black Shark S3 Classic",
+    "question": "Black Shark S3 Classic มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q033",
+    "group": "catalog",
+    "session": "catalog-Black Shark S1 Pro",
+    "question": "Black Shark S1 Pro มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q034",
+    "group": "catalog",
+    "session": "catalog-Black Shark S1 Classic",
+    "question": "Black Shark S1 Classic มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q035",
+    "group": "catalog",
+    "session": "catalog-Black Shark GT3",
+    "question": "Black Shark GT3 มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q036",
+    "group": "catalog",
+    "session": "catalog-Black Shark GT3 NEO",
+    "question": "Black Shark GT3 NEO มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q037",
+    "group": "catalog",
+    "session": "catalog-BLACK SHARK RUN",
+    "question": "BLACK SHARK RUN มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q038",
+    "group": "catalog",
+    "session": "catalog-Black Shark GT3 Neo2",
+    "question": "Black Shark GT3 Neo2 มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q039",
+    "group": "catalog",
+    "session": "catalog-Black Shark PureLoop",
+    "question": "Black Shark PureLoop มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q040",
+    "group": "catalog",
+    "session": "catalog-Black Shark Genuine Leather Strap",
+    "question": "Black Shark Genuine Leather Strap มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q041",
+    "group": "catalog",
+    "session": "catalog-Black Shark GS3 Smartwatch Charger",
+    "question": "Black Shark GS3 Smartwatch Charger มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q042",
+    "group": "catalog",
+    "session": "catalog-Black Shark GS3 Sport Smartwatch Charger",
+    "question": "Black Shark GS3 Sport Smartwatch Charger มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q043",
+    "group": "catalog",
+    "session": "catalog-Black Shark S1 Pro Smartwatch Charger",
+    "question": "Black Shark S1 Pro Smartwatch Charger มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q044",
+    "group": "catalog",
+    "session": "catalog-Black Shark GS3 Sport Smartwatch Cha",
+    "question": "Black Shark GS3 Sport Smartwatch Cha มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q045",
+    "group": "catalog",
+    "session": "catalog-Black Shark Pad 7 wifi",
+    "question": "Black Shark Pad 7 wifi มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q046",
+    "group": "catalog",
+    "session": "catalog-Black Shark Pad 7 LTE",
+    "question": "Black Shark Pad 7 LTE มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q047",
+    "group": "catalog",
+    "session": "catalog-Black Shark Pad 7 Pro LTE",
+    "question": "Black Shark Pad 7 Pro LTE มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q048",
+    "group": "catalog",
+    "session": "catalog-Black Shark Gaming Tablet",
+    "question": "Black Shark Gaming Tablet มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q049",
+    "group": "catalog",
+    "session": "catalog-Black Shark FunCooler 5 Neo",
+    "question": "Black Shark FunCooler 5 Neo มีจุดเด่นและเหมาะกับการใช้งานแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q050",
+    "group": "spec",
+    "session": "spec-01",
+    "question": "Black Shark GS3 กันน้ำระดับไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q051",
+    "group": "spec",
+    "session": "spec-02",
+    "question": "Black Shark GS3 แบตใช้งานทั่วไปได้กี่วันครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q052",
+    "group": "spec",
+    "session": "spec-03",
+    "question": "Black Shark GS3 Ultra จอรีเฟรชเรทกี่ Hzครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q053",
+    "group": "spec",
+    "session": "spec-04",
+    "question": "Black Shark GS3 Ultra GPS เป็นแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q054",
+    "group": "spec",
+    "session": "spec-05",
+    "question": "Black Shark A3 จอขนาดเท่าไหร่ครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q055",
+    "group": "spec",
+    "session": "spec-06",
+    "question": "Black Shark A3 ต้องใช้แอปอะไรครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q056",
+    "group": "spec",
+    "session": "spec-07",
+    "question": "Black Shark S3 มี GPS ในตัวไหมครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q057",
+    "group": "spec",
+    "session": "spec-08",
+    "question": "Black Shark S3 Classic เปลี่ยนสายได้ไหมครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q058",
+    "group": "spec",
+    "session": "spec-09",
+    "question": "BLACK SHARK RUN รับสาย LINE ผ่าน iPhone ได้ไหมครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q059",
+    "group": "spec",
+    "session": "spec-10",
+    "question": "BLACK SHARK RUN แบตใช้งานได้นานเท่าไหร่ครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q060",
+    "group": "spec",
+    "session": "spec-11",
+    "question": "Black Shark T24 Bluetooth เวอร์ชันอะไรครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q061",
+    "group": "spec",
+    "session": "spec-12",
+    "question": "Black Shark T18 Bluetooth เวอร์ชันอะไรครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q062",
+    "group": "spec",
+    "session": "spec-13",
+    "question": "Black Shark Pad 7Pro UE จอขนาดกี่นิ้วครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q063",
+    "group": "spec",
+    "session": "spec-14",
+    "question": "Black Shark Gaming Tablet หน้าจอขนาดกี่นิ้วครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q064",
+    "group": "spec",
+    "session": "spec-15",
+    "question": "Black Shark FunCooler 5 Neo ติดตั้งกับมือถือแบบไหนครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q065",
+    "group": "spec",
+    "session": "spec-16",
+    "question": "Black Shark Magcooler 6 Pro ติดตั้งแบบแม่เหล็กหรือแบบหนีบครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q066",
+    "group": "spec",
+    "session": "spec-17",
+    "question": "Black Shark S1 Pro มีฟังก์ชันตรวจสุขภาพอะไรครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q067",
+    "group": "spec",
+    "session": "spec-18",
+    "question": "Black Shark GT3 แบตอยู่ได้กี่วันครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q068",
+    "group": "spec",
+    "session": "spec-19",
+    "question": "Black Shark T23 หูฟังอยู่ได้นานกี่ชั่วโมงครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q069",
+    "group": "spec",
+    "session": "spec-20",
+    "question": "Black Shark Pad 7 LTE รองรับเครือข่ายอะไรครับ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q070",
+    "group": "faq",
+    "session": "faq-01",
+    "question": "GS3 ชาร์จไม่เข้า ต้องลองแก้ยังไง",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q071",
+    "group": "faq",
+    "session": "faq-02",
+    "question": "GS3 หน้าจอเป็นลายสีขาว ทำยังไงดี",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q072",
+    "group": "faq",
+    "session": "faq-03",
+    "question": "GS3 Ultra ปุ่มกดค้าง รีสตาร์ตอย่างไร",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q073",
+    "group": "faq",
+    "session": "faq-04",
+    "question": "GS3 Ultra แจ้งเตือน LINE ไม่ขึ้น แก้ตรงไหน",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q074",
+    "group": "faq",
+    "session": "faq-05",
+    "question": "S3 ชาร์จไม่เข้า ลองอะไรได้บ้าง",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q075",
+    "group": "faq",
+    "session": "faq-06",
+    "question": "S3 Classic เปลี่ยนสายอย่างไร",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q076",
+    "group": "faq",
+    "session": "faq-07",
+    "question": "A3 วัดการนอนไม่ขึ้น ต้องตั้งค่าอะไรไหม",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q077",
+    "group": "faq",
+    "session": "faq-08",
+    "question": "S1 Pro ไมโครโฟนไม่มีเสียง แก้ยังไง",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q078",
+    "group": "faq",
+    "session": "faq-09",
+    "question": "S1 Pro แจ้งเตือน LINE ไม่แสดงข้อความ ต้องเช็กอะไร",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q079",
+    "group": "faq",
+    "session": "faq-10",
+    "question": "RUN ไม่บันทึกการนอน มีวิธีแก้ไหม",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q080",
+    "group": "faq",
+    "session": "faq-11",
+    "question": "RUN เชื่อมกับมือถือไม่ได้ ควรลองอะไร",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q081",
+    "group": "faq",
+    "session": "faq-12",
+    "question": "FunCooler 5 Neo ใบพัดไม่หมุน ทำยังไง",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q082",
+    "group": "faq",
+    "session": "faq-13",
+    "question": "FunCooler 5 Pro ไม่เย็น ต้องเช็กอะไร",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q083",
+    "group": "faq",
+    "session": "faq-14",
+    "question": "T24 ข้างหนึ่งไม่ดัง รีเซ็ตยังไง",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q084",
+    "group": "faq",
+    "session": "faq-15",
+    "question": "T18 เชื่อม Bluetooth ไม่ได้ ต้องทำอย่างไร",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q085",
+    "group": "shop_boundary",
+    "session": "boundary-01",
+    "question": "ในร้านมีนาฬิกา Kieslect ไหม",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q086",
+    "group": "shop_boundary",
+    "session": "boundary-02",
+    "question": "มี IMILAB รุ่นไหนแนะนำบ้าง",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q087",
+    "group": "shop_boundary",
+    "session": "boundary-03",
+    "question": "มีหูฟัง KOSPET ไหม",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q088",
+    "group": "shop_boundary",
+    "session": "boundary-04",
+    "question": "ช่วยแนะนำสินค้าแบรนด์อื่นแทน Black Shark หน่อย",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q089",
+    "group": "shop_boundary",
+    "session": "boundary-05",
+    "question": "ร้านนี้ขายนาฬิกายี่ห้ออะไรบ้าง",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q090",
+    "group": "shop_boundary",
+    "session": "boundary-06",
+    "question": "มีของ Luckyitmall มาขายไหม",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q091",
+    "group": "shop_boundary",
+    "session": "boundary-07",
+    "question": "S3 ของร้าน Thaisuperphone ต่างจากของร้านนี้ยังไง",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q092",
+    "group": "shop_boundary",
+    "session": "boundary-08",
+    "question": "บอกรายชื่อสินค้าของร้าน Youpin Online Store ให้หน่อย",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q093",
+    "group": "shop_boundary",
+    "session": "boundary-09",
+    "question": "ถ้าไม่มีรุ่นที่ถาม ขอรุ่นที่ร้านนี้มีจริงแทน",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q094",
+    "group": "shop_boundary",
+    "session": "boundary-10",
+    "question": "สินค้าที่คุณแนะนำเป็นของร้าน Black Shark Thailand ใช่ไหม",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q095",
+    "group": "inventory_compare",
+    "session": "inventory-01",
+    "question": "ในร้านมีนาฬิการุ่นอะไรบ้าง",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q096",
+    "group": "inventory_compare",
+    "session": "inventory-02",
+    "question": "หูฟังในร้านมีรุ่นไหนให้เลือก",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q097",
+    "group": "inventory_compare",
+    "session": "inventory-03",
+    "question": "มีพัดลมระบายความร้อนรุ่นไหนบ้าง",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q098",
+    "group": "inventory_compare",
+    "session": "inventory-04",
+    "question": "GS3 กับ GS3 Ultra รุ่นไหนเหมาะกับวิ่งมากกว่า",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q099",
+    "group": "inventory_compare",
+    "session": "inventory-05",
+    "question": "T24 กับ T18 ต่างกันตรงไหน",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "Q100",
+    "group": "inventory_compare",
+    "session": "inventory-06",
+    "question": "S3 กับ S3 Classic ตัวไหนเหมาะกับว่ายน้ำ",
+    "suite": "baseline",
+    "test_kind": "baseline"
+  },
+  {
+    "id": "N101",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-01",
+    "question": "",
+    "item_ids": [
+      "24140513934"
+    ],
+    "expected_product": "Black Shark A3",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N102",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-01",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N101",
+    "expected_product": "Black Shark A3",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N103",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-01",
+    "question": "ช่วยสรุปสเปกสำคัญของรุ่นนี้ให้หน่อยครับ",
+    "followup_of": "N101",
+    "expected_product": "Black Shark A3",
+    "test_kind": "card_followup_second"
+  },
+  {
+    "id": "N104",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-02",
+    "question": "",
+    "item_ids": [
+      "40331159062"
+    ],
+    "expected_product": "Black Shark C3",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N105",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-02",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N104",
+    "expected_product": "Black Shark C3",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N106",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-02",
+    "question": "ช่วยสรุปสเปกสำคัญของรุ่นนี้ให้หน่อยครับ",
+    "followup_of": "N104",
+    "expected_product": "Black Shark C3",
+    "test_kind": "card_followup_second"
+  },
+  {
+    "id": "N107",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-03",
+    "question": "",
+    "item_ids": [
+      "43367444997"
+    ],
+    "expected_product": "Black Shark FunCooler 3 Pro",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N108",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-03",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N107",
+    "expected_product": "Black Shark FunCooler 3 Pro",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N109",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-03",
+    "question": "ช่วยสรุปสเปกสำคัญของรุ่นนี้ให้หน่อยครับ",
+    "followup_of": "N107",
+    "expected_product": "Black Shark FunCooler 3 Pro",
+    "test_kind": "card_followup_second"
+  },
+  {
+    "id": "N110",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-04",
+    "question": "",
+    "item_ids": [
+      "43467455382"
+    ],
+    "expected_product": "Black Shark FunCooler 4",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N111",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-04",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N110",
+    "expected_product": "Black Shark FunCooler 4",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N112",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-04",
+    "question": "ช่วยสรุปสเปกสำคัญของรุ่นนี้ให้หน่อยครับ",
+    "followup_of": "N110",
+    "expected_product": "Black Shark FunCooler 4",
+    "test_kind": "card_followup_second"
+  },
+  {
+    "id": "N113",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-05",
+    "question": "",
+    "item_ids": [
+      "42218197718"
+    ],
+    "expected_product": "Black Shark FunCooler 5 Neo",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N114",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-05",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N113",
+    "expected_product": "Black Shark FunCooler 5 Neo",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N115",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-05",
+    "question": "ช่วยสรุปสเปกสำคัญของรุ่นนี้ให้หน่อยครับ",
+    "followup_of": "N113",
+    "expected_product": "Black Shark FunCooler 5 Neo",
+    "test_kind": "card_followup_second"
+  },
+  {
+    "id": "N116",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-06",
+    "question": "",
+    "item_ids": [
+      "40067459782"
+    ],
+    "expected_product": "Black Shark FunCooler 5 Pro",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N117",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-06",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N116",
+    "expected_product": "Black Shark FunCooler 5 Pro",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N118",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-06",
+    "question": "ช่วยสรุปสเปกสำคัญของรุ่นนี้ให้หน่อยครับ",
+    "followup_of": "N116",
+    "expected_product": "Black Shark FunCooler 5 Pro",
+    "test_kind": "card_followup_second"
+  },
+  {
+    "id": "N119",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-07",
+    "question": "",
+    "item_ids": [
+      "27822949206"
+    ],
+    "expected_product": "Black Shark GS3",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N120",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-07",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N119",
+    "expected_product": "Black Shark GS3",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N121",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-07",
+    "question": "ช่วยสรุปสเปกสำคัญของรุ่นนี้ให้หน่อยครับ",
+    "followup_of": "N119",
+    "expected_product": "Black Shark GS3",
+    "test_kind": "card_followup_second"
+  },
+  {
+    "id": "N122",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-08",
+    "question": "",
+    "item_ids": [
+      "46057699735"
+    ],
+    "expected_product": "Black Shark GS3 Smartwatch Charger",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N123",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-08",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N122",
+    "expected_product": "Black Shark GS3 Smartwatch Charger",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N124",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-08",
+    "question": "ช่วยสรุปสเปกสำคัญของรุ่นนี้ให้หน่อยครับ",
+    "followup_of": "N122",
+    "expected_product": "Black Shark GS3 Smartwatch Charger",
+    "test_kind": "card_followup_second"
+  },
+  {
+    "id": "N125",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-09",
+    "question": "",
+    "item_ids": [
+      "27276155598"
+    ],
+    "expected_product": "Black Shark GS3 Sport",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N126",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-09",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N125",
+    "expected_product": "Black Shark GS3 Sport",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N127",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-09",
+    "question": "ช่วยสรุปสเปกสำคัญของรุ่นนี้ให้หน่อยครับ",
+    "followup_of": "N125",
+    "expected_product": "Black Shark GS3 Sport",
+    "test_kind": "card_followup_second"
+  },
+  {
+    "id": "N128",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-10",
+    "question": "",
+    "item_ids": [
+      "46657749892"
+    ],
+    "expected_product": "Black Shark GS3 Sport Smartwatch Charger",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N129",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-10",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N128",
+    "expected_product": "Black Shark GS3 Sport Smartwatch Charger",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N130",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-10",
+    "question": "ช่วยสรุปสเปกสำคัญของรุ่นนี้ให้หน่อยครับ",
+    "followup_of": "N128",
+    "expected_product": "Black Shark GS3 Sport Smartwatch Charger",
+    "test_kind": "card_followup_second"
+  },
+  {
+    "id": "N131",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-11",
+    "question": "",
+    "item_ids": [
+      "25064823709"
+    ],
+    "expected_product": "Black Shark GS3 Ultra",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N132",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-11",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N131",
+    "expected_product": "Black Shark GS3 Ultra",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N133",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-11",
+    "question": "ช่วยสรุปสเปกสำคัญของรุ่นนี้ให้หน่อยครับ",
+    "followup_of": "N131",
+    "expected_product": "Black Shark GS3 Ultra",
+    "test_kind": "card_followup_second"
+  },
+  {
+    "id": "N134",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-12",
+    "question": "",
+    "item_ids": [
+      "41933130625"
+    ],
+    "expected_product": "Black Shark GS3 Ultra (REFINED EDITION)",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N135",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-12",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N134",
+    "expected_product": "Black Shark GS3 Ultra (REFINED EDITION)",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N136",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-12",
+    "question": "ช่วยสรุปสเปกสำคัญของรุ่นนี้ให้หน่อยครับ",
+    "followup_of": "N134",
+    "expected_product": "Black Shark GS3 Ultra (REFINED EDITION)",
+    "test_kind": "card_followup_second"
+  },
+  {
+    "id": "N137",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-13",
+    "question": "",
+    "item_ids": [
+      "56355146597"
+    ],
+    "expected_product": "Black Shark Gaming Tablet",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N138",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-13",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N137",
+    "expected_product": "Black Shark Gaming Tablet",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N139",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-13",
+    "question": "ช่วยสรุปสเปกสำคัญของรุ่นนี้ให้หน่อยครับ",
+    "followup_of": "N137",
+    "expected_product": "Black Shark Gaming Tablet",
+    "test_kind": "card_followup_second"
+  },
+  {
+    "id": "N140",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-14",
+    "question": "",
+    "item_ids": [
+      "50255768193"
+    ],
+    "expected_product": "Black Shark Goblin X8",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N141",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-14",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N140",
+    "expected_product": "Black Shark Goblin X8",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N142",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-14",
+    "question": "ช่วยสรุปสเปกสำคัญของรุ่นนี้ให้หน่อยครับ",
+    "followup_of": "N140",
+    "expected_product": "Black Shark Goblin X8",
+    "test_kind": "card_followup_second"
+  },
+  {
+    "id": "N143",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-15",
+    "question": "",
+    "item_ids": [
+      "42067454827"
+    ],
+    "expected_product": "Black Shark MagCooler 3 Pro",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N144",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-15",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N143",
+    "expected_product": "Black Shark MagCooler 3 Pro",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N145",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-15",
+    "question": "ช่วยสรุปสเปกสำคัญของรุ่นนี้ให้หน่อยครับ",
+    "followup_of": "N143",
+    "expected_product": "Black Shark MagCooler 3 Pro",
+    "test_kind": "card_followup_second"
+  },
+  {
+    "id": "N146",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-16",
+    "question": "",
+    "item_ids": [
+      "42131170553"
+    ],
+    "expected_product": "Black Shark Magcooler 6 Max",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N147",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-16",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N146",
+    "expected_product": "Black Shark Magcooler 6 Max",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N148",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-16",
+    "question": "ช่วยสรุปสเปกสำคัญของรุ่นนี้ให้หน่อยครับ",
+    "followup_of": "N146",
+    "expected_product": "Black Shark Magcooler 6 Max",
+    "test_kind": "card_followup_second"
+  },
+  {
+    "id": "N149",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-17",
+    "question": "",
+    "item_ids": [
+      "50661100978"
+    ],
+    "expected_product": "Black Shark Magcooler 6 Pro",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N150",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-17",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N149",
+    "expected_product": "Black Shark Magcooler 6 Pro",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N151",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-18",
+    "question": "",
+    "item_ids": [
+      "42231170586"
+    ],
+    "expected_product": "Black Shark Magcooler 6 Ultra",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N152",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-18",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N151",
+    "expected_product": "Black Shark Magcooler 6 Ultra",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N153",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-19",
+    "question": "",
+    "item_ids": [
+      "45612054431"
+    ],
+    "expected_product": "Black Shark OpenAir",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N154",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-19",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N153",
+    "expected_product": "Black Shark OpenAir",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N155",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-20",
+    "question": "",
+    "item_ids": [
+      "53252579399"
+    ],
+    "expected_product": "Black Shark Pad 7 wifi",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N156",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-20",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N155",
+    "expected_product": "Black Shark Pad 7 wifi",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N157",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-21",
+    "question": "",
+    "item_ids": [
+      "53118402816"
+    ],
+    "expected_product": "Black Shark PureLoop",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N158",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-21",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N157",
+    "expected_product": "Black Shark PureLoop",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N159",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-22",
+    "question": "",
+    "item_ids": [
+      "44217439082"
+    ],
+    "expected_product": "Black Shark Rokas 3",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N160",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-22",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N159",
+    "expected_product": "Black Shark Rokas 3",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N161",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-23",
+    "question": "",
+    "item_ids": [
+      "57811093211"
+    ],
+    "expected_product": "Black Shark Rokas 5",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N162",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-23",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N161",
+    "expected_product": "Black Shark Rokas 5",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N163",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-24",
+    "question": "",
+    "item_ids": [
+      "24214834958"
+    ],
+    "expected_product": "Black Shark S1 Classic",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N164",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-24",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N163",
+    "expected_product": "Black Shark S1 Classic",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N165",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-25",
+    "question": "",
+    "item_ids": [
+      "55607690408"
+    ],
+    "expected_product": "Black Shark S1 Pro Smartwatch Charger",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N166",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-25",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N165",
+    "expected_product": "Black Shark S1 Pro Smartwatch Charger",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N167",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-26",
+    "question": "",
+    "item_ids": [
+      "25678132425"
+    ],
+    "expected_product": "Black Shark S3",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N168",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-26",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N167",
+    "expected_product": "Black Shark S3",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N169",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-27",
+    "question": "",
+    "item_ids": [
+      "43278262719"
+    ],
+    "expected_product": "Black Shark S3 Classic",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N170",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-27",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N169",
+    "expected_product": "Black Shark S3 Classic",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N171",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-28",
+    "question": "",
+    "item_ids": [
+      "42031170589"
+    ],
+    "expected_product": "Black Shark Supercharged Laptop Cooler Pro",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N172",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-28",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N171",
+    "expected_product": "Black Shark Supercharged Laptop Cooler Pro",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N173",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-29",
+    "question": "",
+    "item_ids": [
+      "40217446305"
+    ],
+    "expected_product": "Black Shark T11",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N174",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-29",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N173",
+    "expected_product": "Black Shark T11",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N175",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-30",
+    "question": "",
+    "item_ids": [
+      "28791107344"
+    ],
+    "expected_product": "Black Shark T18",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N176",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-30",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N175",
+    "expected_product": "Black Shark T18",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N177",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-31",
+    "question": "",
+    "item_ids": [
+      "28692005387"
+    ],
+    "expected_product": "Black Shark T23",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N178",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-31",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N177",
+    "expected_product": "Black Shark T23",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N179",
+    "suite": "new",
+    "group": "item_id_only",
+    "session": "CARD-32",
+    "question": "",
+    "item_ids": [
+      "42017441072"
+    ],
+    "expected_product": "Black Shark T24",
+    "test_kind": "card_initial"
+  },
+  {
+    "id": "N180",
+    "suite": "new",
+    "group": "card_followup",
+    "session": "CARD-32",
+    "question": "แล้วรุ่นนี้มีจุดเด่นอะไรบ้างครับ",
+    "followup_of": "N179",
+    "expected_product": "Black Shark T24",
+    "test_kind": "card_followup"
+  },
+  {
+    "id": "N181",
+    "suite": "new",
+    "group": "inventory_broad",
+    "session": "INV-BROAD-1",
+    "question": "ร้านนี้มีสินค้าหมวดอะไรบ้างครับ",
+    "expected_category_counts": {
+      "Pad": 5,
+      "smart watch": 15,
+      "สายนาฬิกา": 1,
+      "สายชาร์จ": 4,
+      "ระบบทำความเย็น : Peltier": 11,
+      "หูฟังไร้สาย (TWS)": 7,
+      "หูฟัง Open-Ear": 1,
+      "หมวดหมู่ยังไม่ระบุ": 1
+    },
+    "test_kind": "inventory_broad"
+  },
+  {
+    "id": "N182",
+    "suite": "new",
+    "group": "inventory_broad",
+    "session": "INV-BROAD-2",
+    "question": "มีอะไรขายบ้าง ขอแยกตามประเภทสินค้าให้หน่อยครับ",
+    "expected_category_counts": {
+      "Pad": 5,
+      "smart watch": 15,
+      "สายนาฬิกา": 1,
+      "สายชาร์จ": 4,
+      "ระบบทำความเย็น : Peltier": 11,
+      "หูฟังไร้สาย (TWS)": 7,
+      "หูฟัง Open-Ear": 1,
+      "หมวดหมู่ยังไม่ระบุ": 1
+    },
+    "test_kind": "inventory_broad"
+  },
+  {
+    "id": "N183",
+    "suite": "new",
+    "group": "inventory_broad",
+    "session": "INV-BROAD-3",
+    "question": "ร้านมีหมวดสินค้าอะไรบ้างครับ",
+    "expected_category_counts": {
+      "Pad": 5,
+      "smart watch": 15,
+      "สายนาฬิกา": 1,
+      "สายชาร์จ": 4,
+      "ระบบทำความเย็น : Peltier": 11,
+      "หูฟังไร้สาย (TWS)": 7,
+      "หูฟัง Open-Ear": 1,
+      "หมวดหมู่ยังไม่ระบุ": 1
+    },
+    "test_kind": "inventory_broad"
+  },
+  {
+    "id": "N184",
+    "suite": "new",
+    "group": "inventory_broad",
+    "session": "INV-BROAD-4",
+    "question": "ขอภาพรวมสินค้าทั้งร้าน แบ่งตามหมวดให้ดูหน่อยครับ",
+    "expected_category_counts": {
+      "Pad": 5,
+      "smart watch": 15,
+      "สายนาฬิกา": 1,
+      "สายชาร์จ": 4,
+      "ระบบทำความเย็น : Peltier": 11,
+      "หูฟังไร้สาย (TWS)": 7,
+      "หูฟัง Open-Ear": 1,
+      "หมวดหมู่ยังไม่ระบุ": 1
+    },
+    "test_kind": "inventory_broad"
+  },
+  {
+    "id": "N185",
+    "suite": "new",
+    "group": "inventory_broad",
+    "session": "INV-BROAD-5",
+    "question": "ในร้านมีสินค้าอะไรบ้างครับ",
+    "expected_category_counts": {
+      "Pad": 5,
+      "smart watch": 15,
+      "สายนาฬิกา": 1,
+      "สายชาร์จ": 4,
+      "ระบบทำความเย็น : Peltier": 11,
+      "หูฟังไร้สาย (TWS)": 7,
+      "หูฟัง Open-Ear": 1,
+      "หมวดหมู่ยังไม่ระบุ": 1
+    },
+    "test_kind": "inventory_broad"
+  },
+  {
+    "id": "N186",
+    "suite": "new",
+    "group": "inventory_category",
+    "session": "INV-CAT-1",
+    "question": "ในหมวด Pad มีรุ่นไหนบ้างครับ",
+    "expected_category": "Pad",
+    "expected_products": [
+      "Black Shark Gaming Tablet",
+      "Black Shark Pad 7 LTE",
+      "Black Shark Pad 7 Pro LTE",
+      "Black Shark Pad 7 wifi",
+      "Black Shark Pad 7Pro UE"
+    ],
+    "test_kind": "inventory_category",
+    "question_variant": "canonical"
+  },
+  {
+    "id": "N187",
+    "suite": "new",
+    "group": "inventory_category",
+    "session": "INV-CAT-2",
+    "question": "ในหมวด smart watch มีรุ่นไหนบ้างครับ",
+    "expected_category": "smart watch",
+    "expected_products": [
+      "Black Shark A3",
+      "Black Shark GS3",
+      "Black Shark GS3 Sport",
+      "Black Shark GS3 Ultra",
+      "Black Shark GS3 Ultra (REFINED EDITION)",
+      "Black Shark GT3",
+      "Black Shark GT3 NEO",
+      "Black Shark GT3 Neo2",
+      "Black Shark PureLoop",
+      "BLACK SHARK RUN",
+      "Black Shark S1 Classic",
+      "Black Shark S1 Pro",
+      "Black Shark S3",
+      "Black Shark S3 Classic",
+      "z Black Shark PureLoop"
+    ],
+    "test_kind": "inventory_category",
+    "question_variant": "canonical"
+  },
+  {
+    "id": "N188",
+    "suite": "new",
+    "group": "inventory_category",
+    "session": "INV-CAT-3",
+    "question": "ในหมวด ระบบทำความเย็น : Peltier มีรุ่นไหนบ้างครับ",
+    "expected_category": "ระบบทำความเย็น : Peltier",
+    "expected_products": [
+      "Black Shark FunCooler 3 Pro",
+      "Black Shark FunCooler 4",
+      "Black Shark FunCooler 5",
+      "Black Shark FunCooler 5 Neo",
+      "Black Shark FunCooler 5 Pro",
+      "Black Shark MagCooler 3 Pro",
+      "Black Shark Magcooler 6",
+      "Black Shark Magcooler 6 Max",
+      "Black Shark Magcooler 6 Pro",
+      "Black Shark Magcooler 6 Ultra",
+      "Black Shark Supercharged Laptop Cooler Pro"
+    ],
+    "test_kind": "inventory_category",
+    "question_variant": "canonical"
+  },
+  {
+    "id": "N189",
+    "suite": "new",
+    "group": "inventory_category",
+    "session": "INV-CAT-4",
+    "question": "ในหมวด สายชาร์จ มีรุ่นไหนบ้างครับ",
+    "expected_category": "สายชาร์จ",
+    "expected_products": [
+      "Black Shark GS3 Smartwatch Charger",
+      "Black Shark GS3 Sport Smartwatch Cha",
+      "Black Shark GS3 Sport Smartwatch Charger",
+      "Black Shark S1 Pro Smartwatch Charger"
+    ],
+    "test_kind": "inventory_category",
+    "question_variant": "canonical"
+  },
+  {
+    "id": "N190",
+    "suite": "new",
+    "group": "inventory_category",
+    "session": "INV-CAT-5",
+    "question": "ในหมวด สายนาฬิกา มีรุ่นไหนบ้างครับ",
+    "expected_category": "สายนาฬิกา",
+    "expected_products": [
+      "Black Shark Genuine Leather Strap"
+    ],
+    "test_kind": "inventory_category",
+    "question_variant": "canonical"
+  },
+  {
+    "id": "N191",
+    "suite": "new",
+    "group": "inventory_category",
+    "session": "INV-CAT-6",
+    "question": "ในหมวด หูฟัง Open-Ear มีรุ่นไหนบ้างครับ",
+    "expected_category": "หูฟัง Open-Ear",
+    "expected_products": [
+      "Black Shark OpenAir"
+    ],
+    "test_kind": "inventory_category",
+    "question_variant": "canonical"
+  },
+  {
+    "id": "N192",
+    "suite": "new",
+    "group": "inventory_category",
+    "session": "INV-CAT-7",
+    "question": "ในหมวด หูฟังไร้สาย (TWS) มีรุ่นไหนบ้างครับ",
+    "expected_category": "หูฟังไร้สาย (TWS)",
+    "expected_products": [
+      "Black Shark C3",
+      "Black Shark Rokas 3",
+      "Black Shark Rokas 5",
+      "Black Shark T11",
+      "Black Shark T18",
+      "Black Shark T23",
+      "Black Shark T24"
+    ],
+    "test_kind": "inventory_category",
+    "question_variant": "canonical"
+  },
+  {
+    "id": "N193",
+    "suite": "new",
+    "group": "inventory_category",
+    "session": "INV-CAT-8",
+    "question": "มีรุ่นอะไรในประเภท smart watch ให้เลือกบ้างครับ",
+    "expected_category": "smart watch",
+    "expected_products": [
+      "Black Shark A3",
+      "Black Shark GS3",
+      "Black Shark GS3 Sport",
+      "Black Shark GS3 Ultra",
+      "Black Shark GS3 Ultra (REFINED EDITION)",
+      "Black Shark GT3",
+      "Black Shark GT3 NEO",
+      "Black Shark GT3 Neo2",
+      "Black Shark PureLoop",
+      "BLACK SHARK RUN",
+      "Black Shark S1 Classic",
+      "Black Shark S1 Pro",
+      "Black Shark S3",
+      "Black Shark S3 Classic",
+      "z Black Shark PureLoop"
+    ],
+    "test_kind": "inventory_category",
+    "question_variant": "alternate_wording"
+  },
+  {
+    "id": "N194",
+    "suite": "new",
+    "session": "EDGE-1",
+    "group": "card_disambiguation",
+    "question": "รุ่นนี้กันน้ำได้ไหมครับ",
+    "item_ids": [
+      "26893612033"
+    ],
+    "expected_product": "Black Shark GS3 Ultra",
+    "test_kind": "card_question"
+  },
+  {
+    "id": "N195",
+    "suite": "new",
+    "session": "EDGE-2",
+    "group": "card_kb_conflict",
+    "question": "",
+    "item_ids": [
+      "55355455002"
+    ],
+    "expected_reason": "card_not_in_shop_kb",
+    "test_kind": "card_unmatched"
+  },
+  {
+    "id": "N196",
+    "suite": "new",
+    "session": "EDGE-3",
+    "group": "fake_item_id",
+    "question": "",
+    "item_ids": [
+      "12345678901"
+    ],
+    "expected_reason": "item_id_not_found",
+    "test_kind": "card_unmatched"
+  },
+  {
+    "id": "N197",
+    "suite": "new",
+    "session": "EDGE-4",
+    "group": "multi_card",
+    "question": "การ์ดสองชิ้นนี้เป็นสินค้าอะไรบ้างครับ",
+    "item_ids": [
+      "27822949206",
+      "46057699735"
+    ],
+    "expected_products": [
+      "Black Shark GS3",
+      "Black Shark GS3 Smartwatch Charger"
+    ],
+    "test_kind": "multi_card"
+  },
+  {
+    "id": "N198",
+    "suite": "new",
+    "session": "EDGE-5",
+    "group": "card_comparison",
+    "question": "Black Shark GS3 กับ GS3 Ultra ต่างกันอย่างไรครับ ขอเป็นตารางเทียบสเปก",
+    "item_ids": [
+      "27822949206"
+    ],
+    "expected_products": [
+      "Black Shark GS3",
+      "Black Shark GS3 Ultra"
+    ],
+    "test_kind": "card_comparison"
+  },
+  {
+    "id": "N199",
+    "suite": "new",
+    "session": "EDGE-6",
+    "group": "card_product_qa",
+    "question": "รุ่นนี้มีฟังก์ชันสุขภาพอะไรบ้างครับ",
+    "item_ids": [
+      "53118402816"
+    ],
+    "expected_product": "Black Shark PureLoop",
+    "test_kind": "card_question"
+  },
+  {
+    "id": "N200",
+    "suite": "new",
+    "session": "EDGE-7",
+    "group": "card_product_qa",
+    "question": "Black Shark Goblin X8 เป็นหูฟังแบบไหน มีการเชื่อมต่ออะไรบ้างครับ",
+    "item_ids": [
+      "50255768193"
+    ],
+    "expected_product": "Black Shark Goblin X8",
+    "test_kind": "card_question"
+  }
+]

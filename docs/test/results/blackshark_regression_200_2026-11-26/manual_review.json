@@ -1,0 +1,35 @@
+{
+  "method": "Manual comparison with live Black Shark shop-scoped Supabase KB; no second paid judge model used.",
+  "findings": [
+    {
+      "id": "Q012",
+      "severity": "high",
+      "type": "answer_regression",
+      "note": "Baseline answered; current run returned handoff_mock/insufficient_shop_evidence for whether S3 and S3 Classic can be used for swimming. Shop KB B8 says S3 is 5ATM and supports water activities; B9 says S3 Classic is 3ATM and rated for rain/splashes. The bot should explain the distinction and uncertainty instead of handing off."
+    },
+    {
+      "id": "Q061",
+      "severity": "high",
+      "type": "answer_regression",
+      "note": "Baseline answered; current run handed off for T18 Bluetooth version. Shop KB B39 states Bluetooth 5.3, so the answer is available in the scoped product record."
+    },
+    {
+      "id": "Q077",
+      "severity": "high",
+      "type": "faq_regression",
+      "note": "Baseline answered; current run handed off for S1 Pro microphone troubleshooting. Shop FAQ C3 contains checks for the microphone opening, obstruction, careful cleaning, and retesting."
+    },
+    {
+      "id": "N198",
+      "severity": "high",
+      "type": "incorrect_spec_in_comparison",
+      "note": "The comparison table says GS3 Ultra is 30 Hz. Shop KB B5 says 60 Hz; the same run also answered 60 Hz correctly for the single-product questions Q008 and Q052. This comparison answer contradicts its own allowed source and is an accuracy failure."
+    },
+    {
+      "id": "Q069",
+      "severity": "info",
+      "type": "handoff_supported_by_kb_gap",
+      "note": "This handoff is not a regression: baseline also handed off. In the Black Shark-only KB rows B23–B24 for Pad 7 LTE, the product name contains LTE but no cellular band/network standard is specified; the record only states Wi‑Fi 2.4/5 GHz and Bluetooth 5.0. Handoff avoids guessing."
+    }
+  ]
+}

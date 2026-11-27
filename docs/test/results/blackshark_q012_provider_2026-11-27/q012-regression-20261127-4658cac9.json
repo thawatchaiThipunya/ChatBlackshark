@@ -1,0 +1,159 @@
+{
+  "test_id": "q012-regression-20261127-4658cac9",
+  "question_id": "Q012",
+  "question": "ว่ายน้ำได้ทั้งคู่ไหมคะ",
+  "created_at": "2026-11-27T01:43:46.215186+00:00",
+  "provider_calls": [
+    {
+      "provider": "openrouter",
+      "model": "google/gemini-3.5-flash-lite",
+      "operation": "chat.completions",
+      "source": "chat.intent",
+      "duration_ms": 2030,
+      "attempt": 1,
+      "status": "success",
+      "prompt_tokens": 2244,
+      "completion_tokens": 176,
+      "cost_usd": 0.0011132,
+      "http_status": 200,
+      "reference": "chat_request:q012-regression-20261127-4658cac9",
+      "request_id": "gen-1795743831-KOgPZnVunlJ2QPZ1EnBH",
+      "hub_accepted": true
+    },
+    {
+      "provider": "openrouter",
+      "model": "google/gemini-3.5-flash-lite",
+      "operation": "chat.completions",
+      "source": "chat.answer",
+      "duration_ms": 1703,
+      "attempt": 1,
+      "status": "success",
+      "prompt_tokens": 8191,
+      "completion_tokens": 138,
+      "cost_usd": 0.0028023,
+      "http_status": 200,
+      "reference": "chat_request:q012-regression-20261127-4658cac9",
+      "request_id": "gen-1795743834-rEamjqdOpAM4D5lXfhDu",
+      "hub_accepted": true
+    },
+    {
+      "provider": "openrouter",
+      "model": "google/gemini-3.5-flash-lite",
+      "operation": "chat.completions",
+      "source": "chat.answer_review",
+      "duration_ms": 1831,
+      "attempt": 1,
+      "status": "success",
+      "prompt_tokens": 5945,
+      "completion_tokens": 140,
+      "cost_usd": 0.0021335,
+      "http_status": 200,
+      "reference": "chat_request:q012-regression-20261127-4658cac9",
+      "request_id": "gen-1795743836-7Ot6W6CwJh5pzoUSKrrM",
+      "hub_accepted": true
+    }
+  ],
+  "scope": {
+    "platform": "shopee",
+    "shop_id": "1191420560"
+  },
+  "preflight": {
+    "shop_name": "Black Shark Thailand",
+    "platform": "shopee",
+    "shop_id": "1191420560",
+    "provider": "openrouter",
+    "intent_model": "google/gemini-3.5-flash-lite",
+    "answer_model": "google/gemini-3.5-flash-lite",
+    "ai_usage_hub_configured": true,
+    "shop_kb_products": 88,
+    "shop_kb_faqs": 462,
+    "allowed_files": [
+      "วิธีแก้ปัญหารายรุ่น-Black Shark-เฉพาะติ๊กส่งลูกค้าได้-20261118-0114.xlsx",
+      "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+    ]
+  },
+  "history_turn_count": 3,
+  "status": "completed",
+  "reply": {
+    "status": "answered",
+    "intent": "compatibility",
+    "reason": "source_match",
+    "answer": "ยังยืนยันไม่ได้ครับ เนื่องจากข้อมูลระบุว่า สำหรับรุ่น Black Shark S3 มีมาตรฐานการกันน้ำระดับ 5ATM ที่สามารถทนต่อแรงดันน้ำได้เทียบเท่าความลึกถึง 50 เมตร ส่วนรุ่น S3 Classic มีมาตรฐานการกันน้ำ 3ATM ที่สามารถกันน้ำ ทนฝน และละอองน้ำได้ แต่ทั้งสองรุ่นมีข้อแนะนำเหมือนกันว่าไม่แนะนำให้ใช้นาฬิกาในสภาพแวดล้อมที่ร้อนจัด เช่น ห้องซาวน์น่า หรือใช้อาบน้ำร้อนครับ",
+    "sources": [
+      {
+        "row": 10,
+        "cell": "B10",
+        "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+        "sheet": "ข้อมูลสินค้า",
+        "url_source": {
+          "row": 10,
+          "cell": "D10",
+          "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+          "sheet": "ข้อมูลสินค้า"
+        },
+        "name_source": {
+          "row": 10,
+          "cell": "A10",
+          "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+          "sheet": "ข้อมูลสินค้า"
+        },
+        "product_url": null,
+        "raw_row_index": 8
+      },
+      {
+        "row": 9,
+        "cell": "B9",
+        "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+        "sheet": "ข้อมูลสินค้า",
+        "url_source": {
+          "row": 9,
+          "cell": "D9",
+          "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+          "sheet": "ข้อมูลสินค้า"
+        },
+        "name_source": {
+          "row": 9,
+          "cell": "A9",
+          "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+          "sheet": "ข้อมูลสินค้า"
+        },
+        "product_url": null,
+        "raw_row_index": 7
+      }
+    ],
+    "product_name": null,
+    "matched_question": null,
+    "session_id": "C03",
+    "handoff_mock": false,
+    "handoff_sent": false,
+    "intent_analysis": {
+      "intent": "compatibility",
+      "topic": "Can Black Shark S3 Classic and Black Shark S3 be used for swimming",
+      "needs": [
+        "Check if Black Shark S3 Classic can be used for swimming",
+        "Check if Black Shark S3 can be used for swimming"
+      ],
+      "product_names": [
+        "Black Shark S3 Classic",
+        "Black Shark S3"
+      ],
+      "category": "smart watch",
+      "list_all": false,
+      "unresolved": false,
+      "shop_scope": "current_store"
+    }
+  },
+  "elapsed_seconds": 7.409,
+  "provider_cost_usd": 0.006049,
+  "ai_usage_hub_accepted": 3,
+  "ai_usage_hub_rejected": 0,
+  "checks": {
+    "status_answered": true,
+    "both_models_resolved": false,
+    "s3_water_evidence_used": false,
+    "classic_uncertainty_stated": true,
+    "no_handoff": true,
+    "shop_sources_only": true
+  },
+  "test_passed": false
+}
