@@ -1,0 +1,192 @@
+{
+  "run_id": "20261127T023123Z",
+  "created_at": "2026-11-27T02:31:23.848480+00:00",
+  "planned_questions": 100,
+  "completed_questions": 100,
+  "run_status": "completed",
+  "stop_reason": null,
+  "shop_name": "Black Shark Thailand",
+  "platform": "shopee",
+  "shop_id": "1191420560",
+  "allowed_kb_files": [
+    "วิธีแก้ปัญหารายรุ่น-Black Shark-เฉพาะติ๊กส่งลูกค้าได้-20261118-0114.xlsx",
+    "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+  ],
+  "products_in_shop_kb": 88,
+  "faqs_in_shop_kb": 462,
+  "provider": "openrouter",
+  "model": "google/gemini-3.5-flash-lite",
+  "provider_calls": 294,
+  "provider_cost_usd": 0.4095067,
+  "budget_guard_usd": 1.5,
+  "ai_usage_hub_accepted": 292,
+  "ai_usage_hub_rejected": 2,
+  "result_status_counts": {
+    "answered": 89,
+    "temporarily_unavailable": 11
+  },
+  "shop_scope_failures": 0,
+  "answer_changes_vs_previous_run": 99,
+  "status_regressions_vs_previous_run": [
+    "Q090",
+    "Q091",
+    "Q092",
+    "Q093",
+    "Q095",
+    "Q096",
+    "Q097",
+    "Q098",
+    "Q099",
+    "Q100"
+  ],
+  "status_improvements_vs_previous_run": [
+    "Q069",
+    "Q076"
+  ],
+  "review_flags": [
+    {
+      "id": "Q085",
+      "flags": [
+        "answered_without_source_reference"
+      ]
+    },
+    {
+      "id": "Q087",
+      "flags": [
+        "answered_without_source_reference"
+      ]
+    },
+    {
+      "id": "Q088",
+      "flags": [
+        "answered_without_source_reference"
+      ]
+    },
+    {
+      "id": "Q090",
+      "flags": [
+        "status_regression_from_previous_run"
+      ]
+    },
+    {
+      "id": "Q091",
+      "flags": [
+        "status_regression_from_previous_run"
+      ]
+    },
+    {
+      "id": "Q092",
+      "flags": [
+        "status_regression_from_previous_run"
+      ]
+    },
+    {
+      "id": "Q093",
+      "flags": [
+        "status_regression_from_previous_run"
+      ]
+    },
+    {
+      "id": "Q095",
+      "flags": [
+        "status_regression_from_previous_run"
+      ]
+    },
+    {
+      "id": "Q096",
+      "flags": [
+        "status_regression_from_previous_run"
+      ]
+    },
+    {
+      "id": "Q097",
+      "flags": [
+        "status_regression_from_previous_run"
+      ]
+    },
+    {
+      "id": "Q098",
+      "flags": [
+        "status_regression_from_previous_run"
+      ]
+    },
+    {
+      "id": "Q099",
+      "flags": [
+        "status_regression_from_previous_run"
+      ]
+    },
+    {
+      "id": "Q100",
+      "flags": [
+        "status_regression_from_previous_run"
+      ]
+    }
+  ],
+  "group_stats": {
+    "conversation": {
+      "count": 24,
+      "status_counts": {
+        "answered": 24
+      },
+      "provider_calls": 73,
+      "provider_cost_usd": 0.121236,
+      "median_elapsed_seconds": 5.814,
+      "scope_failures": 0
+    },
+    "catalog": {
+      "count": 25,
+      "status_counts": {
+        "answered": 25
+      },
+      "provider_calls": 75,
+      "provider_cost_usd": 0.0934288,
+      "median_elapsed_seconds": 6.351,
+      "scope_failures": 0
+    },
+    "spec": {
+      "count": 20,
+      "status_counts": {
+        "answered": 20
+      },
+      "provider_calls": 64,
+      "provider_cost_usd": 0.0673651,
+      "median_elapsed_seconds": 5.501,
+      "scope_failures": 0
+    },
+    "faq": {
+      "count": 15,
+      "status_counts": {
+        "answered": 15
+      },
+      "provider_calls": 59,
+      "provider_cost_usd": 0.0913643,
+      "median_elapsed_seconds": 8.129,
+      "scope_failures": 0
+    },
+    "shop_boundary": {
+      "count": 10,
+      "status_counts": {
+        "answered": 5,
+        "temporarily_unavailable": 5
+      },
+      "provider_calls": 17,
+      "provider_cost_usd": 0.0361125,
+      "median_elapsed_seconds": 2.202,
+      "scope_failures": 0
+    },
+    "inventory_compare": {
+      "count": 6,
+      "status_counts": {
+        "temporarily_unavailable": 6
+      },
+      "provider_calls": 6,
+      "provider_cost_usd": 0.0,
+      "median_elapsed_seconds": 0.681,
+      "scope_failures": 0
+    }
+  },
+  "median_elapsed_seconds": 5.855,
+  "p95_elapsed_seconds": 8.438,
+  "accuracy_note": "รายงานแสดงคำตอบและ KB source ทุกข้อ; ตรวจ status/shop scope อัตโนมัติ ส่วนความถูกต้องเชิงความหมายต้องอ่านคำตอบเทียบกับ source ไม่มี LLM judge เพิ่ม"
+}

@@ -121,6 +121,20 @@ class LegacyDataScopeTests(unittest.TestCase):
         self.assertEqual(history[-2]["vision_descriptions"], ["เห็นนาฬิกาสีแดง"])
         self.assertEqual(history[-1]["content"], "answer 6")
 
+    def test_history_preserves_card_item_id_for_kb_identity_resolution(self):
+        row = {"message_id": "card-1", "role": "user", "direction": "in", "text": "จอกี่นิ้ว",
+               "raw_payload": {"data": {"content": {"message_type": "item",
+                   "content": {"item_id": "123456789"}}}}}
+        listing = {"item_id": "123456789", "name": "(NewArrival) Official product listing"}
+        with patch.object(legacy_data, "_message_rows", return_value=[row]), \
+             patch.object(legacy_data, "_shadow_rows", return_value=[]), \
+             patch.object(legacy_data, "shop_alias_is_unique", return_value=True), \
+             patch.object(legacy_data, "product_identities_by_ids", return_value={"123456789": listing}):
+            history = legacy_data.history_for_conversation("c", "111", "shopee", "Shop A")
+
+        self.assertEqual(history[0]["card_item_ids"], ["123456789"])
+        self.assertEqual(history[0]["card_context"], [listing])
+
     def test_variation_card_and_bundle_read_scoped_item_ids(self):
         variation = {"data": {"content": {"message_type": "variation_card",
             "content": {"product_id": 56067346193}}}}

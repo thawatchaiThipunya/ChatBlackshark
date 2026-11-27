@@ -31,10 +31,11 @@ class ShopScopeTests(unittest.TestCase):
         def request(path, payload=None):
             requested.append(path)
             if path.startswith("bot_products?"):
+                self.assertIn("item_ids", path)
                 if "cuktech.xlsx" not in path:
                     return [{"name": "Other shop", "source": {"file": "other.xlsx"}}] * 1000
                 offset = int(path.split("offset=")[1].split("&")[0]) if "offset=" in path else 0
-                return [{"name": f"CTC {i}", "source": {"file": "cuktech.xlsx"}}
+                return [{"name": f"CTC {i}", "item_ids": [str(i)], "source": {"file": "cuktech.xlsx"}}
                         for i in range(offset, min(offset + 1000, 1001))]
             if path.startswith("bot_faqs?"):
                 return []
@@ -43,6 +44,7 @@ class ShopScopeTests(unittest.TestCase):
         store._request = request
         _, knowledge = store.knowledge_for_shop("shopee", "987863120")
         self.assertEqual(len(knowledge["products"]), 1001)
+        self.assertEqual(knowledge["products"][0]["item_ids"], ["0"])
         self.assertTrue(all(row["source"]["file"] == "cuktech.xlsx" for row in knowledge["products"]))
         self.assertTrue(all("cuktech.xlsx" in path for path in requested))
 

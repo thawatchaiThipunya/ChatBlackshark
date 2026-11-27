@@ -1,0 +1,224 @@
+{
+  "planned_questions": 200,
+  "baseline_questions": 100,
+  "new_questions": 100,
+  "shop_name": "Black Shark Thailand",
+  "platform": "shopee",
+  "shop_id": "1191420560",
+  "allowed_kb_files": [
+    "วิธีแก้ปัญหารายรุ่น-Black Shark-เฉพาะติ๊กส่งลูกค้าได้-20261118-0114.xlsx",
+    "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+  ],
+  "products": 88,
+  "faqs": 462,
+  "explicit_categories": {
+    "Pad": 5,
+    "smart watch": 15,
+    "สายนาฬิกา": 1,
+    "สายชาร์จ": 4,
+    "ระบบทำความเย็น : Peltier": 11,
+    "หูฟังไร้สาย (TWS)": 7,
+    "หูฟัง Open-Ear": 1
+  },
+  "provider": "openrouter",
+  "model": "google/gemini-3.5-flash-lite",
+  "ai_usage_hub_configured": true,
+  "mongo_alias_unique": true,
+  "card_mapping_preflight": {
+    "24140513934": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark A3",
+      "expected_kb_product": "Black Shark A3",
+      "match": true
+    },
+    "40331159062": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark C3",
+      "expected_kb_product": "Black Shark C3",
+      "match": true
+    },
+    "43367444997": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark FunCooler 3 Pro",
+      "expected_kb_product": "Black Shark FunCooler 3 Pro",
+      "match": true
+    },
+    "43467455382": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark FunCooler 4",
+      "expected_kb_product": "Black Shark FunCooler 4",
+      "match": true
+    },
+    "42218197718": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark FunCooler 5 Neo",
+      "expected_kb_product": "Black Shark FunCooler 5 Neo",
+      "match": true
+    },
+    "40067459782": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark FunCooler 5 Pro",
+      "expected_kb_product": "Black Shark FunCooler 5 Pro",
+      "match": true
+    },
+    "27822949206": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark GS3",
+      "expected_kb_product": "Black Shark GS3",
+      "match": true
+    },
+    "46057699735": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark GS3 Smartwatch Charger",
+      "expected_kb_product": "Black Shark GS3 Smartwatch Charger",
+      "match": true
+    },
+    "27276155598": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark GS3 Sport",
+      "expected_kb_product": "Black Shark GS3 Sport",
+      "match": true
+    },
+    "46657749892": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark GS3 Sport Smartwatch Charger",
+      "expected_kb_product": "Black Shark GS3 Sport Smartwatch Charger",
+      "match": true
+    },
+    "25064823709": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark GS3 Ultra",
+      "expected_kb_product": "Black Shark GS3 Ultra",
+      "match": true
+    },
+    "41933130625": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark GS3 Ultra (REFINED EDITION)",
+      "expected_kb_product": "Black Shark GS3 Ultra (REFINED EDITION)",
+      "match": true
+    },
+    "56355146597": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark Gaming Tablet",
+      "expected_kb_product": "Black Shark Gaming Tablet",
+      "match": true
+    },
+    "50255768193": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark Goblin X8",
+      "expected_kb_product": "Black Shark Goblin X8",
+      "match": true
+    },
+    "42067454827": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark MagCooler 3 Pro",
+      "expected_kb_product": "Black Shark MagCooler 3 Pro",
+      "match": true
+    },
+    "42131170553": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark Magcooler 6 Max",
+      "expected_kb_product": "Black Shark Magcooler 6 Max",
+      "match": true
+    },
+    "50661100978": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark Magcooler 6 Pro",
+      "expected_kb_product": "Black Shark Magcooler 6 Pro",
+      "match": true
+    },
+    "42231170586": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark Magcooler 6 Ultra",
+      "expected_kb_product": "Black Shark Magcooler 6 Ultra",
+      "match": true
+    },
+    "45612054431": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark OpenAir",
+      "expected_kb_product": "Black Shark OpenAir",
+      "match": true
+    },
+    "53252579399": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark Pad 7 wifi",
+      "expected_kb_product": "Black Shark Pad 7 wifi",
+      "match": true
+    },
+    "53118402816": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark PureLoop",
+      "expected_kb_product": "Black Shark PureLoop",
+      "match": true
+    },
+    "44217439082": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark Rokas 3",
+      "expected_kb_product": "Black Shark Rokas 3",
+      "match": true
+    },
+    "57811093211": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark Rokas 5",
+      "expected_kb_product": "Black Shark Rokas 5",
+      "match": true
+    },
+    "24214834958": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark S1 Classic",
+      "expected_kb_product": "Black Shark S1 Classic",
+      "match": true
+    },
+    "55607690408": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark S1 Pro Smartwatch Charger",
+      "expected_kb_product": "Black Shark S1 Pro Smartwatch Charger",
+      "match": true
+    },
+    "25678132425": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark S3",
+      "expected_kb_product": "Black Shark S3",
+      "match": true
+    },
+    "43278262719": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark S3 Classic",
+      "expected_kb_product": "Black Shark S3 Classic",
+      "match": true
+    },
+    "42031170589": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark Supercharged Laptop Cooler Pro",
+      "expected_kb_product": "Black Shark Supercharged Laptop Cooler Pro",
+      "match": true
+    },
+    "40217446305": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark T11",
+      "expected_kb_product": "Black Shark T11",
+      "match": true
+    },
+    "28791107344": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark T18",
+      "expected_kb_product": "Black Shark T18",
+      "match": true
+    },
+    "28692005387": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark T23",
+      "expected_kb_product": "Black Shark T23",
+      "match": true
+    },
+    "42017441072": {
+      "mongo_found": true,
+      "actual_kb_product": "Black Shark T24",
+      "expected_kb_product": "Black Shark T24",
+      "match": true
+    }
+  },
+  "budget_guard_usd": 1.5,
+  "hard_budget_usd": 2.0,
+  "output": "/Users/itdev4/.codex/worktrees/fix-shop-kb-followups/ChatBlackshark/docs/test/results/blackshark_regression_200_2026-11-26"
+}

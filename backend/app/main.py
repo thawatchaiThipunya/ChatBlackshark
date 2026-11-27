@@ -710,12 +710,21 @@ def _answer_legacy_message(request: TicketAnswerRequest) -> dict[str, Any]:
         for turn in history:
             if turn.get("role") != "user":
                 continue
-            names = turn.get("card_product_names") or turn.get("product_names") or []
-            kb_names = list(dict.fromkeys(
-                name for raw_name in names
-                if isinstance(raw_name, str)
-                if (name := match_catalog_product(raw_name, catalog_products))
-            ))
+            raw_cards = turn.get("card_context") if isinstance(turn.get("card_context"), list) else []
+            if raw_cards:
+                mapped_names = [match_catalog_product(
+                    str(card.get("name") or ""), catalog_products, item_id=card.get("item_id"))
+                    for card in raw_cards if isinstance(card, dict)]
+            else:
+                raw_names = turn.get("card_product_names") or turn.get("product_names") or []
+                raw_ids = turn.get("card_item_ids") if isinstance(turn.get("card_item_ids"), list) else []
+                mapped_names = [match_catalog_product(
+                    raw_name, catalog_products, item_id=raw_ids[index] if index < len(raw_ids) else None)
+                    for index, raw_name in enumerate(raw_names) if isinstance(raw_name, str)]
+                if not raw_names:
+                    mapped_names.extend(match_catalog_product("", catalog_products, item_id=item_id)
+                                        for item_id in raw_ids)
+            kb_names = list(dict.fromkeys(name for name in mapped_names if name))
             turn["product_name"] = kb_names[0] if len(kb_names) == 1 else None
             turn["product_names"] = kb_names
             turn["card_product_names"] = kb_names
@@ -736,7 +745,8 @@ def _answer_legacy_message(request: TicketAnswerRequest) -> dict[str, Any]:
             card_lookup_unavailable = True
         identity_rows = list(card_map.values())
         for listing in identity_rows:
-            listing["product_name"] = match_catalog_product(listing["name"], catalog_products)
+            listing["product_name"] = match_catalog_product(
+                listing["name"], catalog_products, item_id=listing.get("item_id"))
         missing_item_ids = [item_id for item_id in event.item_ids if item_id not in card_map]
         unmatched_item_ids = [item_id for item_id in event.item_ids
                               if item_id in card_map and not card_map[item_id].get("product_name")]
@@ -1030,7 +1040,8 @@ def legacy_engine_test_answer(request: LegacyEngineTestAnswerRequest,
             "handoff_required": True, "handoff_reason": "item_id_not_found",
             "product_cards": [], "products": [], "sources": [], "unresolved_item_ids": request.item_ids})
     for card in card_rows:
-        card["product_name"] = match_catalog_product(str(card.get("name") or ""), catalog)
+        card["product_name"] = match_catalog_product(
+            str(card.get("name") or ""), catalog, item_id=card.get("item_id"))
     unmatched_ids = [item_id for item_id in request.item_ids
                      if not next((row.get("product_name") for row in card_rows
                                   if row.get("item_id") == item_id), None)]
@@ -1184,11 +1195,12 @@ def chat(request: ChatRequest, chat_guest: str | None = Cookie(default=None)) ->
             stored_cards = [card for card in cards if isinstance(card, dict)]
     catalog_products = scoped_knowledge.get("products", [])
     for listing in listings:
-        listing["product_name"] = match_catalog_product(listing["name"], catalog_products)
+        listing["product_name"] = match_catalog_product(
+            listing["name"], catalog_products, item_id=listing.get("item_id"))
     prior_card_context = []
     for card in stored_cards:
         prior_name = str(card.get("name") or card.get("product_name") or "")
-        product_name = match_catalog_product(prior_name, catalog_products)
+        product_name = match_catalog_product(prior_name, catalog_products, item_id=card.get("item_id"))
         if not product_name and str(card.get("product_name") or "") in {row["name"] for row in catalog_products}:
             product_name = str(card["product_name"])
         if product_name:

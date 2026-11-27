@@ -620,6 +620,7 @@ def history_for_conversation(conversation_id: str, shop_id: str, platform: str,
                                  "product_names": [card["name"] for card in cards],
                                  "card_title": cards[0]["name"] if len(cards) == 1 else None,
                                  "card_product_names": [card["name"] for card in cards],
+                                 "card_item_ids": item_ids,
                                  "card_context": cards,
                                  "vision_descriptions": [str(shadow_by_id.get(str(row.get("message_id") or ""), {}).get("bot_image_desc") or "").strip()]
                                     if shadow_by_id.get(str(row.get("message_id") or ""), {}).get("bot_image_desc") else [],
@@ -660,10 +661,14 @@ def history_for_conversation(conversation_id: str, shop_id: str, platform: str,
         user_text = " ".join(str(item.get("content") or "").strip() for item in group if item["role"] == "user").strip()
         user_rows = [item for item in group if item["role"] == "user"]
         product_names = list(dict.fromkeys(name for item in user_rows for name in item.get("product_names", [])))
+        card_item_ids = list(dict.fromkeys(item_id for item in user_rows
+                                           for item_id in item.get("card_item_ids", []) if item_id))
+        card_context = [card for item in user_rows for card in item.get("card_context", [])]
         user_turn: dict[str, Any] = {"role": "user", "content": user_text,
             "product_name": product_names[0] if len(product_names) == 1 else None,
             "product_names": product_names[:10],
             "card_product_names": product_names[:10],
+            "card_item_ids": card_item_ids[:10], "card_context": card_context[:10],
             "vision_descriptions": [text for item in user_rows for text in item.get("vision_descriptions", []) if text]}
         if len(user_rows) == 1 and user_rows[0].get("card_title"):
             user_turn["card_title"] = user_rows[0]["card_title"]

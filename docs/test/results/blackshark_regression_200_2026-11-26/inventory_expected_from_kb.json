@@ -1,0 +1,75 @@
+{
+  "category_counts": {
+    "Pad": 5,
+    "smart watch": 15,
+    "สายนาฬิกา": 1,
+    "สายชาร์จ": 4,
+    "ระบบทำความเย็น : Peltier": 11,
+    "หูฟังไร้สาย (TWS)": 7,
+    "หูฟัง Open-Ear": 1,
+    "หมวดหมู่ยังไม่ระบุ": 1
+  },
+  "category_products": {
+    "Pad": [
+      "Black Shark Gaming Tablet",
+      "Black Shark Pad 7 LTE",
+      "Black Shark Pad 7 Pro LTE",
+      "Black Shark Pad 7 wifi",
+      "Black Shark Pad 7Pro UE"
+    ],
+    "smart watch": [
+      "Black Shark A3",
+      "Black Shark GS3",
+      "Black Shark GS3 Sport",
+      "Black Shark GS3 Ultra",
+      "Black Shark GS3 Ultra (REFINED EDITION)",
+      "Black Shark GT3",
+      "Black Shark GT3 NEO",
+      "Black Shark GT3 Neo2",
+      "Black Shark PureLoop",
+      "BLACK SHARK RUN",
+      "Black Shark S1 Classic",
+      "Black Shark S1 Pro",
+      "Black Shark S3",
+      "Black Shark S3 Classic",
+      "z Black Shark PureLoop"
+    ],
+    "สายนาฬิกา": [
+      "Black Shark Genuine Leather Strap"
+    ],
+    "สายชาร์จ": [
+      "Black Shark GS3 Smartwatch Charger",
+      "Black Shark GS3 Sport Smartwatch Cha",
+      "Black Shark GS3 Sport Smartwatch Charger",
+      "Black Shark S1 Pro Smartwatch Charger"
+    ],
+    "ระบบทำความเย็น : Peltier": [
+      "Black Shark FunCooler 3 Pro",
+      "Black Shark FunCooler 4",
+      "Black Shark FunCooler 5",
+      "Black Shark FunCooler 5 Neo",
+      "Black Shark FunCooler 5 Pro",
+      "Black Shark MagCooler 3 Pro",
+      "Black Shark Magcooler 6",
+      "Black Shark Magcooler 6 Max",
+      "Black Shark Magcooler 6 Pro",
+      "Black Shark Magcooler 6 Ultra",
+      "Black Shark Supercharged Laptop Cooler Pro"
+    ],
+    "หูฟังไร้สาย (TWS)": [
+      "Black Shark C3",
+      "Black Shark Rokas 3",
+      "Black Shark Rokas 5",
+      "Black Shark T11",
+      "Black Shark T18",
+      "Black Shark T23",
+      "Black Shark T24"
+    ],
+    "หูฟัง Open-Ear": [
+      "Black Shark OpenAir"
+    ]
+  },
+  "unique_product_count": 45,
+  "unclassified_product_count": 1,
+  "unclassified_product_names_available": false
+}

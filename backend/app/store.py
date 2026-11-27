@@ -54,7 +54,7 @@ class SupabaseStore:
     def knowledge(self) -> dict[str, Any]:
         if self._cache and time.monotonic() - self._cache[0] < 60:
             return self._cache[1]
-        products = self._request("bot_products?select=name,description,source,category&order=source_index.asc")
+        products = self._request("bot_products?select=name,description,source,category,item_ids&order=source_index.asc")
         faqs = self._request("bot_faqs?select=model_name,question,answer,source&order=source_index.asc&limit=1000")
         if not products or not faqs:
             raise RuntimeError("Supabase knowledge is empty")
@@ -129,7 +129,7 @@ class SupabaseStore:
         for file_name in scope["files"]:
             file_filter = "source->>file=eq." + urllib.parse.quote(file_name, safe="")
             for table, columns, target in (
-                ("bot_products", "name,description,source,category", products),
+                ("bot_products", "name,description,source,category,item_ids", products),
                 ("bot_faqs", "model_name,question,answer,source", faqs),
             ):
                 offset = 0

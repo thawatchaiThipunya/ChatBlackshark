@@ -1,0 +1,38 @@
+[
+  {
+    "id": "Q069",
+    "severity": "expected_handoff",
+    "type": "missing_specification",
+    "note": "KB product row B23 has no network-band/network-type specification. Handoff is consistent with the rule to escalate unsupported KB questions; the answer does not invent bands."
+  },
+  {
+    "id": "Q076",
+    "severity": "high",
+    "type": "faq_not_answered",
+    "note": "A3 sleep-tracking troubleshooting answer exists in shop KB FAQ C27 and that FAQ source is included in the reply, yet the engine returns handoff_mock / insufficient_shop_evidence. This is a concrete FAQ-routing/evidence-use issue."
+  },
+  {
+    "id": "Q085",
+    "severity": "medium",
+    "type": "indirect_availability_answer",
+    "note": "Asked whether the shop sells Kieslect watches; reply says it cannot confirm because this shop has Black Shark watches. It avoids asserting Kieslect availability, but does not plainly say the KB lists only Black Shark watches."
+  },
+  {
+    "id": "Q092",
+    "severity": "passed_shop_boundary",
+    "type": "other_shop_request",
+    "note": "Explicit Youpin Online Store request gets a polite different-shop response, status answered, no handoff, and no foreign shop sources."
+  },
+  {
+    "id": "Q094",
+    "severity": "context_limit",
+    "type": "standalone_reference",
+    "note": "This case is run in its own session without prior recommendation history, so “the product you recommended” has no referent in the test context; asking which model is reasonable for this isolated input and does not test multi-turn reference resolution."
+  },
+  {
+    "id": "Q098-Q100",
+    "severity": "render_check",
+    "type": "markdown_comparison_tables",
+    "note": "All three compare answers contain Markdown pipe tables. This report renders them as HTML tables; the production chat UI rendering was not browser-tested in this run."
+  }
+]

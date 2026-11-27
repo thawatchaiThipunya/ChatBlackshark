@@ -1,0 +1,558 @@
+{
+  "run_id": "20261127T020018Z",
+  "created_at": "2026-11-27T02:00:18.129101+00:00",
+  "provider": "openrouter",
+  "model": "google/gemini-3.5-flash-lite",
+  "shop": "Black Shark Thailand",
+  "platform": "shopee",
+  "shop_id": "1191420560",
+  "shop_kb_files": [
+    "วิธีแก้ปัญหารายรุ่น-Black Shark-เฉพาะติ๊กส่งลูกค้าได้-20261118-0114.xlsx",
+    "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+  ],
+  "provider_cost_usd": 0.0144528,
+  "ai_usage_hub_accepted": 10,
+  "ai_usage_hub_total": 10,
+  "cases_passed": 2,
+  "cases_total": 3,
+  "cases": [
+    {
+      "id": "Q012",
+      "question": "ว่ายน้ำได้ทั้งคู่ไหมคะ",
+      "session": "C03",
+      "history_messages_sent": 6,
+      "status": "answered",
+      "reason": "source_match",
+      "intent": "compatibility",
+      "intent_analysis": {
+        "intent": "compatibility",
+        "topic": "Can Black Shark S3 Classic and Black Shark S3 be used for swimming",
+        "needs": [
+          "Check if Black Shark S3 Classic can be used for swimming",
+          "Check if Black Shark S3 can be used for swimming"
+        ],
+        "product_names": [
+          "Black Shark S3 Classic",
+          "Black Shark S3"
+        ],
+        "category": "smart watch",
+        "list_all": false,
+        "unresolved": false,
+        "shop_scope": "current_store"
+      },
+      "answer": "ยังยืนยันไม่ได้ครับ สำหรับ Black Shark S3 Classic มีมาตรฐานการกันน้ำระดับ 3ATM ที่กันน้ำ ทนฝน และละอองน้ำได้ ส่วนรุ่น S3 มาพร้อมมาตรฐานการกันน้ำระดับ 5ATM ทนต่อแรงดันน้ำเทียบเท่าความลึก 50 เมตร แต่เนื่องจากในข้อมูลของทั้งสองรุ่นไม่ได้ระบุโหมดกีฬาสำหรับการว่ายน้ำโดยเฉพาะ จึงไม่สามารถยืนยันได้ว่าสามารถใส่ว่ายน้ำได้ครับ",
+      "sources": [
+        {
+          "row": 10,
+          "cell": "B10",
+          "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+          "sheet": "ข้อมูลสินค้า",
+          "url_source": {
+            "row": 10,
+            "cell": "D10",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          },
+          "name_source": {
+            "row": 10,
+            "cell": "A10",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          },
+          "product_url": null,
+          "raw_row_index": 8
+        },
+        {
+          "row": 9,
+          "cell": "B9",
+          "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+          "sheet": "ข้อมูลสินค้า",
+          "url_source": {
+            "row": 9,
+            "cell": "D9",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          },
+          "name_source": {
+            "row": 9,
+            "cell": "A9",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          },
+          "product_url": null,
+          "raw_row_index": 7
+        }
+      ],
+      "source_files": [
+        "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+      ],
+      "checks": {
+        "answered_without_handoff": true,
+        "shop_kb_only": true,
+        "all_responses_logged_to_hub": true,
+        "S3_verdict_supported_separately": false,
+        "S3_Classic_uncertainty_separate": false
+      },
+      "passed": false,
+      "baseline_answer": "สำหรับ Black Shark S3 รองรับครับ เพราะมีมาตรฐานการกันน้ำระดับ 5ATM ที่ช่วยให้หมดกังวลเรื่องกิจกรรมทางน้ำ แต่สำหรับรุ่น Black Shark S3 Classic ยังยืนยันไม่ได้ครับ เนื่องจากระบุไว้เพียงมาตรฐานการกันน้ำ 3ATM ที่สามารถกันน้ำ ทนฝน และละอองน้ำได้ โดยข้อมูลในระบบยังไม่มีการระบุชัดเจนว่ารองรับการใส่ว่ายน้ำครับ",
+      "baseline_status": "answered",
+      "provider_calls": [
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.intent",
+          "duration_ms": 2732,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 2244,
+          "completion_tokens": 176,
+          "cost_usd": 0.0011132,
+          "http_status": 200,
+          "reference": "chat_request:handoff-retest-Q012-015955",
+          "request_id": "gen-1795744796-IrnA38dCVcKKngf80S21",
+          "hub_accepted": true
+        },
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.answer",
+          "duration_ms": 1835,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 8218,
+          "completion_tokens": 117,
+          "cost_usd": 0.0027579,
+          "http_status": 200,
+          "reference": "chat_request:handoff-retest-Q012-015955",
+          "request_id": "gen-1795744800-NI0OmcygybPocBfEnNks",
+          "hub_accepted": true
+        },
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.answer_review",
+          "duration_ms": 1491,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 5900,
+          "completion_tokens": 114,
+          "cost_usd": 0.002055,
+          "http_status": 200,
+          "reference": "chat_request:handoff-retest-Q012-015955",
+          "request_id": "gen-1795744802-1C3IqFAeCtVrdJSj5pOl",
+          "hub_accepted": true
+        }
+      ],
+      "cost_usd": 0.0059261,
+      "elapsed_seconds": 8.027
+    },
+    {
+      "id": "Q061",
+      "question": "Black Shark T18 Bluetooth เวอร์ชันอะไรครับ",
+      "session": "spec-12",
+      "history_messages_sent": 0,
+      "status": "answered",
+      "reason": "source_match",
+      "intent": "product_info",
+      "intent_analysis": {
+        "intent": "product_info",
+        "topic": "Bluetooth version of Black Shark T18",
+        "needs": [
+          "Bluetooth version"
+        ],
+        "product_names": [
+          "Black Shark T18"
+        ],
+        "category": null,
+        "list_all": false,
+        "unresolved": false,
+        "shop_scope": "current_store"
+      },
+      "answer": "สำหรับ Black Shark T18 จะใช้ Bluetooth 5.3 ครับ",
+      "sources": [
+        {
+          "row": 39,
+          "cell": "B39",
+          "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+          "sheet": "ข้อมูลสินค้า",
+          "url_source": {
+            "row": 39,
+            "cell": "D39",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          },
+          "name_source": {
+            "row": 39,
+            "cell": "A39",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          },
+          "product_url": null,
+          "raw_row_index": 37
+        }
+      ],
+      "source_files": [
+        "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+      ],
+      "checks": {
+        "answered_without_handoff": true,
+        "shop_kb_only": true,
+        "all_responses_logged_to_hub": true,
+        "Bluetooth_5_3_answered": true
+      },
+      "passed": true,
+      "baseline_answer": "รองรับครับ Black Shark T18 ใช้บลูทูธเวอร์ชัน 5.3 ครับ",
+      "baseline_status": "answered",
+      "provider_calls": [
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.intent",
+          "duration_ms": 1477,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 1495,
+          "completion_tokens": 146,
+          "cost_usd": 0.0008135,
+          "http_status": 200,
+          "reference": "chat_request:handoff-retest-Q061-020003",
+          "request_id": "gen-1795744804-j4Qay7t7i5qvL33uR7Rh",
+          "hub_accepted": true
+        },
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.answer",
+          "duration_ms": 1160,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 2015,
+          "completion_tokens": 52,
+          "cost_usd": 0.0007345,
+          "http_status": 200,
+          "reference": "chat_request:handoff-retest-Q061-020003",
+          "request_id": "gen-1795744806-pcbF4dmMmclKLa5NHHYW",
+          "hub_accepted": true
+        },
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.answer_review",
+          "duration_ms": 1179,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 952,
+          "completion_tokens": 24,
+          "cost_usd": 0.0003456,
+          "http_status": 200,
+          "reference": "chat_request:handoff-retest-Q061-020003",
+          "request_id": "gen-1795744808-u0s5FYjJci5Gh1PuQDao",
+          "hub_accepted": true
+        }
+      ],
+      "cost_usd": 0.0018936,
+      "elapsed_seconds": 5.705
+    },
+    {
+      "id": "Q077",
+      "question": "S1 Pro ไมโครโฟนไม่มีเสียง แก้ยังไง",
+      "session": "faq-08",
+      "history_messages_sent": 0,
+      "status": "answered",
+      "reason": "source_match",
+      "intent": "troubleshooting",
+      "intent_analysis": {
+        "intent": "troubleshooting",
+        "topic": "Microphone has no sound",
+        "needs": [
+          "Fix microphone with no sound issue"
+        ],
+        "product_names": [
+          "Black Shark S1 Pro"
+        ],
+        "category": null,
+        "list_all": false,
+        "unresolved": false,
+        "shop_scope": "current_store"
+      },
+      "answer": "สำหรับอาการไมโครโฟนไม่มีเสียงหรือคู่สายไม่ได้ยินเสียงตอนโทร ทาง Black Shark แนะนำให้ตรวจสอบและแก้ไขตามขั้นตอนนี้ดูนะครับ\n\n1. ตรวจสอบตำแหน่งไมโครโฟนบริเวณรูขนาดเล็กข้างปุ่มควบคุมด้านขวาของอุปกรณ์ครับ\n2. สังเกตดูว่ามีฝุ่นหรือสิ่งสกปรกอุดตันอยู่ภายในช่องไมโครโฟนหรือไม่\n3. ทำความสะอาดอย่างระมัดระวังโดยอาจใช้น้ำยาไล่ความชื้นสำหรับอุปกรณ์อิเล็กทรอนิกส์ช่วยได้ครับ และควรหลีกเลี่ยงการใช้วัตถุมีคมแทงเข้าไปเพราะอาจทำให้ชิ้นส่วนภายในเสียหาย\n4. ทดสอบใช้งานไมโครโฟนใหม่อีกครั้งครับ\n\nหากทำตามขั้นตอนแล้วยังพบปัญหาอยู่ รบกวนแจ้งหมายเลขคำสั่งซื้อพร้อมแนบวิดีโอตอนแก้ไขส่งให้แอดมินตรวจสอบเพื่อดำเนินการช่วยเหลือต่อได้เลยนะครับ",
+      "sources": [
+        {
+          "row": 11,
+          "cell": "B11",
+          "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+          "sheet": "ข้อมูลสินค้า",
+          "url_source": {
+            "row": 11,
+            "cell": "D11",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          },
+          "name_source": {
+            "row": 11,
+            "cell": "A11",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          },
+          "product_url": null,
+          "raw_row_index": 9
+        },
+        {
+          "row": 3,
+          "cell": "C3",
+          "file": "วิธีแก้ปัญหารายรุ่น-Black Shark-เฉพาะติ๊กส่งลูกค้าได้-20261118-0114.xlsx",
+          "sheet": "วิธีแก้ปัญหารายรุ่น"
+        }
+      ],
+      "source_files": [
+        "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+        "วิธีแก้ปัญหารายรุ่น-Black Shark-เฉพาะติ๊กส่งลูกค้าได้-20261118-0114.xlsx"
+      ],
+      "checks": {
+        "answered_without_handoff": true,
+        "shop_kb_only": true,
+        "all_responses_logged_to_hub": true,
+        "FAQ_steps_answered": true
+      },
+      "passed": true,
+      "baseline_answer": "สำหรับอาการไมโครโฟนไม่มีเสียงหรือคู่สายไม่ได้ยินเสียงตอนโทร ทางเราขอแนะนำให้ตรวจสอบและแก้ไขตามขั้นตอนนี้ดูนะครับ\n\n1. ตรวจสอบตำแหน่งไมโครโฟน ตามที่ระบุไว้ในคู่มือ หรือสังเกตรูขนาดเล็กบริเวณข้างปุ่มควบคุมด้านขวาของอุปกรณ์\n2. สังเกตว่ามีฝุ่น เศษผง หรือสิ่งสกปรกสะสมอยู่ภายในช่องดังกล่าวหรือไม่\n3. ทำความสะอาดอย่างระมัดระวัง โดยอาจใช้น้ำยาไล่ความชื้นสำหรับอุปกรณ์อิเล็กทรอนิกส์ประกอบการทำความสะอาดได้ (หลีกเลี่ยงการใช้วัตถุมีคมหรือของแหลมแทงเข้าไปในช่องอุปกรณ์ เนื่องจากอาจทำให้ชิ้นส่วนภายในได้รับความเสียหาย)\n4. ทดลองใช้งานไมโครโฟนและลำโพงอีกครั้งหลังทำความสะอาดเสร็จสิ้น\n\nหากแก้ไขตามขั้นตอนที่ระบุแล้ว นาฬิกายังไม่สามารถใช้งานได้ตามปกติ สามารถส่งวิดีโอขณะดำเนินการ พร้อมหมายเลขคำสั่งซื้อกลับมาให้ทางเจ้าหน้าที่ตรวจสอบเพื่อช่วยเหลือต่อได้เลยนะครับ",
+      "baseline_status": "answered",
+      "provider_calls": [
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.intent",
+          "duration_ms": 1393,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 1498,
+          "completion_tokens": 146,
+          "cost_usd": 0.0008144,
+          "http_status": 200,
+          "reference": "chat_request:handoff-retest-Q077-020009",
+          "request_id": "gen-1795744810-ngEleCOEz2LoZ9S04Kn9",
+          "hub_accepted": true
+        },
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.faq_selection",
+          "duration_ms": 1303,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 6437,
+          "completion_tokens": 10,
+          "cost_usd": 0.0019561,
+          "http_status": 200,
+          "reference": "chat_request:handoff-retest-Q077-020009",
+          "request_id": "gen-1795744812-nse7ZROWzqfIZYNCZUR2",
+          "hub_accepted": true
+        },
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.answer",
+          "duration_ms": 1904,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 5119,
+          "completion_tokens": 237,
+          "cost_usd": 0.0021282,
+          "http_status": 200,
+          "reference": "chat_request:handoff-retest-Q077-020009",
+          "request_id": "gen-1795744814-JKg8FLu35p8FqNothDaA",
+          "hub_accepted": true
+        },
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.answer_review",
+          "duration_ms": 1689,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 3873,
+          "completion_tokens": 229,
+          "cost_usd": 0.0017344,
+          "http_status": 200,
+          "reference": "chat_request:handoff-retest-Q077-020009",
+          "request_id": "gen-1795744816-btMqwAh8Kssuxvdsye1H",
+          "hub_accepted": true
+        }
+      ],
+      "cost_usd": 0.0066331,
+      "elapsed_seconds": 8.913
+    }
+  ],
+  "provider_usage": [
+    {
+      "provider": "openrouter",
+      "model": "google/gemini-3.5-flash-lite",
+      "operation": "chat.completions",
+      "source": "chat.intent",
+      "duration_ms": 2732,
+      "attempt": 1,
+      "status": "success",
+      "prompt_tokens": 2244,
+      "completion_tokens": 176,
+      "cost_usd": 0.0011132,
+      "http_status": 200,
+      "reference": "chat_request:handoff-retest-Q012-015955",
+      "request_id": "gen-1795744796-IrnA38dCVcKKngf80S21",
+      "hub_accepted": true
+    },
+    {
+      "provider": "openrouter",
+      "model": "google/gemini-3.5-flash-lite",
+      "operation": "chat.completions",
+      "source": "chat.answer",
+      "duration_ms": 1835,
+      "attempt": 1,
+      "status": "success",
+      "prompt_tokens": 8218,
+      "completion_tokens": 117,
+      "cost_usd": 0.0027579,
+      "http_status": 200,
+      "reference": "chat_request:handoff-retest-Q012-015955",
+      "request_id": "gen-1795744800-NI0OmcygybPocBfEnNks",
+      "hub_accepted": true
+    },
+    {
+      "provider": "openrouter",
+      "model": "google/gemini-3.5-flash-lite",
+      "operation": "chat.completions",
+      "source": "chat.answer_review",
+      "duration_ms": 1491,
+      "attempt": 1,
+      "status": "success",
+      "prompt_tokens": 5900,
+      "completion_tokens": 114,
+      "cost_usd": 0.002055,
+      "http_status": 200,
+      "reference": "chat_request:handoff-retest-Q012-015955",
+      "request_id": "gen-1795744802-1C3IqFAeCtVrdJSj5pOl",
+      "hub_accepted": true
+    },
+    {
+      "provider": "openrouter",
+      "model": "google/gemini-3.5-flash-lite",
+      "operation": "chat.completions",
+      "source": "chat.intent",
+      "duration_ms": 1477,
+      "attempt": 1,
+      "status": "success",
+      "prompt_tokens": 1495,
+      "completion_tokens": 146,
+      "cost_usd": 0.0008135,
+      "http_status": 200,
+      "reference": "chat_request:handoff-retest-Q061-020003",
+      "request_id": "gen-1795744804-j4Qay7t7i5qvL33uR7Rh",
+      "hub_accepted": true
+    },
+    {
+      "provider": "openrouter",
+      "model": "google/gemini-3.5-flash-lite",
+      "operation": "chat.completions",
+      "source": "chat.answer",
+      "duration_ms": 1160,
+      "attempt": 1,
+      "status": "success",
+      "prompt_tokens": 2015,
+      "completion_tokens": 52,
+      "cost_usd": 0.0007345,
+      "http_status": 200,
+      "reference": "chat_request:handoff-retest-Q061-020003",
+      "request_id": "gen-1795744806-pcbF4dmMmclKLa5NHHYW",
+      "hub_accepted": true
+    },
+    {
+      "provider": "openrouter",
+      "model": "google/gemini-3.5-flash-lite",
+      "operation": "chat.completions",
+      "source": "chat.answer_review",
+      "duration_ms": 1179,
+      "attempt": 1,
+      "status": "success",
+      "prompt_tokens": 952,
+      "completion_tokens": 24,
+      "cost_usd": 0.0003456,
+      "http_status": 200,
+      "reference": "chat_request:handoff-retest-Q061-020003",
+      "request_id": "gen-1795744808-u0s5FYjJci5Gh1PuQDao",
+      "hub_accepted": true
+    },
+    {
+      "provider": "openrouter",
+      "model": "google/gemini-3.5-flash-lite",
+      "operation": "chat.completions",
+      "source": "chat.intent",
+      "duration_ms": 1393,
+      "attempt": 1,
+      "status": "success",
+      "prompt_tokens": 1498,
+      "completion_tokens": 146,
+      "cost_usd": 0.0008144,
+      "http_status": 200,
+      "reference": "chat_request:handoff-retest-Q077-020009",
+      "request_id": "gen-1795744810-ngEleCOEz2LoZ9S04Kn9",
+      "hub_accepted": true
+    },
+    {
+      "provider": "openrouter",
+      "model": "google/gemini-3.5-flash-lite",
+      "operation": "chat.completions",
+      "source": "chat.faq_selection",
+      "duration_ms": 1303,
+      "attempt": 1,
+      "status": "success",
+      "prompt_tokens": 6437,
+      "completion_tokens": 10,
+      "cost_usd": 0.0019561,
+      "http_status": 200,
+      "reference": "chat_request:handoff-retest-Q077-020009",
+      "request_id": "gen-1795744812-nse7ZROWzqfIZYNCZUR2",
+      "hub_accepted": true
+    },
+    {
+      "provider": "openrouter",
+      "model": "google/gemini-3.5-flash-lite",
+      "operation": "chat.completions",
+      "source": "chat.answer",
+      "duration_ms": 1904,
+      "attempt": 1,
+      "status": "success",
+      "prompt_tokens": 5119,
+      "completion_tokens": 237,
+      "cost_usd": 0.0021282,
+      "http_status": 200,
+      "reference": "chat_request:handoff-retest-Q077-020009",
+      "request_id": "gen-1795744814-JKg8FLu35p8FqNothDaA",
+      "hub_accepted": true
+    },
+    {
+      "provider": "openrouter",
+      "model": "google/gemini-3.5-flash-lite",
+      "operation": "chat.completions",
+      "source": "chat.answer_review",
+      "duration_ms": 1689,
+      "attempt": 1,
+      "status": "success",
+      "prompt_tokens": 3873,
+      "completion_tokens": 229,
+      "cost_usd": 0.0017344,
+      "http_status": 200,
+      "reference": "chat_request:handoff-retest-Q077-020009",
+      "request_id": "gen-1795744816-btMqwAh8Kssuxvdsye1H",
+      "hub_accepted": true
+    }
+  ]
+}

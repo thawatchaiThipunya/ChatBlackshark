@@ -1,0 +1,14 @@
+{
+  "test_id": "q012-regression-20261127-5549f63e",
+  "question_id": "Q012",
+  "question": "ว่ายน้ำได้ทั้งคู่ไหมคะ",
+  "created_at": "2026-11-27T01:42:10.577801+00:00",
+  "provider_calls": [],
+  "status": "failed",
+  "scope": {
+    "platform": "shopee",
+    "shop_id": "1191420560"
+  },
+  "error_type": "URLError",
+  "error_code": ""
+}

@@ -1,0 +1,1071 @@
+{
+  "note": "Initial paced run stopped at user direction to remove pacing; these paid attempts are excluded from the 100-question result set and included in total spend.",
+  "question_count": 14,
+  "provider_calls": 21,
+  "cost_usd": 0.0380996,
+  "hub_accepted": 21,
+  "hub_rejected": 0,
+  "rows": [
+    {
+      "id": "Q001",
+      "group": "conversation",
+      "session": "C01",
+      "question": "gs3 ultra กันน้ำระดับไหนครับ",
+      "reply": {
+        "status": "answered",
+        "intent": "product_info",
+        "reason": "source_match",
+        "answer": "รองรับครับ สำหรับรุ่น Black Shark GS3 Ultra มาพร้อมมาตรฐานกันน้ำระดับ 5ATM และ IP69K ครับ ซึ่งช่วยให้สามารถกันฝุ่นได้อย่างสมบูรณ์ ทนแรงดันน้ำเทียบเท่าความลึก 50 เมตร และยังทนน้ำร้อนสูงถึง 80°C ได้ด้วยครับผม",
+        "sources": [
+          {
+            "row": 5,
+            "cell": "B5",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          }
+        ],
+        "product_name": "Black Shark GS3 Ultra",
+        "matched_question": null,
+        "session_id": "C01",
+        "handoff_mock": false,
+        "handoff_sent": false,
+        "intent_analysis": {
+          "intent": "product_info",
+          "topic": "ระดับการกันน้ำของสมาร์ทวอทช์",
+          "needs": [
+            "ขอทราบระดับการกันน้ำ"
+          ],
+          "product_names": [
+            "Black Shark GS3 Ultra"
+          ],
+          "category": "smart watch",
+          "list_all": false,
+          "unresolved": false,
+          "shop_scope": "current_store"
+        }
+      },
+      "elapsed_seconds": 9.6,
+      "usage": [
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.intent",
+          "duration_ms": 1565,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 1475,
+          "completion_tokens": 157,
+          "cost_usd": 0.000835,
+          "http_status": 200,
+          "reference": "chat_request:provider-rerun-Q001",
+          "hub_accepted": true
+        },
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.answer",
+          "duration_ms": 1571,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 5085,
+          "completion_tokens": 100,
+          "cost_usd": 0.0017755,
+          "http_status": 200,
+          "reference": "chat_request:provider-rerun-Q001",
+          "hub_accepted": true
+        },
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.answer_review",
+          "duration_ms": 1135,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 3799,
+          "completion_tokens": 93,
+          "cost_usd": 0.0013722,
+          "http_status": 200,
+          "reference": "chat_request:provider-rerun-Q001",
+          "hub_accepted": true
+        }
+      ],
+      "cost_usd": 0.0039827,
+      "scope_checked": true,
+      "scope_ok": true,
+      "source_files": [
+        "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+      ],
+      "created_at": "2026-11-26T05:36:38.921756+00:00"
+    },
+    {
+      "id": "Q002",
+      "group": "conversation",
+      "session": "C01",
+      "question": "ใส่ว่ายน้ำได้มั้ย",
+      "reply": {
+        "status": "answered",
+        "intent": "compatibility",
+        "reason": "source_match",
+        "answer": "รองรับครับ สำหรับรุ่น Black Shark GS3 Ultra มาพร้อมมาตรฐานกันน้ำ 5ATM และ IP69K ซึ่งรองรับการทนแรงดันน้ำเทียบเท่าความลึก 50 เมตร พร้อมทั้งมีฟังก์ชันติดตามท่าว่ายน้ำเพื่อช่วยพัฒนาการว่ายน้ำให้แม่นยำยิ่งขึ้นด้วยครับ",
+        "sources": [
+          {
+            "row": 5,
+            "cell": "B5",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          }
+        ],
+        "product_name": "Black Shark GS3 Ultra",
+        "matched_question": null,
+        "session_id": "C01",
+        "handoff_mock": false,
+        "handoff_sent": false,
+        "intent_analysis": {
+          "intent": "compatibility",
+          "topic": "water resistance for swimming",
+          "needs": [
+            "Check if Black Shark GS3 Ultra can be worn for swimming"
+          ],
+          "product_names": [
+            "Black Shark GS3 Ultra"
+          ],
+          "category": "smart watch",
+          "list_all": false,
+          "unresolved": false,
+          "shop_scope": "current_store"
+        }
+      },
+      "elapsed_seconds": 12.87,
+      "usage": [
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.intent",
+          "duration_ms": 1464,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 1639,
+          "completion_tokens": 142,
+          "cost_usd": 0.0008467,
+          "http_status": 200,
+          "reference": "chat_request:provider-rerun-Q002",
+          "hub_accepted": true
+        },
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.answer",
+          "duration_ms": 1592,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 5205,
+          "completion_tokens": 92,
+          "cost_usd": 0.0017915,
+          "http_status": 200,
+          "reference": "chat_request:provider-rerun-Q002",
+          "hub_accepted": true
+        },
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.answer_review",
+          "duration_ms": 1334,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 3740,
+          "completion_tokens": 93,
+          "cost_usd": 0.0013545,
+          "http_status": 200,
+          "reference": "chat_request:provider-rerun-Q002",
+          "hub_accepted": true
+        }
+      ],
+      "cost_usd": 0.0039927,
+      "scope_checked": true,
+      "scope_ok": true,
+      "source_files": [
+        "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+      ],
+      "created_at": "2026-11-26T05:36:51.788451+00:00"
+    },
+    {
+      "id": "Q003",
+      "group": "conversation",
+      "session": "C01",
+      "question": "อาบน้ำอุ่น เข้าซาวน่าได้ไหม",
+      "reply": {
+        "status": "answered",
+        "intent": "compatibility",
+        "reason": "source_match",
+        "answer": "ไม่ได้ครับ ทางแบรนด์ระบุว่าแม้ตัวเรือนจะออกแบบมาให้ทนต่ออุณหภูมิสูงได้ แต่ไม่แนะนำให้ใช้นาฬิกาในสภาพแวดล้อมที่ร้อนจัด เช่น ห้องซาวน่า หรือใช้อาบน้ำร้อน เพราะอาจทำให้ชิ้นส่วนภายในของนาฬิกาเสียหายได้ครับ",
+        "sources": [
+          {
+            "row": 5,
+            "cell": "B5",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          }
+        ],
+        "product_name": "Black Shark GS3 Ultra",
+        "matched_question": null,
+        "session_id": "C01",
+        "handoff_mock": false,
+        "handoff_sent": false,
+        "intent_analysis": {
+          "intent": "compatibility",
+          "topic": "ความสามารถในการใส่อาบน้ำอุ่นและเข้าซาวน่า",
+          "needs": [
+            "สอบถามว่าสามารถใส่อาบน้ำอุ่นได้หรือไม่",
+            "สอบถามว่าสามารถเข้าซาวน่าได้หรือไม่"
+          ],
+          "product_names": [
+            "Black Shark GS3 Ultra"
+          ],
+          "category": "smart watch",
+          "list_all": false,
+          "unresolved": false,
+          "shop_scope": "current_store"
+        }
+      },
+      "elapsed_seconds": 12.91,
+      "usage": [
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.intent",
+          "duration_ms": 1358,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 1806,
+          "completion_tokens": 168,
+          "cost_usd": 0.0009618,
+          "http_status": 200,
+          "reference": "chat_request:provider-rerun-Q003",
+          "hub_accepted": true
+        },
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.answer",
+          "duration_ms": 1452,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 5385,
+          "completion_tokens": 116,
+          "cost_usd": 0.0019055,
+          "http_status": 200,
+          "reference": "chat_request:provider-rerun-Q003",
+          "hub_accepted": true
+        },
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.answer_review",
+          "duration_ms": 1665,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 3768,
+          "completion_tokens": 98,
+          "cost_usd": 0.0013754,
+          "http_status": 200,
+          "reference": "chat_request:provider-rerun-Q003",
+          "hub_accepted": true
+        }
+      ],
+      "cost_usd": 0.0042427,
+      "scope_checked": true,
+      "scope_ok": true,
+      "source_files": [
+        "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+      ],
+      "created_at": "2026-11-26T05:37:04.704361+00:00"
+    },
+    {
+      "id": "Q004",
+      "group": "conversation",
+      "session": "C01",
+      "question": "แบตอยู่ได้กี่วัน",
+      "reply": {
+        "status": "answered",
+        "intent": "product_info",
+        "reason": "source_match",
+        "answer": "สำหรับรุ่น Black Shark GS3 Ultra สามารถใช้งานทั่วไปได้นานสูงสุดประมาณ 18 วันครับ หรือถ้าเปิดโหมดสแตนด์บายยาวนานพิเศษจะอยู่ได้นานสุดถึง 45 วัน และหากใช้งานหนักจะอยู่ได้ประมาณ 9 วันครับผม",
+        "sources": [
+          {
+            "row": 5,
+            "cell": "B5",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          }
+        ],
+        "product_name": "Black Shark GS3 Ultra",
+        "matched_question": null,
+        "session_id": "C01",
+        "handoff_mock": false,
+        "handoff_sent": false,
+        "intent_analysis": {
+          "intent": "product_info",
+          "topic": "battery life",
+          "needs": [
+            "Battery life duration"
+          ],
+          "product_names": [
+            "Black Shark GS3 Ultra"
+          ],
+          "category": "smart watch",
+          "list_all": false,
+          "unresolved": false,
+          "shop_scope": "current_store"
+        }
+      },
+      "elapsed_seconds": 12.06,
+      "usage": [
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.intent",
+          "duration_ms": 1131,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 1978,
+          "completion_tokens": 133,
+          "cost_usd": 0.0009259,
+          "http_status": 200,
+          "reference": "chat_request:provider-rerun-Q004",
+          "hub_accepted": true
+        },
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.answer",
+          "duration_ms": 1243,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 5585,
+          "completion_tokens": 80,
+          "cost_usd": 0.0018755,
+          "http_status": 200,
+          "reference": "chat_request:provider-rerun-Q004",
+          "hub_accepted": true
+        },
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.answer_review",
+          "duration_ms": 1140,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 3778,
+          "completion_tokens": 80,
+          "cost_usd": 0.0013334,
+          "http_status": 200,
+          "reference": "chat_request:provider-rerun-Q004",
+          "hub_accepted": true
+        }
+      ],
+      "cost_usd": 0.0041348,
+      "scope_checked": true,
+      "scope_ok": true,
+      "source_files": [
+        "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+      ],
+      "created_at": "2026-11-26T05:37:16.764258+00:00"
+    },
+    {
+      "id": "Q005",
+      "group": "conversation",
+      "session": "C02",
+      "question": "GS3 กับ GS3 Ultra ต่างกันยังไงคะ",
+      "reply": {
+        "status": "answered",
+        "intent": "comparison",
+        "reason": "source_match",
+        "answer": "รองรับค่ะ สำหรับ Black Shark GS3 และ GS3 Ultra จะมีความแตกต่างกันในด้านวัสดุตัวเรือน ความสว่างหน้าจอ เครือข่ายดาวเทียม โหมดกีฬา ฟังก์ชันสุขภาพ และแอปพลิเคชันที่ใช้งาน โดยน้อง Black Shark สรุปรายละเอียดเปรียบเทียบให้ดูตามตารางด้านล่างนี้ได้เลยนะครับ\n\n| รายละเอียด | Black Shark GS3 | Black Shark GS3 Ultra |\n| --- | --- | --- |\n| วัสดุตัวเรือน | Corning® Gorilla® Glass 3 + Fiberglass | Corning® Gorilla® Glass 3 + Zinc Alloy |\n| ความสว่างหน้าจอ | 600Nit | 1000Nits |\n| เครือข่ายดาวเทียม GPS | 5 เครือข่าย (GPS, BeiDou, GLONASS, GALILEO, QZSS) | Dual-Band 6 เครือข่าย (GPS, BeiDou, GLONASS, GALILEO, NAVIC, QZSS) |\n| โหมดกีฬา | มากกว่า 100 ชนิด | 160 ชนิด |\n| ฟังก์ชันสุขภาพเพิ่มเติม | ตรวจวัดพื้นฐาน (หัวใจ, ออกซิเจน, ความเครียด, การนอน) | เพิ่มฟังก์ชันตรวจอารมณ์ และ Women's Health |\n| แอปพลิเคชันที่ใช้งาน | iOS: Shark Wearable / Android: Shark Sport | Shark Track (ทั้ง iOS และ Android) |\n| ความจุแบตเตอรี่ | 470mAh | 440mAh |\n| ระยะเวลาใช้งาน Daily Mode | นานสุด 21 วัน | นานสุด 18 วัน |\n| สายนาฬิกาในกล่อง | สายผ้า (Woven Strap) และสายชาร์จ | สายชาร์จ |\n\nหากเน้นความสว่างหน้าจอที่สูงขึ้น พร้อมระบบ GPS ที่อัปเกรดเป็น Dual-Band และโหมดกีฬาที่หลากหลายกว่า รุ่น GS3 Ultra จะตอบโจทย์ได้ดีครับ แต่ถ้าชอบแบตเตอรี่ที่ใช้งานได้ยาวนานกว่าและได้รับสายผ้าแถมมาในกล่องพร้อมใช้งาน รุ่น GS3 ก็เป็นตัวเลือกที่น่าสนใจครับ",
+        "sources": [
+          {
+            "row": 3,
+            "cell": "B3",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          },
+          {
+            "row": 5,
+            "cell": "B5",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          }
+        ],
+        "product_name": null,
+        "matched_question": null,
+        "session_id": "C02",
+        "handoff_mock": false,
+        "handoff_sent": false,
+        "intent_analysis": {
+          "intent": "comparison",
+          "topic": "เปรียบเทียบความแตกต่างระหว่าง GS3 และ GS3 Ultra",
+          "needs": [
+            "เปรียบเทียบความแตกต่างระหว่าง Black Shark GS3 และ Black Shark GS3 Ultra"
+          ],
+          "product_names": [
+            "Black Shark GS3",
+            "Black Shark GS3 Ultra"
+          ],
+          "category": null,
+          "list_all": false,
+          "unresolved": false,
+          "shop_scope": "current_store"
+        }
+      },
+      "elapsed_seconds": 13.76,
+      "usage": [
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.intent",
+          "duration_ms": 1221,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 1478,
+          "completion_tokens": 177,
+          "cost_usd": 0.0008859,
+          "http_status": 200,
+          "reference": "chat_request:provider-rerun-Q005",
+          "hub_accepted": true
+        },
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.answer",
+          "duration_ms": 2318,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 8599,
+          "completion_tokens": 450,
+          "cost_usd": 0.0037047,
+          "http_status": 200,
+          "reference": "chat_request:provider-rerun-Q005",
+          "hub_accepted": true
+        },
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.answer_review",
+          "duration_ms": 2285,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 7373,
+          "completion_tokens": 498,
+          "cost_usd": 0.0034569,
+          "http_status": 200,
+          "reference": "chat_request:provider-rerun-Q005",
+          "hub_accepted": true
+        }
+      ],
+      "cost_usd": 0.0080475,
+      "scope_checked": true,
+      "scope_ok": true,
+      "source_files": [
+        "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+      ],
+      "created_at": "2026-11-26T05:37:30.526430+00:00"
+    },
+    {
+      "id": "Q006",
+      "group": "conversation",
+      "session": "C02",
+      "question": "ตัวไหนแบตอึดกว่าคะ",
+      "reply": {
+        "status": "answered",
+        "intent": "comparison",
+        "reason": "source_match",
+        "answer": "สำหรับเรื่องความอึดของแบตเตอรี่ รุ่น Black Shark GS3 จะใช้งานได้ยาวนานกว่าครับ โดยรุ่น Black Shark GS3 มีความจุแบตเตอรี่ 470mAh และใช้งานแบบ Daily Use ได้นานสุด 21 วัน ส่วนรุ่น Black Shark GS3 Ultra มีความจุแบตเตอรี่ 440mAh และใช้งานทั่วไปได้นานสุด 18 วัน ทั้งสองรุ่นรองรับการใช้งานแบบ Standby Mode ได้นานสุด 45 วันเท่ากันครับ\n\n| รายละเอียด | Black Shark GS3 | Black Shark GS3 Ultra |\n| --- | --- | --- |\n| ความจุแบตเตอรี่ | 470mAh | 440mAh |\n| ระยะเวลาใช้งาน Daily Mode | นานสุด 21 วัน | นานสุด 18 วัน |\n| ระยะเวลาใช้งาน Standby Mode | นานสุด 45 วัน | นานสุด 45 วัน |\n\nหากคุณลูกค้าเน้นการใช้งานทั่วไปที่ยาวนานกว่าต่อการชาร์จแต่ละครั้ง รุ่น GS3 จะมีความจุแบตเตอรี่ที่ใหญ่กว่าและใช้งานในโหมดปกติได้นานกว่าครับผม",
+        "sources": [
+          {
+            "row": 3,
+            "cell": "B3",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          },
+          {
+            "row": 5,
+            "cell": "B5",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          }
+        ],
+        "product_name": null,
+        "matched_question": null,
+        "session_id": "C02",
+        "handoff_mock": false,
+        "handoff_sent": false,
+        "intent_analysis": {
+          "intent": "comparison",
+          "topic": "เปรียบเทียบแบตเตอรี่ระหว่าง GS3 และ GS3 Ultra",
+          "needs": [
+            "เปรียบเทียบความอึดของแบตเตอรี่ระหว่าง Black Shark GS3 และ Black Shark GS3 Ultra"
+          ],
+          "product_names": [
+            "Black Shark GS3",
+            "Black Shark GS3 Ultra"
+          ],
+          "category": null,
+          "list_all": false,
+          "unresolved": false,
+          "shop_scope": "current_store"
+        }
+      },
+      "elapsed_seconds": 12.27,
+      "usage": [
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.intent",
+          "duration_ms": 1277,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 2038,
+          "completion_tokens": 171,
+          "cost_usd": 0.0010389,
+          "http_status": 200,
+          "reference": "chat_request:provider-rerun-Q006",
+          "hub_accepted": true
+        },
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.answer",
+          "duration_ms": 2191,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 9166,
+          "completion_tokens": 223,
+          "cost_usd": 0.0033073,
+          "http_status": 200,
+          "reference": "chat_request:provider-rerun-Q006",
+          "hub_accepted": true
+        },
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.answer_review",
+          "duration_ms": 1954,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 7144,
+          "completion_tokens": 272,
+          "cost_usd": 0.0028232,
+          "http_status": 200,
+          "reference": "chat_request:provider-rerun-Q006",
+          "hub_accepted": true
+        }
+      ],
+      "cost_usd": 0.0071694,
+      "scope_checked": true,
+      "scope_ok": true,
+      "source_files": [
+        "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+      ],
+      "created_at": "2026-11-26T05:37:42.800007+00:00"
+    },
+    {
+      "id": "Q007",
+      "group": "conversation",
+      "session": "C02",
+      "question": "ในกล่องแถมสายมาด้วยมั้ยคะ",
+      "reply": {
+        "status": "answered",
+        "intent": "product_info",
+        "reason": "source_match",
+        "answer": "มีสายแถมมาในกล่องครับ สำหรับรุ่น Black Shark GS3 จะมีสายผ้า Woven Strap และสายชาร์จมาให้ในแพ็กเกจ ส่วนรุ่น Black Shark GS3 Ultra ในกล่องจะมีสายชาร์จและตัวเรือนมาให้ครับ",
+        "sources": [
+          {
+            "row": 3,
+            "cell": "B3",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          },
+          {
+            "row": 5,
+            "cell": "B5",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          }
+        ],
+        "product_name": null,
+        "matched_question": null,
+        "session_id": "C02",
+        "handoff_mock": false,
+        "handoff_sent": false,
+        "intent_analysis": {
+          "intent": "product_info",
+          "topic": "สอบถามของแถมสายนาฬิกาในกล่องของ Black Shark GS3 และ GS3 Ultra",
+          "needs": [
+            "สอบถามว่ามีสายแถมมาในกล่องหรือไม่"
+          ],
+          "product_names": [
+            "Black Shark GS3",
+            "Black Shark GS3 Ultra"
+          ],
+          "category": null,
+          "list_all": false,
+          "unresolved": false,
+          "shop_scope": "current_store"
+        }
+      },
+      "elapsed_seconds": 11.8,
+      "usage": [
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.intent",
+          "duration_ms": 1267,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 2378,
+          "completion_tokens": 168,
+          "cost_usd": 0.0011334,
+          "http_status": 200,
+          "reference": "chat_request:provider-rerun-Q007",
+          "hub_accepted": true
+        },
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.answer",
+          "duration_ms": 1296,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 9567,
+          "completion_tokens": 83,
+          "cost_usd": 0.0030776,
+          "http_status": 200,
+          "reference": "chat_request:provider-rerun-Q007",
+          "hub_accepted": true
+        },
+        {
+          "provider": "openrouter",
+          "model": "google/gemini-3.5-flash-lite",
+          "operation": "chat.completions",
+          "source": "chat.answer_review",
+          "duration_ms": 1159,
+          "attempt": 1,
+          "status": "success",
+          "prompt_tokens": 7046,
+          "completion_tokens": 82,
+          "cost_usd": 0.0023188,
+          "http_status": 200,
+          "reference": "chat_request:provider-rerun-Q007",
+          "hub_accepted": true
+        }
+      ],
+      "cost_usd": 0.0065298,
+      "scope_checked": true,
+      "scope_ok": true,
+      "source_files": [
+        "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+      ],
+      "created_at": "2026-11-26T05:37:54.603948+00:00"
+    },
+    {
+      "id": "Q008",
+      "group": "conversation",
+      "session": "C02",
+      "question": "จอ Ultra กี่ Hz คะ",
+      "reply": {
+        "status": "answered",
+        "intent": "product_info",
+        "reason": "source_match",
+        "answer": "รองรับค่ะ หน้าจอของรุ่น Black Shark GS3 Ultra จะมีความถี่อยู่ที่ 60Hz ค่ะ",
+        "sources": [
+          {
+            "row": 5,
+            "cell": "B5",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          }
+        ],
+        "product_name": "Black Shark GS3 Ultra",
+        "matched_question": null,
+        "session_id": "C02",
+        "handoff_mock": false,
+        "handoff_sent": false,
+        "intent_analysis": {
+          "intent": "product_info",
+          "topic": "หน้าจออัตราการรีเฟรช (Hz) ของ Black Shark GS3 Ultra",
+          "needs": [
+            "ความถี่หน้าจอ (Hz) ของ Black Shark GS3 Ultra"
+          ],
+          "product_names": [
+            "Black Shark GS3 Ultra"
+          ],
+          "category": "smart watch",
+          "list_all": false,
+          "unresolved": false,
+          "shop_scope": "current_store"
+        }
+      },
+      "elapsed_seconds": 12.47,
+      "usage": [],
+      "cost_usd": 0,
+      "scope_checked": true,
+      "scope_ok": true,
+      "source_files": [
+        "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+      ],
+      "created_at": "2026-11-26T05:38:07.072550+00:00"
+    },
+    {
+      "id": "Q009",
+      "group": "conversation",
+      "session": "C03",
+      "question": "S3 Classic กับ S3 เฉย ๆ ต่างกันยังไงคะ",
+      "reply": {
+        "status": "answered",
+        "intent": "comparison",
+        "reason": "source_match",
+        "answer": "น้อง Black Shark ขอสรุปความต่างระหว่างสองรุ่นนี้ให้ฟังคร่าว ๆ ก่อนนะครับ ทั้งคู่ใช้หน้าจอ AMOLED ขนาด 1.43 นิ้วและความสว่าง 600nits เท่ากัน แต่จะมีรายละเอียดสเปกบางจุดที่ไม่เหมือนกันครับ\n\n| รายละเอียดสเปก | Black Shark S3 Classic | Black Shark S3 |\n| --- | --- | --- |\n| บลูทูธ | 5.4 | 5.3 |\n| ความจุแบตเตอรี่ | 350mAh | 500mAh |\n| มาตรฐานการกันน้ำ | 3ATM | 5ATM |\n| GPS | ไม่พบข้อมูล | Built-in GPS 5 เครือข่าย |\n| Strava | ไม่รองรับ | รองรับ |\n| ไฟฉาย | ไม่พบข้อมูล | มี |\n| น้ำหนัก (ไม่รวมสาย) | 38 กรัม | 44.3 กรัม |\n\nหากเน้นเรื่องการออกกำลังกายที่ต้องการ GPS ในตัวและการซิงก์ Strava รุ่น Black Shark S3 จะตอบโจทย์มากกว่าครับ แต่ถ้าชอบดีไซน์คลาสสิกน้ำหนักเบาและประหยัดพลังงาน รุ่น Black Shark S3 Classic ก็เป็นตัวเลือกที่ดีครับ",
+        "sources": [
+          {
+            "row": 9,
+            "cell": "B9",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          },
+          {
+            "row": 8,
+            "cell": "B8",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          }
+        ],
+        "product_name": null,
+        "matched_question": null,
+        "session_id": "C03",
+        "handoff_mock": false,
+        "handoff_sent": false,
+        "intent_analysis": {
+          "intent": "comparison",
+          "topic": "compare Black Shark S3 Classic and Black Shark S3",
+          "needs": [
+            "compare differences between Black Shark S3 Classic and Black Shark S3"
+          ],
+          "product_names": [
+            "Black Shark S3 Classic",
+            "Black Shark S3"
+          ],
+          "category": null,
+          "list_all": false,
+          "unresolved": false,
+          "shop_scope": "current_store"
+        }
+      },
+      "elapsed_seconds": 13.36,
+      "usage": [],
+      "cost_usd": 0,
+      "scope_checked": true,
+      "scope_ok": true,
+      "source_files": [
+        "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+      ],
+      "created_at": "2026-11-26T05:38:20.434790+00:00"
+    },
+    {
+      "id": "Q010",
+      "group": "conversation",
+      "session": "C03",
+      "question": "S3 Classic เปลี่ยนสายได้มั้ยคะ",
+      "reply": {
+        "status": "answered",
+        "intent": "compatibility",
+        "reason": "source_match",
+        "answer": "รองรับครับ รุ่นนี้มีข้อมูลวิธีการใส่สายนาฬิกาแนะนำไว้ให้ดูเพิ่มเติมด้วยครับ (สามารถดูได้จากลิงก์วิธีการใส่สายนาฬิกา: youtu.be/Oen126kBRzI)",
+        "sources": [
+          {
+            "row": 9,
+            "cell": "B9",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          }
+        ],
+        "product_name": "Black Shark S3 Classic",
+        "matched_question": null,
+        "session_id": "C03",
+        "handoff_mock": false,
+        "handoff_sent": false,
+        "intent_analysis": {
+          "intent": "compatibility",
+          "topic": " strap replacement for S3 Classic",
+          "needs": [
+            "Check if the Black Shark S3 Classic supports changing straps"
+          ],
+          "product_names": [
+            "Black Shark S3 Classic"
+          ],
+          "category": null,
+          "list_all": false,
+          "unresolved": false,
+          "shop_scope": "current_store"
+        }
+      },
+      "elapsed_seconds": 12.06,
+      "usage": [],
+      "cost_usd": 0,
+      "scope_checked": true,
+      "scope_ok": true,
+      "source_files": [
+        "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+      ],
+      "created_at": "2026-11-26T05:38:32.500990+00:00"
+    },
+    {
+      "id": "Q011",
+      "group": "conversation",
+      "session": "C03",
+      "question": "แล้ว S3 ตอบข้อความไลน์จากนาฬิกาได้มั้ย",
+      "reply": {
+        "status": "answered",
+        "intent": "product_info",
+        "reason": "source_match",
+        "answer": "ไม่ได้ครับ รุ่นนี้ยังไม่รองรับการพิมพ์ข้อความตอบกลับครับ ถึงแม้จะสามารถแสดงการแจ้งเตือนจากแอปโซเชียลมีเดียบนหน้าปัดได้ แต่ในส่วนของการใช้งานฟังก์ชันนี้จะยังไม่รองรับการพิมพ์ข้อความเพื่อตอบกลับครับ",
+        "sources": [
+          {
+            "row": 8,
+            "cell": "B8",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          }
+        ],
+        "product_name": "Black Shark S3",
+        "matched_question": null,
+        "session_id": "C03",
+        "handoff_mock": false,
+        "handoff_sent": false,
+        "intent_analysis": {
+          "intent": "product_info",
+          "topic": "S3 message reply capability",
+          "needs": [
+            "Check if Black Shark S3 can reply to Line messages from the watch"
+          ],
+          "product_names": [
+            "Black Shark S3"
+          ],
+          "category": null,
+          "list_all": false,
+          "unresolved": false,
+          "shop_scope": "current_store"
+        }
+      },
+      "elapsed_seconds": 12.89,
+      "usage": [],
+      "cost_usd": 0,
+      "scope_checked": true,
+      "scope_ok": true,
+      "source_files": [
+        "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+      ],
+      "created_at": "2026-11-26T05:38:45.389905+00:00"
+    },
+    {
+      "id": "Q012",
+      "group": "conversation",
+      "session": "C03",
+      "question": "ว่ายน้ำได้ทั้งคู่ไหมคะ",
+      "reply": {
+        "status": "answered",
+        "intent": "compatibility",
+        "reason": "source_match",
+        "answer": "ยังยืนยันไม่ได้ครับ เนื่องจากข้อมูลระบุการกันน้ำที่แตกต่างกัน โดยรุ่น Black Shark S3 มาพร้อมมาตรฐานการกันน้ำ 5ATM ที่ช่วยให้ทนต่อแรงดันน้ำเทียบเท่าความลึก 50 เมตร และหมดกังวลเรื่องกิจกรรมทางน้ำ ส่วนรุ่น Black Shark S3 Classic มีมาตรฐานการกันน้ำ 3ATM ที่สามารถกันน้ำ ทนฝน และละอองน้ำได้ครับ ทั้งนี้ทางแบรนด์มีข้อแนะนำเหมือนกันคือไม่แนะนำให้ใช้นาฬิกาในสภาพแวดล้อมที่ร้อนจัด เช่น ห้องซาวน่า หรือใช้อาบน้ำร้อนครับ",
+        "sources": [
+          {
+            "row": 8,
+            "cell": "B8",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          },
+          {
+            "row": 9,
+            "cell": "B9",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          }
+        ],
+        "product_name": null,
+        "matched_question": null,
+        "session_id": "C03",
+        "handoff_mock": false,
+        "handoff_sent": false,
+        "intent_analysis": {
+          "intent": "compatibility",
+          "topic": "การกันน้ำและใส่ว่ายน้ำของนาฬิกา Black Shark S3 และ S3 Classic",
+          "needs": [
+            "สอบถามว่านาฬิกาทั้งสองรุ่นสามารถใส่ว่ายน้ำได้หรือไม่"
+          ],
+          "product_names": [
+            "Black Shark S3",
+            "Black Shark S3 Classic"
+          ],
+          "category": null,
+          "list_all": false,
+          "unresolved": false,
+          "shop_scope": "current_store"
+        }
+      },
+      "elapsed_seconds": 12.57,
+      "usage": [],
+      "cost_usd": 0,
+      "scope_checked": true,
+      "scope_ok": true,
+      "source_files": [
+        "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+      ],
+      "created_at": "2026-11-26T05:38:57.960353+00:00"
+    },
+    {
+      "id": "Q013",
+      "group": "conversation",
+      "session": "C04",
+      "question": "อยากได้นาฬิกาไว้วิ่ง มี GPS ในตัว และใช้กับ Strava ได้ แนะนำรุ่นไหนครับ",
+      "reply": {
+        "status": "answered",
+        "intent": "product_search",
+        "reason": "source_match",
+        "answer": "รองรับครับ สำหรับผู้ที่มองหานาฬิกาใส่วิ่ง มี GPS ในตัว และรองรับการใช้งานกับ Strava ทั้ง 3 รุ่นที่แนะนำสามารถตอบโจทย์ได้ทั้งหมดครับ\n\n- BLACK SHARK RUN: รองรับ Strava และมี Built-in GPS ในตัว รองรับระบบดาวเทียมหลักถึง 5 Satellite พร้อมโหมดกีฬา 150 แบบ ตัวเรือนเบาพิเศษเพียง 30 กรัม\n- Black Shark S3: รองรับ Strava และมี Built-in GPS ถึง 5 เครือข่าย พร้อม 150 โหมดกีฬา ดีไซน์พรีเมียมพร้อมเม็ดมะยม\n- Black Shark GS3: รองรับ Strava และมี Built-in GPS ถึง 5 เครือข่าย พร้อมโหมดกีฬามากกว่า 100 ชนิด ดีไซน์ทนทานระดับ MIL-STD 810H\n\nหากเน้นความเบาสบายสำหรับสายวิ่ง รุ่น BLACK SHARK RUN จะตอบโจทย์ได้ดีครับ แต่ถ้าชอบความพรีเมียมหรูหรา รุ่น Black Shark S3 ก็เป็นตัวเลือกที่น่าสนใจ หรือหากเน้นความทนทานลุย ๆ และแบตเตอรี่อึด รุ่น Black Shark GS3 จะเหมาะที่สุดครับ",
+        "sources": [
+          {
+            "row": 14,
+            "cell": "B14",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          },
+          {
+            "row": 8,
+            "cell": "B8",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          },
+          {
+            "row": 3,
+            "cell": "B3",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          }
+        ],
+        "product_name": "BLACK SHARK RUN",
+        "matched_question": null,
+        "session_id": "C04",
+        "handoff_mock": false,
+        "handoff_sent": false,
+        "product_cards": [],
+        "intent_analysis": {
+          "intent": "product_search",
+          "topic": "recommend watch for running with built-in GPS and Strava support",
+          "needs": [
+            "recommend smartwatch model for running",
+            "built-in GPS feature",
+            "Strava app compatibility"
+          ],
+          "product_names": [
+            "BLACK SHARK RUN",
+            "Black Shark S3",
+            "Black Shark GS3"
+          ],
+          "category": "smart watch",
+          "list_all": false,
+          "unresolved": false,
+          "shop_scope": "current_store"
+        }
+      },
+      "elapsed_seconds": 17.69,
+      "usage": [],
+      "cost_usd": 0,
+      "scope_checked": true,
+      "scope_ok": true,
+      "source_files": [
+        "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+      ],
+      "created_at": "2026-11-26T05:39:15.652320+00:00"
+    },
+    {
+      "id": "Q014",
+      "group": "conversation",
+      "session": "C04",
+      "question": "ใช้กับ iPhone ได้ไหม",
+      "reply": {
+        "status": "answered",
+        "intent": "compatibility",
+        "reason": "source_match",
+        "answer": "รองรับครับ สามารถใช้งานร่วมกับ iPhone ได้โดยเชื่อมต่อผ่านแอปพลิเคชัน Shark Wearable สำหรับระบบ iOS และรองรับการซิงค์ข้อมูลผ่าน Strava ได้ครับ",
+        "sources": [
+          {
+            "row": 14,
+            "cell": "B14",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          },
+          {
+            "row": 8,
+            "cell": "B8",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          },
+          {
+            "row": 3,
+            "cell": "B3",
+            "file": "สินค้า - Black Shark Thailand (sellcenter).xlsx",
+            "sheet": "ข้อมูลสินค้า"
+          }
+        ],
+        "product_name": null,
+        "matched_question": null,
+        "session_id": "C04",
+        "handoff_mock": false,
+        "handoff_sent": false,
+        "intent_analysis": {
+          "intent": "compatibility",
+          "topic": "compatibility with iPhone for previously discussed smartwatches",
+          "needs": [
+            "check compatibility with iPhone"
+          ],
+          "product_names": [
+            "BLACK SHARK RUN",
+            "Black Shark S3",
+            "Black Shark GS3"
+          ],
+          "category": "smart watch",
+          "list_all": false,
+          "unresolved": false,
+          "shop_scope": "current_store"
+        }
+      },
+      "elapsed_seconds": 11.81,
+      "usage": [],
+      "cost_usd": 0,
+      "scope_checked": true,
+      "scope_ok": true,
+      "source_files": [
+        "สินค้า - Black Shark Thailand (sellcenter).xlsx"
+      ],
+      "created_at": "2026-11-26T05:39:27.474071+00:00"
+    }
+  ]
+}
